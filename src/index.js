@@ -13,11 +13,13 @@ class BasicForm extends React.Component {
   constructor(props) {
     super(props);
     this.onSelect = this.onSelect.bind(this);
+    this.audioRef = React.createRef()
     this.state = {
       nb: 0,
       wordinput: '',
       inputValue:'',
       targetValue: '',
+      controlsValue:'',
       error: null,
       isLoaded: false,
       item: [],
@@ -42,6 +44,7 @@ class BasicForm extends React.Component {
       //const item = this.state;
 
       //const { wordinput } = this.state;
+
       //const items = this.state.items.map(obj => obj);
       //const displayPlayer = (<audio controls> <source src={`${item.name}${item.id}.mp3`} type='audio/mpeg'></source></audio>);
       //this.validateWordInput();
@@ -114,18 +117,33 @@ class BasicForm extends React.Component {
 
   userInputValues = () => {
     const inputValue = this.state;
-//this.setState({ inputValue: e.target.value })
-    console.log(inputValue);
-    //this.setState({inputValue: ''});
-    //console.log(inputValue);
+//this.setState({ inputValue: e.target.value })A
+   
+    console.log(inputValue); 
+  //this.setState({inputValue: ''}); 
+  //console.log(inputValue);
   }
+  controlsFalse = () => {
+    
+    this.audioRef.setAttribute("controls","false");
+  }
+  
   onClickUploadFile = () => {
     const items = this.state;
     //this.setState({item : items}, () => console.log("ITEMS : ", this.state.item) );
 
     //this.refs.btn.setAttribute("disabled", "disabled");
     //  ref={btn => { this.btn = btn; }}  
+    const inputValue = this.state;
+    const targetValue = this.state;
     this.btn.setAttribute("disabled", "disabled");
+    //const audio2 = {targetValue};
+    if(inputValue === targetValue) {
+    //const item = this.state;
+    //this.audio.setAttribute("controls", "false");
+      //controlsFalse();
+      //this.audioRef.setAttribute("controls","false");
+    }
     //this.btn.setAttribute("disabled", "disabled");
     //this.btn.removeAttribute("disabled");
   }
@@ -203,7 +221,7 @@ class BasicForm extends React.Component {
               </button>
               <div>{this.state.valuestest}</div>
               <div>{this.state.items.map(item =>
-                <audio onPlay={e => this.setState({ targetValue: e.target.id })} id={item.name} controls> <source src={`${item.name}.mp3`}  type='audio/mpeg'></source></audio>)}<br />
+                <audio ref={this.audioRef} onPlay={e => this.setState({ targetValue: e.target.id, controlsValue: e.target.controls })} id={item.name} controls> <source src={`${item.name}.mp3`}  type='audio/mpeg'></source></audio>)}<br />
               </div>
             </div>
           </form>
