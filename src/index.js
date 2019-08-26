@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import ReactDOM from 'react-dom';
+import React, {useState} from 'react'; 
+import ReactDOM from 'react-dom'; 
 import $ from 'jquery'; 
 import './index.css';
 import axios from 'axios';
@@ -12,14 +12,20 @@ document.head.appendChild(s);
 class BasicForm extends React.Component {
   constructor(props) {
     super(props);
-    this.onSelect = this.onSelect.bind(this);
-    this.audioRef = React.createRef()
+    //this.onSelect = this.onSelect.bind(this);
+    //this.audioRef = React.createRef();
+    //this.handleAudio = this.handleAudio.bind(this);
+    //this.focusTextInput = React.createRef();
+    //this.audioRef = this.audioRef.bind(this);
+    //this.controlsFalse = this.controlsFalse.bind(this);
     this.state = {
       nb: 0,
       wordinput: '',
       inputValue:'',
       targetValue: '',
-      controlsValue:'',
+      valuestest:'',
+      //controlsValue:'',
+      controls:true,
       error: null,
       isLoaded: false,
       item: [],
@@ -35,10 +41,18 @@ class BasicForm extends React.Component {
       onblur:''
     };
   }
+  getInitialState = () => {
+    return {
+      controls:
+        true
+    }
+  }
+
   handleWordInput = event => {
 
     //const inputValue = this.state;
     this.btn.removeAttribute("disabled");
+    //this.focusTextInput.current.focus();
     //this.setState({ inputValue: event.target.value }, () => {
       //const item2 = this.state;
       //const item = this.state;
@@ -66,10 +80,24 @@ class BasicForm extends React.Component {
     event.preventDefault();
     const { targetValue } = this.state;
     const { inputValue } = this.state;
+    //if(inputValue === targetValue) {
+    //  this.disableFormButton.bind(this); 
+    //  disableFormButton();
+    //}
+ //this.setState{audioRef.current.controls;
+    //this.audioRef = this.audioRef.bind(this);
     this.setState({
       valuestest:
-        inputValue === targetValue ? `Your state values: \n Values: ${inputValue}/${targetValue}ok` : `Your state values: \n Values: ${inputValue}/${targetValue}not ok`
+        inputValue === targetValue ? `Your state values: \n Values: ${inputValue}/${targetValue}ok` : `Your state values: \n Values: ${inputValue}/${targetValue}not ok`,
+      //controlsValue: 
+        //audioRef
+      controls:
+        //this.audioRef.current.controls
+      //controls:
+        inputValue === targetValue ? "" : true
+
     });
+    //this.audioRef.setAttribute({
   }
   fieldOnblur = () => {
     const { wordinput } = this.state;
@@ -123,10 +151,10 @@ class BasicForm extends React.Component {
   //this.setState({inputValue: ''}); 
   //console.log(inputValue);
   }
-  controlsFalse = () => {
-    
-    this.audioRef.setAttribute("controls","false");
-  }
+  //controlsFalse = (audioRef) => {
+     
+  //  this.audioRef.current.setAttribute("controls","false");
+  //}
   
   onClickUploadFile = () => {
     const items = this.state;
@@ -137,15 +165,31 @@ class BasicForm extends React.Component {
     const inputValue = this.state;
     const targetValue = this.state;
     this.btn.setAttribute("disabled", "disabled");
+    //this.setState({controlsValue: this.audioRef.current.controls});
     //const audio2 = {targetValue};
-    if(inputValue === targetValue) {
+    //if(inputValue === targetValue) {
+    //  this.disableFormButton.bind(this); 
+    //}
     //const item = this.state;
     //this.audio.setAttribute("controls", "false");
-      //controlsFalse();
+      //controlsFalse(audioRef);
       //this.audioRef.setAttribute("controls","false");
-    }
+    //}
     //this.btn.setAttribute("disabled", "disabled");
     //this.btn.removeAttribute("disabled");
+  }
+  disableFormButton = () => {
+    this.setState({
+      controls: 
+        '' 
+    });
+  }
+  displayAudio = event => {
+    event.preventDefault();
+    this.setState({
+      controls:
+        true
+    })
   }
   render() { 
     const { wordinput } = this.state;
@@ -210,18 +254,30 @@ class BasicForm extends React.Component {
                 id={`wordinput${item.id}`}
                 placeholder='Enter word'
                 key={item.id}
+                //ref={this.focusTextInput}
                 value={this.state.inputValue}
-                onFocus={this.handleWordInput}
+                onClick={this.handleWordInput}
+                //onFocus={this.handleWordInput}
                 onChange={e => this.setState({ inputValue: e.target.value }) }
                 //onBlur={this.fieldOnblur}
 //this.setState({ inputValue: e.target.value })
               />
-              <button ref={btn => { this.btn = btn; }}  onMouseDown={this.userInputValues} onClick={this.onClickUploadFile} > 
+              //button ref={btn => { this.btn = btn; }}  onMouseDown={this.userInputValues} onClick={this.onClickUploadFile} > 
+              //button onClick=///ref={btn => { this.btn = btn; }}>
+              //
+              //  type="button"
+              //  value="Focus the text input"
+              //  onClick=this.handleAudio
+              //
+              <button onClick={this.handleWordInput} ref={btn => { this.btn = btn; }}>
                 click me
+              </button>
+              <button onClick={this.displayAudio}>
+                start over
               </button>
               <div>{this.state.valuestest}</div>
               <div>{this.state.items.map(item =>
-                <audio ref={this.audioRef} onPlay={e => this.setState({ targetValue: e.target.id, controlsValue: e.target.controls })} id={item.name} controls> <source src={`${item.name}.mp3`}  type='audio/mpeg'></source></audio>)}<br />
+                <audio ref={e => this.audioRef = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.name} controls={this.state.controls}> <source src={`${item.name}.mp3`}  type='audio/mpeg'></source></audio>)}<br />
               </div>
             </div>
           </form>
