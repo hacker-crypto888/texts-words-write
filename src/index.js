@@ -34,7 +34,9 @@ class BasicForm extends React.Component {
       wordinput: '',
       audioCode:'',
       inputValue:'',
+      checkInput:'',
       wordtest:'',
+      checkTarget:'',
       targetValue: '',
       mountElements:[],
       valuestest:'',
@@ -59,14 +61,18 @@ class BasicForm extends React.Component {
   getInitialState = () => {
     return {
       controls:
-        true
+        true,
+      targetValue:
+        ''
     }
   }
 
-  handleWordInput = event => {
-
+  handleWordInput = (event) => {
+    event.preventDefault();
     //const inputValue = this.state;
     this.btn.removeAttribute("disabled");
+    const targetValue = this.state;
+    console.log({targetValue});
   }
     //this.focusTextInput.current.focus();
     //this.setState({ inputValue: event.target.value }, () => {
@@ -204,7 +210,11 @@ class BasicForm extends React.Component {
     //console.log(ReactDOM.render(boldElement, mountElement));
     this.setState({
       wordtest:
-        inputValue === targetValue ? this.removeAudioPlayer() : `Values: \n ${inputValue} / ${targetValue} not ok`  
+        inputValue === targetValue ? this.removeAudioPlayer() : `Values: \n ${inputValue} / ${targetValue} not ok`,
+      checkInput:
+        inputValue === '' ? 'enter a word' : null,
+      checkTarget:
+        targetValue === '' ? 'play a word' : null
     });
 
     //const node = this.audioRef.current;
@@ -239,11 +249,15 @@ class BasicForm extends React.Component {
 
     for (var i = 0; i < audioElements.length; i++) {
       audioElements[i].removeAttribute('controls');
-      audioElements[i].setAttribute('controls','') 
+      audioElements[i].setAttribute('controls','');
+      audioElements[i].pause();
+      audioElements[i].currentTime = 0;
     };
     const inputValue = this.state;
     this.setState({
       inputValue:
+        '',
+      targetValue:
         ''
     });
     console.log(audioElements);
@@ -261,11 +275,17 @@ class BasicForm extends React.Component {
 
     const mountElements = document.getElementsByClassName(`${targetValue}`);
     console.log({mountElements});
+
+    mountElements[0].pause();
+    mountElements[0].currentTime = 0;
+
     mountElements[0].removeAttribute('controls');
     //const inputElements = document.getElementsByTagName('input');
     //inputElements[0].state.value = '';
     this.setState({
       inputValue:
+        '',
+      targetValue:
         ''
     });
   }
@@ -355,10 +375,12 @@ class BasicForm extends React.Component {
                 start over
               </button>
               <div>{this.state.wordtest}</div>
+              <div>{this.state.checkInput}</div>
+              <div>{this.state.checkTarget}</div>
               //<div>{this.state.audioframe}</div>
               <div>
                 {this.state.items.map(item =>
-                  <audio className={item.name} key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.name} controls={this.state.controls}> 
+                  <audio className={item.name} key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls, isLoaded: true })} id={item.name} controls={this.state.controls}> 
                     <source src={`${item.name}.mp3`} className={item.name}  type='audio/mpeg'></source>
                   </audio>
                 )}<br />
