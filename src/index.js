@@ -236,8 +236,9 @@ class BasicForm extends React.Component {
   }
   displayAudio = event => {
     const audioElements = document.getElementsByTagName('audio');
-    audioElements.removeAttribute('controls');
+
     for (var i = 0; i < audioElements.length; i++) {
+      audioElements[i].removeAttribute('controls');
       audioElements[i].setAttribute('controls','') 
     };
     const inputValue = this.state;
