@@ -34,8 +34,11 @@ class BasicForm extends React.Component {
       wordinput: '',
       audioCode:'',
       inputValue:'',
+      checkInput:'',
       wordtest:'',
+      checkTarget:'',
       targetValue: '',
+      mountElements:[],
       valuestest:'',
       //controlsValue:'',
       controls:true,
@@ -58,14 +61,18 @@ class BasicForm extends React.Component {
   getInitialState = () => {
     return {
       controls:
-        true
+        true,
+      targetValue:
+        ''
     }
   }
 
-  handleWordInput = event => {
-
+  handleWordInput = (event) => {
+    event.preventDefault();
     //const inputValue = this.state;
     this.btn.removeAttribute("disabled");
+    const targetValue = this.state;
+    console.log({targetValue});
   }
     //this.focusTextInput.current.focus();
     //this.setState({ inputValue: event.target.value }, () => {
@@ -201,15 +208,25 @@ class BasicForm extends React.Component {
     //href = {`#${this.state.id}`};
     //const mountElement = document.querySelector(href);
     //console.log({mountElement});
-    console.log({boldElement: React.createElement('b')});
+    //console.log({boldElement: React.createElement('b')});
+    //const id = JSON.stringify(targetValue);
+    //console.log({mountElement: document.getElementById('apple')});
+    //console.log({mountElement: document.getElementById({id})});
+    //const mountElement = document.getElementById({id});
+    //console.log({boldElement: React.createElement('b')});
     //const boldElement = React.createElement('b');
 //var mountElement = document.querySelector('#root');
 // Render the boldElement in the DOM tree
     //console.log(ReactDOM.render(boldElement, mountElement));
     this.setState({
       wordtest:
-        inputValue === targetValue ? `Values: \n ${inputValue} / ${targetValue} ok` : `Values: \n ${inputValue} / ${targetValue} not ok`  
+        inputValue === targetValue ? this.removeAudioPlayer() : `Values: \n ${inputValue} / ${targetValue} not ok`,
+      checkInput:
+        inputValue === '' ? 'enter a word' : null,
+      checkTarget:
+        targetValue === '' ? 'play a word' : null
     });
+
     //const node = this.audioRef.current;
     //this.setState({
     //  controls:
@@ -238,13 +255,50 @@ class BasicForm extends React.Component {
     });
   }
   displayAudio = event => {
-    event.preventDefault();
+    const audioElements = document.getElementsByTagName('audio');
+
+    for (var i = 0; i < audioElements.length; i++) {
+      audioElements[i].removeAttribute('controls');
+      audioElements[i].setAttribute('controls','');
+      audioElements[i].pause();
+      audioElements[i].currentTime = 0;
+    };
+    const inputValue = this.state;
     this.setState({
-      controls:
-        true
+      inputValue:
+        '',
+      targetValue:
+        ''
     });
+    console.log(audioElements);
+
   }
   //handleWordInput
+  removeAudioPlayer = (props) => {
+    const { targetValue, inputValue } = this.state;
+    this.setState({
+      wordtest:
+        `Values: \n ${inputValue} / ${targetValue} ok`   
+    });
+    //event.preventDefault();
+    console.log({targetValue});
+
+    const mountElements = document.getElementsByClassName(`${targetValue}`);
+    console.log({mountElements});
+
+    mountElements[0].pause();
+    mountElements[0].currentTime = 0;
+
+    mountElements[0].removeAttribute('controls');
+    //const inputElements = document.getElementsByTagName('input');
+    //inputElements[0].state.value = '';
+    this.setState({
+      inputValue:
+        '',
+      targetValue:
+        ''
+    });
+  }
   render() { 
     //const { wordinput } = this.state;
     const item = this.state;
@@ -331,11 +385,13 @@ class BasicForm extends React.Component {
                 start over
               </button>
               <div>{this.state.wordtest}</div>
+              <div>{this.state.checkInput}</div>
+              <div>{this.state.checkTarget}</div>
               //<div>{this.state.audioframe}</div>
               <div>
                 {this.state.items.map(item =>
-                  <audio key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} className={item.name} id={item.name} controls={this.state.controls}> 
-                    <source src={`${item.name}.mp3`}  type='audio/mpeg' className={item.name}></source>
+                  <audio className={item.name} key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.name} controls={this.state.controls}> 
+                    <source src={`${item.name}.mp3`} className={item.name}  type='audio/mpeg'></source>
                   </audio>
                 )}<br />
               </div>
