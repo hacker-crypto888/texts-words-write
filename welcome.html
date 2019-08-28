@@ -1,0 +1,25 @@
+<form method="POST" action="welcome.php" accept-charset="UTF-8">
+<p>Text Submission Form</p>
+<p><label>Your Name<strong>*</strong><br>
+<input type="text" size="48" name="name"></label></p>
+<p><label>Email Address<strong>*</strong><br>
+<input type="email" size="48" name="email"></label></p>
+<p><label>Text<strong>*</strong><br>
+<textarea name="loaded_text" cols="48" rows="8"></textarea></label></p>
+<p><input type="submit" name="submit_text" value="Send Message"></p>
+</form>
+<form method="POST" action="welcome.php" accept-charset="UTF-8">
+<p>Enter A Date<label><strong>*</strong><br>
+<input type="text" size="48" name="date"></label></p>
+<p><input type="submit" name="submit_date" value="Send Message"></p>
+</form>
+
+<p>Back to home page to load a new text or a new date</p>
+<p><a href="welcome.html">Back</a></p>
+//you already choosed a date or loaded a text = submit button to generate databases
+<form method="POST" action="welcome.php" accept-charset="UTF-8">
+<p><input type="submit" name="loaded_text_db" value="Generate Loaded Text Database"></p>
+<form method="POST" action="welcome.php" accept-charset="UTF-8">
+<p><input type="submit" name="date_db" value="Generate Database With Date Entered"></p>
+</form>
+
