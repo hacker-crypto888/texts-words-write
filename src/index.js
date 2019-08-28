@@ -36,6 +36,7 @@ class BasicForm extends React.Component {
       inputValue:'',
       wordtest:'',
       targetValue: '',
+      mountElements:[],
       valuestest:'',
       //controlsValue:'',
       controls:true,
@@ -191,20 +192,21 @@ class BasicForm extends React.Component {
 
     console.log({targetValue});
     console.log({inputValue});
-    console.log({id: targetValue});
+    //console.log({id: targetValue});
     const id = JSON.stringify(targetValue);
-    console.log({mountElement: document.getElementById('apple')});
+    //console.log({mountElement: document.getElementById('apple')});
     //console.log({mountElement: document.getElementById({id})});
-    const mountElement = document.getElementById({id});
-    console.log({boldElement: React.createElement('b')});
-    const boldElement = React.createElement('b');
+    //const mountElement = document.getElementById({id});
+    //console.log({boldElement: React.createElement('b')});
+    //const boldElement = React.createElement('b');
 //var mountElement = document.querySelector('#root');
 // Render the boldElement in the DOM tree
-    console.log(ReactDOM.render(boldElement, mountElement));
+    //console.log(ReactDOM.render(boldElement, mountElement));
     this.setState({
       wordtest:
-        inputValue === targetValue ? `Values: \n ${inputValue} / ${targetValue} ok` : `Values: \n ${inputValue} / ${targetValue} not ok`  
+        inputValue === targetValue ? this.removeAudioPlayer() : `Values: \n ${inputValue} / ${targetValue} not ok`  
     });
+
     //const node = this.audioRef.current;
     //this.setState({
     //  controls:
@@ -233,13 +235,39 @@ class BasicForm extends React.Component {
     });
   }
   displayAudio = event => {
-    event.preventDefault();
+    const audioElements = document.getElementsByTagName('audio');
+    audioElements.removeAttribute('controls');
+    for (var i = 0; i < audioElements.length; i++) {
+      audioElements[i].setAttribute('controls','') 
+    };
+    const inputValue = this.state;
     this.setState({
-      controls:
-        true
+      inputValue:
+        ''
     });
+    console.log(audioElements);
+
   }
   //handleWordInput
+  removeAudioPlayer = (props) => {
+    const { targetValue, inputValue } = this.state;
+    this.setState({
+      wordtest:
+        `Values: \n ${inputValue} / ${targetValue} ok`   
+    });
+    //event.preventDefault();
+    console.log({targetValue});
+
+    const mountElements = document.getElementsByClassName(`${targetValue}`);
+    console.log({mountElements});
+    mountElements[0].removeAttribute('controls');
+    //const inputElements = document.getElementsByTagName('input');
+    //inputElements[0].state.value = '';
+    this.setState({
+      inputValue:
+        ''
+    });
+  }
   render() { 
     //const { wordinput } = this.state;
     const item = this.state;
@@ -329,8 +357,8 @@ class BasicForm extends React.Component {
               //<div>{this.state.audioframe}</div>
               <div>
                 {this.state.items.map(item =>
-                  <audio key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.name} controls={this.state.controls}> 
-                    <source src={`${item.name}.mp3`}  type='audio/mpeg'></source>
+                  <audio className={item.name} key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.name} controls={this.state.controls}> 
+                    <source src={`${item.name}.mp3`} className={item.name}  type='audio/mpeg'></source>
                   </audio>
                 )}<br />
               </div>
