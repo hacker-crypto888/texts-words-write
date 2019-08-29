@@ -167,6 +167,7 @@ if(isset($_POST['add_new_words'])){
         print_r("\r\n");
         print_r($word);
         print_r("\r\n");
+//add the date for the duplicate elements
         if (count($jsonData['items']) > 0) { 
           //if $jsonData[
           for ($j = 0; $j <= count($jsonData['items']); $j++) {

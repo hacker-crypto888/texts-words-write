@@ -50,10 +50,6 @@ class BasicForm extends React.Component {
       items: [],
       items_name:[],
       wordinputError: '',
-      name: '',
-      email: '',
-      nameError:'',
-      emailError:'',
       user: '',
       itemname:'',
       audioplayerToggle:"",
@@ -71,13 +67,29 @@ class BasicForm extends React.Component {
         ''
     }
   }
- handleWordInput = (event) => {
+
+  handleWordInput = (event) => {
     event.preventDefault();
     //const inputValue = this.state;
     this.btn.removeAttribute("disabled");
     const targetValue = this.state;
     console.log({targetValue});
   }
+    //this.focusTextInput.current.focus();
+    //this.setState({ inputValue: event.target.value }, () => {
+      //const item2 = this.state;
+      //const item = this.state;
+
+      //const { wordinput } = this.state;
+
+      //const items = this.state.items.map(obj => obj);
+      //const displayPlayer = (<audio controls> <source src={`${item.name}${item.id}.mp3`} type='audio/mpeg'></source></audio>);
+      //this.validateWordInput();
+     // this.fieldOnblur();
+
+      //this.setState({audioplayerToggle: wordinput === item.name ? null : displayPlayer});
+
+    //});
   
   validateWordInput = () => {
     const { wordinput } = this.state;
@@ -86,6 +98,21 @@ class BasicForm extends React.Component {
         //wordinput.length > 3 ? null : ''
     });
   }
+//  renderfunction = () => {
+    //const itemname = this.state;
+
+      //controlsValue: 
+        //audioRef
+      //controls:
+        //this.audioRef.current.controls
+      //controls:
+        //inputValue === targetValue ? "" : true,
+      //audioframe:
+        //this.renderfunction 
+
+    //});
+    //this.audioRef.setAttribute({
+  //}
   fieldOnblur = () => {
     const { wordinput } = this.state;
     this.setState({
@@ -107,39 +134,70 @@ class BasicForm extends React.Component {
        nb:
          this.state.nb + 1
     });
+    //);
+    
+
+    //console.log(items.find((o) => o.id === this.state.nb));
+    //console.log(items.find((o) => o.id === this.state.nb));
   }
   componentDidMount() {
+    //this.focusAudioSource();
+    //this.audioSource.current.focusAudioSource();
     axios.get(`./items.json`)
       .then(res => {
         const items = res.data.items.map(obj => obj);
         this.setState({ items });
         console.log(items.find((o) => o.id === 2).name);
         console.log("mesg");
+        //this.setState({itemsdisplay: items.find((o) => o.id === 2).name});
+        //{this.state.items.map(item => (
+        //  {itemsdisplay: {item}}
+        //))}
       });
   }
   onSelect(event) {
     const selectedIndex = event.target.options.selectedIndex;
+    //console.log(event.target.options[selectedIndex].getAttribute('data-key'));
   }
 
   userInputValues = () => {
     const inputValue = this.state;
+//this.setState({ inputValue: e.target.value })A
+   
+    //console.log(inputValue); 
+  //this.setState({inputValue: ''}); 
+  //console.log(inputValue);
   }
+  //controlsFalse = (audioRef) => {
      
+  //  this.audioRef.current.setAttribute("controls","false");
+  //}
   handleSubmit = (event) => {
     event.preventDefault();
     const inputValue = this.state;
     const targetValue = this.state;
+    //this.setState({
+      //wordtest:
+        //inputValue === targetValue ? `Values: \n ${inputValue}/${targetValue} ok` : `Values: \n ${inputValue}/${targetValue} not ok`  
+      //targetValue:
+        //this.audioRef.id,
+      //inputValue:
+        //this.state.inputValue
+    //});
+    //});
   }
+  //onClickUploadFile = () => {
   disableButton = (event) => {
     event.preventDefault();
     const { targetValue, inputValue } = this.state;
+    //this.setState({item : items}, () => console.log("ITEMS : ", this.state.item) );
     this.btn.setAttribute("disabled", "disabled");
 
     console.log({targetValue});
     console.log({inputValue});
     this.setState({
       wordtest:
-        inputValue === targetValue ? this.removeAudioPlayer() : null,      
+        inputValue === targetValue ? this.removeAudioPlayer() : null//`Values: \n ${inputValue} / ${targetValue} not ok`,
       checkInput:
         inputValue === '' ? 'enter a word' : null,
       checkTarget:
@@ -153,11 +211,6 @@ class BasicForm extends React.Component {
         '' 
     });
   }
-  handleNameChange = event => {
-    this.setState({ name: event.target.value }, () => {
-      this.validateName();
-    });
-  };
   displayAudio = event => {
     const audioElements = document.getElementsByTagName('audio');
 
@@ -254,133 +307,5 @@ class BasicForm extends React.Component {
 }
 
 ReactDOM.render(<BasicForm />, document.getElementById('root'));
-
-class RegistrationForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: '',
-      email: '',
-      value: "",
-      text:'',
-      textError:'',
-      nameError: '',
-      emailError: ''
-      
-    };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleNameChange = event => {
-    this.setState({ name: event.target.value }, () => {
-      this.validateName();
-    });
-  };
-
-  //handleTextChange = event => {
-  //  this.setState({ text: event.target.value });
-  //};
-
-  handleEmailChange = event => {
-    this.setState({ email: event.target.value }, () => {
-      this.validateEmail();
-    });
-  };
-
-  validateName = () => {
-    const { name } = this.state;
-    this.setState({
-      nameError:
-        name.length > 3 ? null : 'Name must be longer than 3 characters'
-    });
-  }
-
-  validateEmail = () => {
-    const { email } = this.state;
-    this.setState({
-      emailError:
-        email.length > 3 ? null : 'Email must be longer than 3 characters'
-    });
-  }
-  //validateText = () => {
-  //  const { text } = this.state;
-  //  this.setState({
-  //    textError:
-  //      text.length > 3 ? null : 'Email must be longer than 3 characters'
-  //  });
- 
-  handleText = (event) => {
-    event.preventDefault();
-    alert(`The text youi \n
-           entered: \n` + this.state.value);
-    //assign value of text entered to variable
-
-    //PREG SPLIT NO EMPTY = remove all punctuation signs and spaces and split into array of words
-
-    // array unique = only keep one item of each value
-
-    // second verification = remove all additional signs of each word (keep only a-z and A-Z character of the words)
-
-    // put all the words in lower cases
-
-    //remove the "null" from the array
-    // for each word, 
-  } 
-  //}
-
-  handleSubmit = event => {
-    const { name, email } = this.state;
-    //alert(`Your state values: \n 
-    //        name: ${name} \n 
-    //        email: ${email} \n` + this.state.value);
-    this.handleText();
-    event.preventDefault();
-  };
- handleChange(event) {
-    this.setState({value: event.target.value});
-  }
-
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <div className='form-group'>
-          <label htmlFor='name'>Name</label>
-          <input
-            name='name'
-            className={`form-control ${this.state.nameError ? 'is-invalid' : ''}`}
-            id='name'
-            placeholder='Enter name'
-            value={this.state.name}
-            onChange={this.handleNameChange}
-            onBlur={this.validateName}
-          />
-          <div className='invalid-feedback'>{this.state.nameError}</div>
-        </div>
-        <div className='form-group'>
-          <label htmlFor='email'>Email</label>
-          <input
-            name='email'
-            className={`form-control ${this.state.emailError ? 'is-invalid' : ''}`}
-            id='email'
-            placeholder='Enter email'
-            value={this.state.email}
-            onChange={this.handleEmailChange}
-            onBlur={this.validateEmail}
-          />
-          <div className='invalid-feedback'>{this.state.emailError}</div>
-        </div>
-        <label>
-          Essay:
-          <textarea placeholder="Enter a text" value={this.state.value} onChange={this.handleChange} />
-        </label>
-        <input type="submit" value="Submit" className='btn btn-success btn-block' />  
-      </form>
-    );
-  }
-}
-
-//button type'submit' className'btn btn-success btn-block'
-          //Submit
-        //button
-ReactDOM.render(<RegistrationForm />, document.getElementById('root'));
+              //
+serviceWorker.unregister();
