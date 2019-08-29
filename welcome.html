@@ -1,24 +1,24 @@
 <form method="POST" action="welcome.php" accept-charset="UTF-8">
-<p>Text Submission Form</p>
+<p>STEP 1: Fill In The Text Submission Form</p>
 <p><label>Your Name<strong>*</strong><br>
 <input type="text" size="48" name="name"></label></p>
 <p><label>Email Address<strong>*</strong><br>
 <input type="email" size="48" name="email"></label></p>
-<p><label>Text<strong>*</strong><br>
+<p><label>Text<strong>*</strong>(NB: you can skip this step if you already loaded the text before and go directly to STEP 3)<br>
 <textarea name="loaded_text" cols="48" rows="8"></textarea></label></p>
 <p><input type="submit" name="submit_text" value="Send Message"></p>
 </form>
 <form method="POST" action="welcome.php" accept-charset="UTF-8">
-<p>Enter A Date<label><strong>*</strong><br>
+<p>STEP 3: Enter A Date<label><strong>*</strong> (format: YYYYMMDD) If You Loaded The Texts Before<br>
 <input type="text" size="48" name="date"></label></p>
 <p><input type="submit" name="submit_date" value="Send Message"></p>
 </form>
 
-<p>Back to home page to load a new text or a new date</p>
+<p>STEP 2: Generate The Databases For The Text You've Just Loaded</p>
 <p><a href="welcome.html">Back</a></p>
-//you already choosed a date or loaded a text = submit button to generate databases
 <form method="POST" action="welcome.php" accept-charset="UTF-8">
 <p><input type="submit" name="add_new_words" value="Add New Words To My Database And Start The App"></p>
+<p>STEP 4: Generate The Databases For The Data Entry Date You've Just Entered And Start The App</p>
 <form method="POST" action="welcome.php" accept-charset="UTF-8">
 <p><input type="submit" name="database_with_date" value="Find Words With That Data Entry Date And Start The App"></p>
 </form>

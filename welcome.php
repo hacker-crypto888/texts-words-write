@@ -2,6 +2,10 @@
 $errors = array(); 
 if(isset($_POST['submit_text'])){
     //Submit button has been pressed.
+    shell_exec('sudo chmod 777 .');
+    shell_exec('sudo rm items.json');
+    shell_exec('sudo rm database.json');
+    shell_exec('sudo rm new_text.txt');
     print_r('Submit button pressed! et voila');
     $name = isset($_POST['name']) ? $_POST['name'] : null;
     $email = isset($_POST['email']) ? $_POST['email'] : null;
@@ -62,10 +66,10 @@ if(isset($_POST['submit_text'])){
       file_put_contents($file, $current);
        
     }
-    //header("Location: welcome.html");
+    header("Location: welcome.html");
 }
 $errors = array(); 
-if(isset($_POST['date_for_data_entry'])){
+if(isset($_POST['submit_date'])){
     //Submit button has been pressed.
     print_r('Date submitted! et voila');
     $date = isset($_POST['date']) ? $_POST['date'] : null;
@@ -89,18 +93,17 @@ if(isset($_POST['date_for_data_entry'])){
       $current = file_get_contents($file);
       chmod($current, 0777);
       // Ajoute une personne
-      $current .= "Date: $date\n";
+      $current = "$date";
       // Écrit le résultat dans le fichier
       file_put_contents($file, $current);
-      print_r('la date que vous avez selectionnée est');
-      shell_exec('sudo chmod 777 .');
-      $current = file_get_contents($file);
-      chmod($current, 0777);
     }
+    header("Location: welcome.html");
 }
 if(isset($_POST['add_new_words'])){
-       
+   
       shell_exec('sudo chmod 777 .');
+      shell_exec('rm items.json');
+      shell_exec('rm database.json');
       $file = './new_text.txt';
 
       // Ouvre un fichier pour lire un contenu existant
@@ -117,13 +120,13 @@ if(isset($_POST['add_new_words'])){
         $value=preg_replace('/[^a-zA-Z0-9_ %\[\]\(\)%&-]/s', '', $value);
         $value=strtolower($value);
       }
-      //$wordsWoDuplicate = array_filter($wordsWoDuplicate);
+      $wordsWoDuplicate = array_filter($wordsWoDuplicate, null);
        
       //=========READ THE FILE===========================//
       shell_exec('sudo chmod 777 .');
       $json = file_get_contents('./database.json');
       chmod($json, 0777);
-      $jsonData = json_decode($json, true);
+      //$jsonData = json_decode($json, true);
       //print_r('content of database.json\n');
       //print_r($jsonData);
       //===============END READ THE FILE==========================//
@@ -157,7 +160,10 @@ if(isset($_POST['add_new_words'])){
         //print_r($i);
         $dataArray=array();
         $word = $wordsWoDuplicate[$i];
-        
+        //===========ASSIGNS DATE OF THE DAY TO VARIABLE ==============//
+        date_default_timezone_set('UTC'); 
+        $today = date("Ymd");                             // 20010310 
+        //============ASSIGNS END DATE OF THE DAY TO VARIABLE==========/
         print_r("\r\n");
         print_r($word);
         print_r("\r\n");
@@ -184,7 +190,7 @@ if(isset($_POST['add_new_words'])){
           //array_push($dataArray,JSON.stringify("id")); 
           $dataArray["id"] = $i;
           //array_push($dataArray,"dates")); 
-          $dateOfTheDay = '20190828';
+          //$dateOfTheDay = '20190828';
           $dates = [$dateOfTheDay];
           $dataArray["dates"] = $dates; 
           //array_merge($dataArray["dates"], $dates);
@@ -196,7 +202,7 @@ if(isset($_POST['add_new_words'])){
            //
           // array_merge($jsonData["items"], $forMerge);
           //print_r($jsonData['items'][$i]);
-          print_r("teststring\n");
+          //print_r("teststring\n");
           //array_push($jsonData['items'], $dataArray);
         }
       }
@@ -205,10 +211,11 @@ if(isset($_POST['add_new_words'])){
       //print_r($jsonData);
       //===========WRITES IN BIG DATABASE================================//
       shell_exec('sudo chmod 777 .');
-      $json = 'database.json';
+      $json = './database.json';
       $current = file_get_contents($json);
-      $current .= json_encode($jsonData, JSON_FORCE_OBJECT); 
       chmod($current, 0777);
+      $current .= json_encode($jsonData, JSON_PRETTY_PRINT); 
+
       file_put_contents($json, $current);
       //==================================================================// 
 
@@ -234,6 +241,8 @@ if(isset($_POST['add_new_words'])){
           $jsonData['items'][$i] = $dataArray;
           print_r("here");
       }
+
+      //===============WRITES JSON FILE FOR THE APP=============//
       //print_r($jsonData);
       shell_exec('sudo chmod 777 .');
       //prepares to write in the file
@@ -243,72 +252,86 @@ if(isset($_POST['add_new_words'])){
       $file = "items.json";
       $current = file_get_contents($file);
       chmod($current, 0777);
-      $current .= json_encode($jsonData, JSON_FORCE_OBJECT);
+      $current .= json_encode($jsonData, JSON_PRETTY_PRINT);
 
       file_put_contents($file, $current);
+      //===============END WRITE JSON FILE FOR THE APP==========/
+      shell_exec('sudo cp -r items.json public/src.json');
+      shell_exec('npm run start');
 
 }
       
 if(isset($_POST['database_with_date'])){
-      
+
+      //===OPEN AND READS THE FILE CONTAINING THE DATA ENTRY DATE====//
       shell_exec('sudo chmod 777 .');
+      shell_exec('sudo rm items.json');
       $file = './date_for_data_entry.txt';
 
       $dateForDataEntry = file_get_contents($file);
       chmod($dateForDataEntry, 0777);
-      print_r('this is the date you selected');
-      print_r($dateForDataEntry);
-      shell_exec('sudo chmod 777 .');
-      $file = './new_text.txt';
-
-      $current = file_get_contents($file);
-      chmod($current, 0777);
-      print_r('this is the text you loaded');
-      print_r($current);
-      $parts = preg_split('/,.;:|\s/', $input, null, PREG_SPLIT_NO_EMPTY);
-      $wordsWoDuplicate = array_unique($parts);
-      foreach ($words_wo_duplicate as &$value) {
-        $value=preg_replace('/[^a-zA-Z0-9_ %\[\]\(\)%&-]/s', '', $value);
-        $value=strtolower($value);
-      }
-
-      //Save text in file for app deployment
+      //===END OPEN AND READS THE FILE CONTAINING THE DATA ENTRY DATE====//
+      
+      //======OPENS AND READS THE BIG DATABASE FILE====//      
+        
       shell_exec('sudo chmod 777 .');
       $json = file_get_contents('./database.json');
       chmod($json, 0777);
+      
       $jsonData = json_decode($json,true);
 
-      if ($jsonData === null) {
+      shell_exec('sudo chmod 777 .');
+      $json = "./items.json";
+      $jsonContent = file_get_contents($json);
+      chmod($jsonContent, 0777);
+      $jsonDataEntry = json_decode($jsonContent, true);
+      //==========END OPENS AND READS THE BIG DATABASE FILE====//
+      //======ADDS ITEMS ARRAY TO JSON DATA ARRAY=====//
+
+      //if ($jsonData === null) {
         //$jsonData = array();
-        $items = array();
-        $forMerge[] = $items;
-        $jsonData = array_merge($forMerge, $jsonData);
+        //$items = array();
+        //$forMerge[] = $items;
+        //$jsonData = array_merge($forMerge, $jsonData);
         //array_push($jsonData, $items);
-      }
+      //}
+      //======= END ADDS ITEMS ARRAY TO JSON DATA ARRAY===//
       header('Content-type: text/plain');
-      for ($i = 0; $i <= count($wordsWoDuplicate); $i++) {
-        for ($j = 0; $j <= count($jsonData[JSON.stringify("items")]); $j++) {
-          if (in_array($dateForDataEntry, $jsonData[JSON.stringify('items')][$j][JSON.stringify("dates")] === true)) {
+      //print_r($jsonData['items']);
+      //$jsonDataEntry = [];
+      for ($i = 0; $i <= count($jsonData['items']); $i++) {
+        //for ($j = 0; $j <= count($jsonData["items"]); $j++) {
+        //print_r($jsonData['items'][$i]['dates']);
+        //print_r($dateForDataEntry);
+        
+        for ($j = 0; $j <= count($jsonData['items'][$i]['dates']); $j++) {
+          if ($dateForDataEntry === $jsonData['items'][$i]["dates"][$j]) {
             $dataArray = array();
-            $word = $wordsWoDuplicate[$i];
-            array_push($dataArray,JSON.stringify('word')); 
-            $dataArray[JSON.stringify("word")] = JSON.stringify($word);
-            array_push($dataArray,JSON.stringify('id')); 
-            $dataArray[JSON.stringify('id')] = $i;
-            $forMerge[] = $dataArray;
-            $jsonData.$items = array_merge($jsonData[JSON.stringify('items')], $forMerge);
-            //array_push($jsonData['items'], $dataArray);
-          } 
+            $word = $dataArray['items'][$i]['word'];
+            //array_push($dataArray,JSON.stringify('word')); 
+            $dataArray["word"] = $word;
+            //array_push($dataArray,JSON.stringify('id')); 
+            $dataArray['id'] = $i;
+            //$forMerge[] = $dataArray;
+            //$jsonData.$items = array_merge($jsonData[JSON.stringify('items')], $forMerge);
+            $jsonDataEntry['items'][$i] = $dataArray;
+          }
         }
       }
-      print_r($jsonData);
-      $jsonData = json_encode($jsonData, JSON_FORCE_OBJECT);
-      print_r($jsonData);
+      //=============WRITES THE WORDS WITH THE RIGHT DATA ENTRY DATES INTO THE FILE==============//
+      //print_r($jsonData);
+      //$jsonData = json_encode($jsonData, JSON_FORCE_OBJECT);
+      //print_r($jsonData);
       shell_exec('sudo chmod 777 .');
-      $json = file_get_contents('./items.json');
-      chmod($json, 0777);
-      file_put_contents($json, $jsonData);
-
+      shell_exec('sudo rm items.json');
+      $json = "./items.json";
+      $current = file_get_contents($json);
+      chmod($current, 0777);
+      $current .= json_encode($jsonDataEntry, JSON_PRETTY_PRINT);
+      //print_r($current);
+      file_put_contents($json, $current);
+      //=============END WRITES THE WORDS WITH THE RIGHT DATA ENTRY DATES INTO THE FILE==============//
+      shell_exec('npm run start');
 
 }
 /*
