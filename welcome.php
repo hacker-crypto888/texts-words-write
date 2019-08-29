@@ -2,11 +2,11 @@
 $errors = array(); 
 if(isset($_POST['submit_text'])){
     //Submit button has been pressed.
-    echo 'Submit button pressed! et voila';
+    print_r('Submit button pressed! et voila');
     $name = isset($_POST['name']) ? $_POST['name'] : null;
     $email = isset($_POST['email']) ? $_POST['email'] : null;
     $loadedText = isset($_POST['loaded_text']) ? $_POST['loaded_text'] : null;
-    echo $loadedText;
+    print_r($loadedText);
     //Check the name and make sure that it isn't a blank/empty string.
     if(strlen(trim($name)) === 0){
         //Blank string, add error to $errors array.
@@ -24,50 +24,52 @@ if(isset($_POST['submit_text'])){
     //If our $errors array is empty, we can assume that everything went fine.
     if(empty($errors)){
         //Send email or insert data into database.
-      echo 'msg sent!';
+      print_r('msg sent!');
       foreach($errors as $errorMessage){
-        echo $errorMessage . '<br>';
+        print_r($errorMessage . '<br>');
       
       }
       shell_exec('sudo chmod 777 .');
       $file = './name.txt';
-      chmod($file, 0777);
+
       // Ouvre un fichier pour lire un contenu existant
-      $current = file_get_contents($file, FILE_USE_INCLUDE_PATH);
-      echo 'current';
-      echo $current;
+      $current = file_get_contents($file, FILE_USE_INCLUDE_PATH | FILE_APPEND);
+      chmod($current, 0777);
+      print_r('current');
+      print_r($current);
       // Ajoute une personne
       $current .= "Name: $name\nE-mail: $email\n";
-      //echo $current;
-      // Écrit le résultat dans le fichier
+      // Writes name and email in a file
       file_put_contents($file, $current);
-      $current = file_get_contents($file);
-      echo 'file empty?';
-      echo $current;
-      $file = './loaded_text.txt';
-      chmod($file, 0777);
-      // Ouvre un fichier pour lire un contenu existant
+      
+      //shell_exec('sudo chmod 777 .');
+      //$current = file_get_contents($file);
+      //chmod($current, 0777);
+      //print_r('file empty?');
+      //print_r($current);
+
+      $file = './new_text.txt';
+      shell_exec('sudo chmod 777 .');
       $current = file_get_contents($file, FILE_USE_INCLUDE_PATH);
-      echo 'current';
-      echo $current;
+      chmod($current, 0777);
+      print_r('current');
+      print_r($current);
       // Ajoute une personne
       $current .= "$loadedText";
-      //echo $current;
-      // Écrit le résultat dans le fichier
+      // assign )text to a variable
+      shell_exec('sudo chmod 777 .');
+      //writes text into file 
       file_put_contents($file, $current);
-      $current = file_get_contents($file);
-      echo 'file empty?';
-      echo $current;
        
     }
     //header("Location: welcome.html");
 }
 $errors = array(); 
-if(isset($_POST['submit_date'])){
+if(isset($_POST['date_for_data_entry'])){
     //Submit button has been pressed.
-    echo 'Date submitted! et voila';
+    print_r('Date submitted! et voila');
     $date = isset($_POST['date']) ? $_POST['date'] : null;
-    echo $date;
+    print_r($date);
     //Check the name and make sure that it isn't a blank/empty string.
     if(strlen(trim($date)) === 0){
         //Blank string, add error to $errors array.
@@ -75,101 +77,266 @@ if(isset($_POST['submit_date'])){
     }
     if(empty($errors)){
         //Send email or insert data into database.
-      echo '<h1>msg sent!</h1>';
+      print_r('<h1>msg sent!</h1>');
       foreach($errors as $errorMessage){
-        echo $errorMessage . '<br>';
+        print_r($errorMessage . '<br>');
 
       }
       shell_exec('sudo chmod 777 .');
-      $file = './date.txt';
-      chmod($file, 0777);
+      $file = './date_for_data_entry.txt';
+
       // Ouvre un fichier pour lire un contenu existant
       $current = file_get_contents($file);
+      chmod($current, 0777);
       // Ajoute une personne
       $current .= "Date: $date\n";
       // Écrit le résultat dans le fichier
       file_put_contents($file, $current);
-      echo 'la date que vous avez selectionnée est';
-      echo file_get_contents($file);
+      print_r('la date que vous avez selectionnée est');
+      shell_exec('sudo chmod 777 .');
+      $current = file_get_contents($file);
+      chmod($current, 0777);
     }
 }
-if(isset($_POST['loaded_text_db'])){
-      $file = './loaded_text.txt';
-      chmod($file, 0777);
+if(isset($_POST['add_new_words'])){
+       
+      shell_exec('sudo chmod 777 .');
+      $file = './new_text.txt';
+
       // Ouvre un fichier pour lire un contenu existant
       $current = file_get_contents($file);
+      chmod($current, 0777);
       // Ajoute une personne
-      echo 'this is the text you loaded';
-      echo $current;
-      //do something with loaded text
-}
+      print_r('this is the text you loaded');
+      //print_r($current);
+      $parts = preg_split('/,.;:|\s/', $current, null, PREG_SPLIT_NO_EMPTY);
+      //remove duplicate
+      $wordsWoDuplicate = array_unique($parts);
+
+      foreach ($words_wo_duplicate as &$value) {
+        $value=preg_replace('/[^a-zA-Z0-9_ %\[\]\(\)%&-]/s', '', $value);
+        $value=strtolower($value);
+      }
+      //$wordsWoDuplicate = array_filter($wordsWoDuplicate);
+       
+      //=========READ THE FILE===========================//
+      shell_exec('sudo chmod 777 .');
+      $json = file_get_contents('./database.json');
+      chmod($json, 0777);
+      $jsonData = json_decode($json, true);
+      //print_r('content of database.json\n');
+      //print_r($jsonData);
+      //===============END READ THE FILE==========================//
+      //$dataArray = array();
       
-if(isset($_POST['date_db'])){
-      $file = './date.txt';
-      chmod($file, 0777);
-      // Ouvre un fichier pour lire un contenu existant
+      //=====ADD ARRAY TO JSON DATA ARRAY =================//
+      //if ($jsonData === null) {
+        //$jsonData = array();
+        //$items = array();
+        //print_r($items);
+        //$forMerge[] = $items;
+        //array_push($jsonData, "items");
+        //print_r($forMerge);
+        //$jsonData = array_merge($forMerge, $jsonData);
+        //$jsonData['items'] = [];
+        //print_r($jsonData);
+        
+        //shell_exec('sudo chmod 777 .');
+        //file_put_contents('database.json',json_encode($jsonData));
+      //}
+      //===END ADD ARRAY TO JSON DATA ARRAY=====//
+      header('Content-type: text/plain');
+      //print_r("thisisatest");
+      //print_r($wordsWoDuplicate);
+      for ($i = 0; $i <= count($wordsWoDuplicate); $i++) {
+        $duplicate = 0;
+        //print_r($i);
+        //print_r('length words');
+        //print_r(count($wordsWoDuplicate));
+        //print_r($jsonData['items']);
+        //print_r($i);
+        $dataArray=array();
+        $word = $wordsWoDuplicate[$i];
+        
+        print_r("\r\n");
+        print_r($word);
+        print_r("\r\n");
+        if (count($jsonData['items']) > 0) { 
+          //if $jsonData[
+          for ($j = 0; $j <= count($jsonData['items']); $j++) {
+            //print_r("thisline");
+            if ($jsonData['items'][$j]['word'] === $word) {
+              if(in_array($dateOfTheDay, $jsonData['items'][$j]['dates']) === false) {
+                //print_r('duplicate and the date has to be added in the database that already exists');
+                //$date = [$dateOfTheDay];
+                array_push($jsonData["items"][$j]['dates'], $dateOfTheDay);
+                //print_r($jsonData['items']);
+                $duplicate = 1;
+              } 
+            } 
+          }
+        }
+        
+        if (duplicate == 0) {
+          //print_r("pas de duplicate");
+          //array_push($dataArray,JSON.stringify("word")); 
+          $dataArray["word"] = $word;
+          //array_push($dataArray,JSON.stringify("id")); 
+          $dataArray["id"] = $i;
+          //array_push($dataArray,"dates")); 
+          $dateOfTheDay = '20190828';
+          $dates = [$dateOfTheDay];
+          $dataArray["dates"] = $dates; 
+          //array_merge($dataArray["dates"], $dates);
+          //$forMerge[] = $dataArray;
+          if (count($dataArray === 3)) {
+            print_r("data array has three elements\r\n");
+          }
+          $jsonData["items"][$i] = $dataArray;
+           //
+          // array_merge($jsonData["items"], $forMerge);
+          //print_r($jsonData['items'][$i]);
+          print_r("teststring\n");
+          //array_push($jsonData['items'], $dataArray);
+        }
+      }
+      //print_r($jsonData['items'][6]);
+      //print_r($jsonData);
+      //print_r($jsonData);
+      //===========WRITES IN BIG DATABASE================================//
+      shell_exec('sudo chmod 777 .');
+      $json = 'database.json';
+      $current = file_get_contents($json);
+      $current .= json_encode($jsonData, JSON_FORCE_OBJECT); 
+      chmod($current, 0777);
+      file_put_contents($json, $current);
+      //==================================================================// 
+
+      //same process, but exporting the file to be used by the app instead 
+      shell_exec('sudo chmod 777 .');
+      $json = file_get_contents('./items.json');
+      chmod($json, 0777);
+      $jsonData = json_decode($json);
+
+      //if ($jsonData === null) {
+        //$items = array();
+        //$forMerge[] = $items;
+        //$jsonData = array_merge($forMerge, $jsonData);
+        //$jsonData['items']=[];
+        //print_r("create items array");
+      //}
+      header('Content-type: text/plain');
+      for ($i = 0; $i <= count($wordsWoDuplicate); $i++) {
+          $dataArray = array();
+          $word = $wordsWoDuplicate[$i];
+          $dataArray['word'] = $word;
+          $dataArray['id'] = $i;
+          $jsonData['items'][$i] = $dataArray;
+          print_r("here");
+      }
+      //print_r($jsonData);
+      shell_exec('sudo chmod 777 .');
+      //prepares to write in the file
+      //$jsonData = json_encode($jsonData);
+      //print_r("jsonData");
+      //print_r($jsonData);
+      $file = "items.json";
       $current = file_get_contents($file);
-      // Ajoute une personne
-      echo 'this is the date you selected';
-      echo $current;
-      //do something with date you selected 
+      chmod($current, 0777);
+      $current .= json_encode($jsonData, JSON_FORCE_OBJECT);
+
+      file_put_contents($file, $current);
 
 }
-//// transformer les textes en BDD pour le logiciel 1 texte apres lautre
-$input = file_get_contents( 'text2.txt' ); // get the contents, and echo it out.
-//separation of the characters string => gives list of words 
-$parts = preg_split('/,.;:|\s/', $input, null, PREG_SPLIT_NO_EMPTY);
-//remove duplicate
-$words_wo_duplicate = array_unique($parts);
-foreach ($words_wo_duplicate as &$value) {
-  $value=preg_replace('/[^a-zA-Z0-9_ %\[\]\(\)%&-]/s', '', $value);
-  $value=strtolower($value);
+      
+if(isset($_POST['database_with_date'])){
+      
+      shell_exec('sudo chmod 777 .');
+      $file = './date_for_data_entry.txt';
+
+      $dateForDataEntry = file_get_contents($file);
+      chmod($dateForDataEntry, 0777);
+      print_r('this is the date you selected');
+      print_r($dateForDataEntry);
+      shell_exec('sudo chmod 777 .');
+      $file = './new_text.txt';
+
+      $current = file_get_contents($file);
+      chmod($current, 0777);
+      print_r('this is the text you loaded');
+      print_r($current);
+      $parts = preg_split('/,.;:|\s/', $input, null, PREG_SPLIT_NO_EMPTY);
+      $wordsWoDuplicate = array_unique($parts);
+      foreach ($words_wo_duplicate as &$value) {
+        $value=preg_replace('/[^a-zA-Z0-9_ %\[\]\(\)%&-]/s', '', $value);
+        $value=strtolower($value);
+      }
+
+      //Save text in file for app deployment
+      shell_exec('sudo chmod 777 .');
+      $json = file_get_contents('./database.json');
+      chmod($json, 0777);
+      $jsonData = json_decode($json,true);
+
+      if ($jsonData === null) {
+        //$jsonData = array();
+        $items = array();
+        $forMerge[] = $items;
+        $jsonData = array_merge($forMerge, $jsonData);
+        //array_push($jsonData, $items);
+      }
+      header('Content-type: text/plain');
+      for ($i = 0; $i <= count($wordsWoDuplicate); $i++) {
+        for ($j = 0; $j <= count($jsonData[JSON.stringify("items")]); $j++) {
+          if (in_array($dateForDataEntry, $jsonData[JSON.stringify('items')][$j][JSON.stringify("dates")] === true)) {
+            $dataArray = array();
+            $word = $wordsWoDuplicate[$i];
+            array_push($dataArray,JSON.stringify('word')); 
+            $dataArray[JSON.stringify("word")] = JSON.stringify($word);
+            array_push($dataArray,JSON.stringify('id')); 
+            $dataArray[JSON.stringify('id')] = $i;
+            $forMerge[] = $dataArray;
+            $jsonData.$items = array_merge($jsonData[JSON.stringify('items')], $forMerge);
+            //array_push($jsonData['items'], $dataArray);
+          } 
+        }
+      }
+      print_r($jsonData);
+      $jsonData = json_encode($jsonData, JSON_FORCE_OBJECT);
+      print_r($jsonData);
+      shell_exec('sudo chmod 777 .');
+      $json = file_get_contents('./items.json');
+      chmod($json, 0777);
+      file_put_contents($json, $jsonData);
+
+
 }
-header('Content-type: text/plain');
+/*
 //displays list of words
-print_r($words_wo_duplicate); 
+//print_r($words_wo_duplicate); 
 //creation of the  "words" column
-$words = array_fill_keys($words_wo_duplicate, 'mot');
 //end of creation of "mp3" column
 //print_r($mp3);
 //create array containing mp3 file names
-$mp3filenames = array();
-foreach ($words_wo_duplicate as &$value) {
-	array_push($mp3filenames, "$value.mp3");
-}
-//}
-//display of mp3 files
-print_r($mp3filenames);
-//creation of "mp3" column
-$mp3files = array_fill_keys($mp3files, 'mp3'); 
 //installation of a time zone  
-date_default_timezone_set('UTC');
+//date_default_timezone_set('UTC');
 // date of the day 
-$date_of_today_s_practice = array();
-$today = date("Ymd");
+//$date_of_today_s_practice = array();
+//$today = date("Ymd");
 //print the date of today
-print_r($today);
-foreach ($words_wo_duplicate as &$value6) {
-array_push($date_of_today_s_practice, $today);	
-}
-$dates = array_fill_keys($date_of_today_s_practice, 'date');
-//combine three or more arrats
-//words words_wo_duplicate 
-//mp3files mp3filenames
-// dates date_of_today_s_practice
-$csv="";
-$ids = array(1,2,3);
-$result = array();
-foreach ($words_wo_duplicate as $id => $key) {
-    $result[$key] = array(
-        'word'  => $words_wo_duplicate[$id],
-        'mp3 filename' => "$words_wo_duplicate[$id].mp3",
+//print_r($today);
+//$ids = array(1,2,3);
+//$result = array();
+//foreach ($words_wo_duplicate as $id => $key) {
+//    $result[$key] = array(
+//        'word'  => $words_wo_duplicate[$id],
+//        'mp3 filename' => "$words_wo_duplicate[$id].mp3",
         //'date of today'    => $today,
-        'date of today'    => '20190101', 
-    );
+//        'date of today'    => '20190101', 
+//    );
     //$csv.="$words_wo_duplicate[$id],$words_wo_duplicate[$id].mp3,$today\n";
-    $csv.="$words_wo_duplicate[$id],$words_wo_duplicate[$id].mp3,20190501\n";
-}
+//    $csv.="$words_wo_duplicate[$id],$words_wo_duplicate[$id].mp3,20190501\n";
+//}
 //$ar = range(0,count($words));
 //print_r($ar);
 //$row = array();
@@ -185,21 +352,21 @@ foreach ($words_wo_duplicate as $id => $key) {
     //array_push($mychart,$row);
    // $row=array();
 //}
-print_r($result);
-print_r($csv);
-file_put_contents("2.txt", $csv);
+//print_r($result);
+//print_r($csv);
+//file_put_contents("2.txt", $csv);
 /////// dedoublonner deux BDDS en fusionnant leurs collonnes des dates
-$input1 = file_get_contents( '1.txt' ); // get the contents,
-$input2 = file_get_contents( '2.txt' ); // get the contents,
+//$input1 = file_get_contents( '1.txt' ); // get the contents,
+//$input2 = file_get_contents( '2.txt' ); // get the contents,
 //separation of the characters string  gives list of words 
 //$file1_line_by_line = preg_split('/\s/', $input1, null, PREG_SPLIT_NO_EMPTY);
-$file1_line_by_line = preg_split("/[\n]+/", $input1);
-$file2_line_by_line = preg_split("/[\n]+/", $input2);
+//$file1_line_by_line = preg_split("/[\n]+/", $input1);
+//$file2_line_by_line = preg_split("/[\n]+/", $input2);
 //$file2_line_by_line = preg_split('/\s/', $input2, null, PREG_SPLIT_NO_EMPTY);
 //liste de mots du premier texte
-$list_of_words_1=array();
+//$list_of_words_1=array();
 //liste de mots du deuxieme texte
-$list_of_words_2=array();
+//$list_of_words_2=array();
 foreach ($file1_line_by_line as &$value) {
   $word1=array(); 
   $word1 = preg_split('/[,]+/', $value, null, PREG_SPLIT_NO_EMPTY);
@@ -265,5 +432,5 @@ $csv="";
 foreach ($csvlines as &$value) {
   $csv.="$value\n"; 
 }
-file_put_contents("final.txt", $csv);
+file_put_contents("final.txt", $csv);*/
 ?>
