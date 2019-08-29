@@ -38,6 +38,7 @@ class BasicForm extends React.Component {
       wordtest:'',
       checkTarget:'',
       targetValue: '',
+      variableErrors:'',
       mountElements:[],
       valuestest:'',
       //controlsValue:'',
@@ -220,7 +221,7 @@ class BasicForm extends React.Component {
     //console.log(ReactDOM.render(boldElement, mountElement));
     this.setState({
       wordtest:
-        inputValue === targetValue ? this.removeAudioPlayer() : `Values: \n ${inputValue} / ${targetValue} not ok`,
+        inputValue === targetValue ? this.removeAudioPlayer() : null//`Values: \n ${inputValue} / ${targetValue} not ok`,
       checkInput:
         inputValue === '' ? 'enter a word' : null,
       checkTarget:
@@ -285,13 +286,19 @@ class BasicForm extends React.Component {
 
     const mountElements = document.getElementsByClassName(`${targetValue}`);
     console.log({mountElements});
+    this.setState({
+      variableErrors:
+        mountElements[0] === undefined ? "Please choose and listen to a word first" : null
+    });
+    if (mountElements[0] !== undefined) {
+      mountElements[0].pause();
+      mountElements[0].currentTime = 0;
 
-    mountElements[0].pause();
-    mountElements[0].currentTime = 0;
-
-    mountElements[0].removeAttribute('controls');
-    //const inputElements = document.getElementsByTagName('input');
-    //inputElements[0].state.value = '';
+      mountElements[0].removeAttribute('controls');
+    }
+      //const inputElements = document.getElementsByTagName('input');
+      //inputElements[0].state.value = '';
+    
     this.setState({
       inputValue:
         '',
@@ -373,21 +380,16 @@ class BasicForm extends React.Component {
                 //onBlur={this.fieldOnblur}
 //this.setState({ inputValue: e.target.value })
               />
-              //input 
               <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
                 click me
               </button>
-                //type"button"
-                //value"Focus the audio source"
-                //onClick=his.focusAudioSource
-              //
               <button onClick={this.displayAudio}>
                 start over
               </button>
               <div>{this.state.wordtest}</div>
               <div>{this.state.checkInput}</div>
               <div>{this.state.checkTarget}</div>
-              //<div>{this.state.audioframe}</div>
+              <div>{this.state.variableErrors}</div>
               <div>
                 {this.state.items.map(item =>
                   <audio className={item.name} key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.name} controls={this.state.controls}> 
