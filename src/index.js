@@ -12,23 +12,6 @@ document.head.appendChild(s);
 class BasicForm extends React.Component {
   constructor(props) {
     super(props);
-    //this.audioSource = null;
-  
-    //this.setAudioSourceRef = element => {
-      //this.audioSource = element;
-    //};
-    
-    //this.focusAudioSource = () => {
-      //if (this.audioSource) this.audioSource.focus();
-    //};
-    //this.audioSource = React.createRef();
-
-    //this.onSelect = this.onSelect.bind(this);
-    //this.audioRef = React.createRef();
-    //this.handleAudio = this.handleAudio.bind(this);
-    //this.focusTextInput = React.createRef();
-    //this.audioRef = this.audioRef.bind(this);
-    //this.controlsFalse = this.controlsFalse.bind(this);
     this.state = {
       nb: 0,
       wordinput: '',
@@ -262,9 +245,13 @@ class RegistrationForm extends React.Component {
       name: '',
       email: '',
       value: "",
+      i:0,
+      jsonArray:[];
       text:'',
+      importText:'',
       textError:'',
       nameError: '',
+      list:'',
       emailError: ''
       
     };
@@ -312,26 +299,48 @@ class RegistrationForm extends React.Component {
  
   handleText = (event) => {
     event.preventDefault();
-    alert(`The text youi \n
+    alert(`The text you \n
            entered: \n` + this.state.value);
-    //assign value of text entered to variable
-
+    //======================SUBMIT TEXT FUNCTION ===========================//
+    //assign value of entered text to variable
+    const importText = this.state.value;
+    //=======================	END SUBMIT TEXT FUNCTION =================//
+    //==============ADD NEW WORDS TO DATABASE============================//
     //PREG SPLIT NO EMPTY = remove all punctuation signs and spaces and split into array of words
-
+    list = importText.split(/[\s.?:;!,]+/);
+    x = (list) => list.filter((v,i) => list.indexOf(v) === i);
+    x(list);
     // array unique = only keep one item of each value
 
+     
     // second verification = remove all additional signs of each word (keep only a-z and A-Z character of the words)
-
+    list = list.map(function(y){ return y.replace(/[\W_]+/g," ") });
     // put all the words in lower cases
+    list = list.map(function(x){ return x.toUpperCase() });
 
     //remove the "null" from the array
+    list = list.filter(function( element ) {
+      return element !== null;
+    });
     // for each word, 
-    
+
     //make an array containing date, id and word save each array to a bigger array then save this bigger array in a file and keep this array --- that will be needed for what comes next
+    //   const //  = this.state;
+    //for (let step = 0; step < 5; step++) {
+    // Runs 5 times, with values of step 0 through 4.
+    //console.log('Walking east one step');
+} 
+    // that's all -- make the same array without the date field----and export that file. It is ready for use by our application.
 
-    // that's all -- make the same array without the date field----and if this word and date already existed in the file only add the date to the word that already exists 
+    //if this word and date already existed in the file only add the date to the word that already exists 
+    // the user can upload and download the database JSON file with ajax and apis....
+    //==============END ADD NEW WORDS TO DATABASE============================//
+    //==============DATABASE WITH DATA ENTRY DATES======================//
 
-    // i needed to upload and download the database JSON file and do it with ajax and apis....
+    //import the big database and keep only the items with the data entry date the user specified in the submission form
+    //==============END DATABASE WITH DATA ENTRY DATES======================//
+
+
   } 
   //}
 
