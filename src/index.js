@@ -288,6 +288,7 @@ my two mistresses: what a beast am I to slack it!`,
       concat:[],
       k:null,
       l:null,
+      databaseLength:null,
       itemlist:"",
       bigDatabase:[],
       nameError: '',
@@ -295,7 +296,9 @@ my two mistresses: what a beast am I to slack it!`,
       listOfWords:[],
       dateOfTheDay:[],
       datesFromDatabase:[],
+      concatAll:null,
       updateDates:[],
+      duplicate:null,
       x:[],
       emailError: ''
       
@@ -398,11 +401,12 @@ my two mistresses: what a beast am I to slack it!`,
     //const i = this.state;
     const wordsFromLoadedText = [];
     const jsonArrayForMerge2=[]; 
-    const jsonArray = [];
+    //const jsonArray = [];
     for (var i = 0; i < listOfWords.length; i++) {
       //const i = this.state;
       //const j=i;
       //alert(list[i]);
+      const jsonArray = [];
       jsonArray['word'] = listOfWords[i];  
       //alert(jsonArray['word']); 
       jsonArray['id'] = i;
@@ -448,36 +452,61 @@ my two mistresses: what a beast am I to slack it!`,
           //console.log('Walking east one step');
 
         //const l =k;
+      const duplicate = 0;
       if (database.length > 0) { 
         for (let k = 0; k < database.length; k++) { // database is the big database
           if (database[k]['word'] === jsonArray['word'])  {
-            if(database[k]['dates'].includes(date) === false)  {
-
+            if (database[k]['dates'].includes(this.state.date) === false)  {
       //==adds the date of today in the line of the duplicate in the big database==/
               const dateOfTheDay = [this.state.date];
               const datesFromDatabase = database[k]['dates'];
-              const updateDates = datesFromDatabase.concat(dateOfTheDay);
+              const updateDates = dateOfTheDay.concat(datesFromDatabase);
               database[k]['dates'] = updateDates;
-            //alert(database[k]['dates'], "dates");
+              duplicate=1;
+              //alert('dates');
             }
           }
         }
       //============end adds the date of today in the right line of the duplicate in the big database====/
-      } else {
+      } 
       //===========creates a new line in the big database============/
             //jsonArray['dates']= [date]; //date is date of the day, see DidMountComponent 
             //alert(JSON.stringify(jsonArray['dates']));
             //alert(jsonArray['dates'][0]);
             //alert(jsonArray['id']);
-        const jsonArray = this.state;
+      ///const jsonArray = [];
+      if (duplicate === 0) {
+        //const jsonArray = this.state;
         const database = this.state; 
-        const concatArray = [jsonArray];
 
-        const bigDatabase = [].concat(database, concatArray);
-        alert(JSON.stringify(bigDatabase));
+        //const listOfWords = this.state;
+        //const i = this.state; 
+        if (this.state.database && this.state.database.length) {
+          //const databaseLength = database.length;
+          database[database.length]['word'] = jsonArray['word'];
+          database[database.length]['id'] = jsonArray['id'];
+          database[database.length]['dates'] = jsonArray['dates'];
+        } else {
+          const database=[[]];
+          database[0]['word'] = jsonArray['word'];
+          database[0]['id'] = jsonArray['id'];
+          database[0]['dates'] = jsonArray['dates'];
+        }
+ 
+        alert(database[0]['word']);
+        
+        //jsonArray['word'] = listOfWords[i];  
+        //jsonArray['id'] = i;
+        //jsonArray['dates'] = [this.state.date];
+
+        //const bigDatabase = this.state.database;
+        //const concatAll = [].concat(bigDatabase, concatArray);
+        //alert(jsonArray['word']);
+        //const database = concatAll;
+        //alert(database);
         //jsonData[k] = jsonArray;
-          //jsonArrayArray = [{jsonArray}];
-          //database.concat(jsonArray);
+        //jsonArrayArray = [{jsonArray}];
+        //database.concat(jsonArray);
       //the variable database contains all the arrays when the button exported is clicked it good be ok to make a download of the file available to the user
       //===========end creates a new line in the big database============/
       //============end adds the text of today in the big database =====//
