@@ -249,7 +249,14 @@ class RegistrationForm extends React.Component {
       jsonArray:[];
       text:'',
       importText:'',
+      jsonArrayArray:[],
+      jsonArrayForMerge2:[],
+      date:'',
+      wordsFromLoadedText:[],
       textError:'',
+      printTests:'',
+      jsonData:[],
+      today:'',
       nameError: '',
       list:'',
       emailError: ''
@@ -257,6 +264,12 @@ class RegistrationForm extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    const that = this;
+    const today = new Date();
+    const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
   }
 
   handleNameChange = event => {
@@ -308,10 +321,10 @@ class RegistrationForm extends React.Component {
     //==============ADD NEW WORDS TO DATABASE============================//
     //PREG SPLIT NO EMPTY = remove all punctuation signs and spaces and split into array of words
     list = importText.split(/[\s.?:;!,]+/);
+
+    // array unique = only keep one item of each value
     x = (list) => list.filter((v,i) => list.indexOf(v) === i);
     x(list);
-    // array unique = only keep one item of each value
-
      
     // second verification = remove all additional signs of each word (keep only a-z and A-Z character of the words)
     list = list.map(function(y){ return y.replace(/[\W_]+/g," ") });
@@ -325,19 +338,56 @@ class RegistrationForm extends React.Component {
     // for each word, 
 
     //make an array containing date, id and word save each array to a bigger array then save this bigger array in a file and keep this array --- that will be needed for what comes next
-    //   const //  = this.state;
-    //for (let step = 0; step < 5; step++) {
+    const i = this.state;
+    const wordsFromLoadedText = [];
+    const jsonArrayForMerge2=[]; 
+    for (let i = 0; i < list.length; i++) {
     // Runs 5 times, with values of step 0 through 4.
+      const jsonArray = this.state;
+      //====writes a new line to be added to the big database or a smaller one like the words to be played today=====//
+      jsonArray['word'] = list[{i}];
+      jsonArray['id'] = list[{i}];
+      //=====================makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===//
+      jsonArrayForMerge2 = [{jsonArray}];
+      wordsFromLoadedText.concat(jsonArrayForMerge2); //variable contenant une liste d'arrays devant être exportés au format JSON pour être lisibles par l'application ---> il faudra donner des instructions à l'utilisateur pour sauvegarder le fichier dans une fonction
+      //=====================end makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===//
+      jsonArray['dates']= [{date}]; //date is date of the day, see DidMountComponent
+      //==== end writes a new line to be added to the big database =====//
+      //this.setState({
+      //  printTests:
+      //    jsonArray
+      //});
     //console.log('Walking east one step');
-} 
+      for (let j = 0; j < database.length; j++) { // database is the big database
+      if ((database.length > 0) || (database[{j}]['dates'].includes({date}) === false) || (database[{j}]['word'] === jsonArray['word']) ) {
+      //==adds the right date in the line of the duplicate in the big database==/
+        database[j]['dates'].concat(jsonArray['dates']);
+      //============end adds the right date in the right line of the duplicate in the big database====/
+      } else {
+      //===========creates a new line in the big database============/
+        jsonArrayArray = [{jsonArray}];
+        database.concat(jsonArray);
+      //the variable database contains all the arrays when the button exported is clicked it good be ok to make a download of the file available to the user
+      //===========end creates a new line in the big database============/
+      }
+    } 
     // that's all -- make the same array without the date field----and export that file. It is ready for use by our application.
+    //see above
 
     //if this word and date already existed in the file only add the date to the word that already exists 
+    //not done yet
     // the user can upload and download the database JSON file with ajax and apis....
+    //create two buttons as in my first html page in php
+    //first button you can download big database and file for the app
+    //second button you can download words selected by date
     //==============END ADD NEW WORDS TO DATABASE============================//
     //==============DATABASE WITH DATA ENTRY DATES======================//
 
     //import the big database and keep only the items with the data entry date the user specified in the submission form
+    //npm i react-datepicker
+    //check if the database array is readable from the new function created linked with the click of the button to find words from the database by date
+    //second install react date picker and check the validity of the format of the date with the format of the date in the big database array
+    //lastly, if everything works fine, bind the picking of the date with the selection of the right words (most by the use of an iterative array)
     //==============END DATABASE WITH DATA ENTRY DATES======================//
 
 
