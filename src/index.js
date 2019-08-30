@@ -244,21 +244,59 @@ class RegistrationForm extends React.Component {
     this.state = {
       name: '',
       email: '',
-      value: "",
-      i:0,
-      jsonArray:[];
+      value: `Truly, for mine own part, I would little or nothing
+with you. Your father and my uncle hath made
+motions: if it be my luck, so; if not, happy man be
+his dole! They can tell you how things go better
+than I can: you may ask your father; here he comes.
+Good Mistress Page, for that I love your daughter
+In such a righteous fashion as I do,
+Perforce, against all cheques, rebukes and manners,
+I must advance the colours of my love
+And not retire: let me have your good will.
+Come, trouble not yourself. Good Master Fenton,
+I will not be your friend nor enemy:
+My daughter will I question how she loves you,
+And as I find her, so am I affected.
+Till then farewell, sir: she must needs go in;
+Her father will be angry.
+A kind heart he hath: a woman would run through
+fire and water for such a kind heart. But yet I
+would my master had Mistress Anne; or I would
+Master Slender had her; or, in sooth, I would Master
+Fenton had her; I will do what I can for them all
+three; for so I have promised, and I'll be as good
+as my word; but speciously for Master Fenton. Well,
+I must of another errand to Sir John Falstaff from
+my two mistresses: what a beast am I to slack it!`,
+      i:null,
+      jsonArray:null,
       text:'',
       importText:'',
       jsonArrayArray:[],
       jsonArrayForMerge2:[],
+      listItems:[],
       date:'',
       wordsFromLoadedText:[],
       textError:'',
+      database:[],
+      j:null,
       printTests:'',
       jsonData:[],
       today:'',
+      word:{},
+      concat:[],
+      k:null,
+      l:null,
+      itemlist:"",
+      bigDatabase:[],
       nameError: '',
-      list:'',
+      concatArray:null,
+      listOfWords:[],
+      dateOfTheDay:[],
+      datesFromDatabase:[],
+      updateDates:[],
+      x:[],
       emailError: ''
       
     };
@@ -270,6 +308,11 @@ class RegistrationForm extends React.Component {
     const that = this;
     const today = new Date();
     const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    
+    that.setState({
+      date:
+        date
+    });
   }
 
   handleNameChange = event => {
@@ -311,7 +354,7 @@ class RegistrationForm extends React.Component {
   //  });
  
   handleText = (event) => {
-    event.preventDefault();
+    //event.preventDefault();
     alert(`The text you \n
            entered: \n` + this.state.value);
     //======================SUBMIT TEXT FUNCTION ===========================//
@@ -320,55 +363,126 @@ class RegistrationForm extends React.Component {
     //=======================	END SUBMIT TEXT FUNCTION =================//
     //==============ADD NEW WORDS TO DATABASE============================//
     //PREG SPLIT NO EMPTY = remove all punctuation signs and spaces and split into array of words
-    list = importText.split(/[\s.?:;!,]+/);
-
+    //const list = this.state;
+    const database = [];
+    //alert('database'+this.state.database);
+    const date = this.state;
+    alert(this.state.date);
+    //const x = this.state;
+    //const jsonArrayArray = this.state;
+    //const list = 
     // array unique = only keep one item of each value
-    x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-    x(list);
+    const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
+    //x(list);
      
     // second verification = remove all additional signs of each word (keep only a-z and A-Z character of the words)
-    list = list.map(function(y){ return y.replace(/[\W_]+/g," ") });
-    // put all the words in lower cases
-    list = list.map(function(x){ return x.toUpperCase() });
-
-    //remove the "null" from the array
-    list = list.filter(function( element ) {
+    const listOfWords = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
       return element !== null;
     });
+    //alert(list[0]);
+    //alert(list[10]);
+    //alert(list[20]);
+    // put all the words in lower cases
+    //list = list;
+
+    //remove the "null" from the array
+    //list = list.filter(function( element ) {
+      //return element !== null;
+    //});
     // for each word, 
 
     //make an array containing date, id and word save each array to a bigger array then save this bigger array in a file and keep this array --- that will be needed for what comes next
-    const i = this.state;
+    //alert(this.state.list.map(item => (
+      //<p>{item}</p>
+    //)));
+    //const i = this.state;
     const wordsFromLoadedText = [];
     const jsonArrayForMerge2=[]; 
-    for (let i = 0; i < list.length; i++) {
-    // Runs 5 times, with values of step 0 through 4.
-      const jsonArray = this.state;
-      //====writes a new line to be added to the big database or a smaller one like the words to be played today=====//
-      jsonArray['word'] = list[{i}];
-      jsonArray['id'] = list[{i}];
-      //=====================makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===//
-      jsonArrayForMerge2 = [{jsonArray}];
-      wordsFromLoadedText.concat(jsonArrayForMerge2); //variable contenant une liste d'arrays devant être exportés au format JSON pour être lisibles par l'application ---> il faudra donner des instructions à l'utilisateur pour sauvegarder le fichier dans une fonction
-      //=====================end makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===//
-      jsonArray['dates']= [{date}]; //date is date of the day, see DidMountComponent
-      //==== end writes a new line to be added to the big database =====//
-      //this.setState({
-      //  printTests:
-      //    jsonArray
+    const jsonArray = [];
+    for (var i = 0; i < listOfWords.length; i++) {
+      //const i = this.state;
+      //const j=i;
+      //alert(list[i]);
+      jsonArray['word'] = listOfWords[i];  
+      //alert(jsonArray['word']); 
+      jsonArray['id'] = i;
+      //const jsonArray = this.setState({
+        //word:
+          //list[i],
+        //id:
+          //i,
+        //dates:
+          //date
       //});
-    //console.log('Walking east one step');
-      for (let j = 0; j < database.length; j++) { // database is the big database
-      if ((database.length > 0) || (database[{j}]['dates'].includes({date}) === false) || (database[{j}]['word'] === jsonArray['word']) ) {
-      //==adds the right date in the line of the duplicate in the big database==/
-        database[j]['dates'].concat(jsonArray['dates']);
-      //============end adds the right date in the right line of the duplicate in the big database====/
+      //const concat = []; 
+      //concat.concat(word);
+      //alert(concat,'word');
+      //this.setState({printTests: i});
+    // Runs 5 times, with values of step 0 through 4.
+
+      //const jsonArray = this.state;
+      //const jsonArray=this.state;
+      //alert(`{list[{i}]}`);
+      //alert(list[i]);
+      //const jsonArray['word']=list[i];
+      //jsonArray.setState({
+        //word:
+          //list[j],
+        //id:
+          //j,
+      //});
+      // //=====================makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===// 
+      //const jsonArrayForMerge2 = jsonArray; wordsFromLoadedText[i] = jsonArray; 
+      //variable contenant une liste d'arrays devant être exportés au format JSON pour être lisibles par l'application il faudra donner des instructions à l'utilisateur pour sauvegarder le fichier dans une fonction 
+      //alertwordsFromLoadedText[i);
+      jsonArray['dates'] = [this.state.date];
+      //alert(jsonArray['dates']);
+      //for (var k = 0; k < jsonArray.length; k++) {
+        //const l=k;
+        //alert(jsonArray[l]); 
+      //}
+      //=====================end makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===//
+
+      //============ adds the text of today in the big database =====//
+
+          //console.log('Walking east one step');
+
+        //const l =k;
+      if (database.length > 0) { 
+        for (let k = 0; k < database.length; k++) { // database is the big database
+          if (database[k]['word'] === jsonArray['word'])  {
+            if(database[k]['dates'].includes(date) === false)  {
+
+      //==adds the date of today in the line of the duplicate in the big database==/
+              const dateOfTheDay = [this.state.date];
+              const datesFromDatabase = database[k]['dates'];
+              const updateDates = datesFromDatabase.concat(dateOfTheDay);
+              database[k]['dates'] = updateDates;
+            //alert(database[k]['dates'], "dates");
+            }
+          }
+        }
+      //============end adds the date of today in the right line of the duplicate in the big database====/
       } else {
       //===========creates a new line in the big database============/
-        jsonArrayArray = [{jsonArray}];
-        database.concat(jsonArray);
+            //jsonArray['dates']= [date]; //date is date of the day, see DidMountComponent 
+            //alert(JSON.stringify(jsonArray['dates']));
+            //alert(jsonArray['dates'][0]);
+            //alert(jsonArray['id']);
+        const jsonArray = this.state;
+        const database = this.state; 
+        const concatArray = [jsonArray];
+
+        const bigDatabase = [].concat(database, concatArray);
+        alert(JSON.stringify(bigDatabase));
+        //jsonData[k] = jsonArray;
+          //jsonArrayArray = [{jsonArray}];
+          //database.concat(jsonArray);
       //the variable database contains all the arrays when the button exported is clicked it good be ok to make a download of the file available to the user
       //===========end creates a new line in the big database============/
+      //============end adds the text of today in the big database =====//
+          
+        
       }
     } 
     // that's all -- make the same array without the date field----and export that file. It is ready for use by our application.
@@ -398,11 +512,16 @@ class RegistrationForm extends React.Component {
     const { name, email } = this.state;
     //alert(`Your state values: \n 
     //        name: ${name} \n 
-    //        email: ${email} \n` + this.state.value);
+    const date = this.state;
+    this.setState({
+      printTests:
+        date
+    });
+//        email: ${email} \n` + this.state.value);
     this.handleText();
     event.preventDefault();
-  };
-  handleChange(event) {
+  }
+  handleChange = (event) => {
     this.setState({value: event.target.value});
   }
 
@@ -437,9 +556,10 @@ class RegistrationForm extends React.Component {
         </div>
         <label>
           Essay:
-          <textarea placeholder="Enter a text" value={this.state.value} onChange={this.handleChange} />
+          <textarea placeholder="Enter a text" value={this.state.value} onChange={this.handleChange} /> //value=this.state.value
         </label>
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
+        <div>{this.state.printTests}</div>
       </form>
     );
   }
