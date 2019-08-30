@@ -71,7 +71,7 @@ class BasicForm extends React.Component {
         ''
     }
   }
- handleWordInput = (event) => {
+  handleWordInput = (event) => {
     event.preventDefault();
     //const inputValue = this.state;
     this.btn.removeAttribute("disabled");
@@ -326,6 +326,12 @@ class RegistrationForm extends React.Component {
 
     //remove the "null" from the array
     // for each word, 
+    
+    //make an array containing date, id and word save each array to a bigger array then save this bigger array in a file and keep this array --- that will be needed for what comes next
+
+    // that's all -- make the same array without the date field----and if this word and date already existed in the file only add the date to the word that already exists 
+
+    // i needed to upload and download the database JSON file and do it with ajax and apis....
   } 
   //}
 
@@ -337,7 +343,7 @@ class RegistrationForm extends React.Component {
     this.handleText();
     event.preventDefault();
   };
- handleChange(event) {
+  handleChange(event) {
     this.setState({value: event.target.value});
   }
 
