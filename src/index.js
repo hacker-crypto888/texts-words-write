@@ -196,7 +196,10 @@ class BasicForm extends React.Component {
     const inputValue = this.state;
     return(
 
-        <form onSubmit={this.handleSubmit}>
+      <form onSubmit={this.handleSubmit}>
+           <div>
+             <RegistrationForm />
+           </div>
            <div className={`form-group${item.id}`}> 
               <label htmlFor={`wordinput${item.id}`}>Word</label>
               <li key={item.id}>{item.name} {item.price}</li>
@@ -236,7 +239,7 @@ class BasicForm extends React.Component {
   }
 }
 
-ReactDOM.render(<BasicForm />, document.getElementById('root'));
+//ReactDOM.render(<BasicForm />, document.getElementById('root'));
 
 class RegistrationForm extends React.Component {
   constructor(props) {
@@ -281,7 +284,7 @@ my two mistresses: what a beast am I to slack it!`,
       textError:'',
       database:[],
       j:null,
-      printTests:'',
+      //printTests:'',
       jsonData:[],
       today:'',
       word:{},
@@ -299,11 +302,14 @@ my two mistresses: what a beast am I to slack it!`,
       concatAll:null,
       updateDates:[],
       duplicate:null,
+      arrays:[],
+      testdatabase:[],
+      seconddatabase:[],
       x:[],
       emailError: ''
       
     };
-    this.handleChange = this.handleChange.bind(this);
+    //this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -436,7 +442,9 @@ my two mistresses: what a beast am I to slack it!`,
           //j,
       //});
       // //=====================makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===// 
-      //const jsonArrayForMerge2 = jsonArray; wordsFromLoadedText[i] = jsonArray; 
+      //const jsonArrayForMerge2 = jsonArray; 
+      wordsFromLoadedText[i] = jsonArray; 
+      //soit exporter le fichier comme json et le réouvrir pour faire fonctionner l'application soit utiliser les mots de la base de donnée sauvegardée en mémoire pour exécuter l'application (option la plus rapide)
       //variable contenant une liste d'arrays devant être exportés au format JSON pour être lisibles par l'application il faudra donner des instructions à l'utilisateur pour sauvegarder le fichier dans une fonction 
       //alertwordsFromLoadedText[i);
       jsonArray['dates'] = [this.state.date];
@@ -454,47 +462,78 @@ my two mistresses: what a beast am I to slack it!`,
         //const l =k;
       const duplicate = 0;
         //if (this.state.database && this.state.database.length) {
-   //TO DO modify if statement to meet requirements of array length
-      if (database.length > 0) { 
-        for (let k = 0; k < database.length; k++) { // database is the big database
-          if (database[k]['word'] === jsonArray['word'])  {
-            if (database[k]['dates'].includes(this.state.date) === false)  {
+   //DONE change id in the loop so that the id is set in increasing order in the JSON file 
+   //TO DO write the functions corresponding to the clicking of the submit date button
+   //TO DO set api for date insertions with charts of each month like a calendar
+      //if (database.length > 0) { 
+      if (this.state.database && this.state.database.length) {
+        if (this.state.database.length > 0) {
+          for (let k = 0; k < this.state.database.length; k++) { // database is the big database
+            if (this.state.database[k]['word'] === jsonArray['word'])  {
+              if (this.state.database[k]['dates'].includes(this.state.date) === false)  {
       //==adds the date of today in the line of the duplicate in the big database==/
-              const dateOfTheDay = [this.state.date];
-              const datesFromDatabase = database[k]['dates'];
-              const updateDates = dateOfTheDay.concat(datesFromDatabase);
-              database[k]['dates'] = updateDates;
-              duplicate=1;
-              //alert('dates');
+                const dateOfTheDay = [this.state.date];
+                const datesFromDatabase = this.state.database[k]['dates'];
+                const updateDates = dateOfTheDay.concat(datesFromDatabase);
+                this.state.database[k]['dates'] = updateDates;
+                duplicate=1;
+                //alert('dates');
+              }
             }
           }
         }
       //============end adds the date of today in the right line of the duplicate in the big database====/
       } 
-      //===========creates a new line in the big database============/
-            //jsonArray['dates']= [date]; //date is date of the day, see DidMountComponent 
-            //alert(JSON.stringify(jsonArray['dates']));
-            //alert(jsonArray['dates'][0]);
-            //alert(jsonArray['id']);
-      ///const jsonArray = [];
+        //===========creates a new line in the big database============/
+        //jsonArray['dates']= [date]; //date is date of the day, see DidMountComponent 
+        //alert(JSON.stringify(jsonArray['dates']));
+        //alert(jsonArray['dates'][0]);
+        //alert(jsonArray['id']);
+        ///const jsonArray = [];
       if (duplicate === 0) {
         //const jsonArray = this.state;
-        const database = this.state; 
+
 
         //const listOfWords = this.state;
         //const i = this.state; 
-        if (this.state.database && this.state.database.length) {
-          //const databaseLength = database.length;
-          database[database.length]['word'] = jsonArray['word'];
-          database[database.length]['id'] = jsonArray['id'];
-          database[database.length]['dates'] = jsonArray['dates'];
-        } else {
-          const database=[[]];
-          database[0]['word'] = jsonArray['word'];
-          database[0]['id'] = jsonArray['id'];
-          database[0]['dates'] = jsonArray['dates'];
+        if ((this.state.database) || (this.state.database.length)) {
+          if (this.state.database.length > 0) {
+            //const databaseLength = database.length;
+            const database = this.state; 
+            //alert('length bigger than 0', database.length);
+
+            this.state.database[this.state.database.length] = jsonArray;
+            this.state.database[this.state.database.length]['id'] = this.state.database.length; //the id is equal to the length of the array
+            //alert(this.state.database.length);
+            //database[database.length]['id'] = jsonArray['id'];
+            //database[database.length]['dates'] = jsonArray['dates'];
+          } else if (this.state.database.length === 0) {
+            //const database = this.state; 
+            //alert('length smaller than 0');
+            const database = this.state;
+            //const seconddatabase = [['']];
+            //const testdatabase = [['']];
+            //const database = [].concat(seconddatabase, testdatabase);
+            //database[0] = [];
+            this.state.database[0] = jsonArray;
+            this.state.database[0]['id'] = 0;
+            //alert(this.state.database.length)
+            //alert(this.state.database[0]['word']);
+            //alert(database[0]['word']);
+            //database[0]['word'] = jsonArray['word'];
+            //database[0]['id'] = jsonArray['id'];
+            //alert(jsonArray['id']);
+            //database[0]['dates'] = jsonArray['dates'];
+          }
+        } else if (this.state.database === null) {
+        
+          //alert('null array');
+          const database = this.state; //big database 
+          //database[0] = [];
+          this.state.database[0] = jsonArray;
+          this.state.database[0]['id'] = 0;
         }
- 
+
         //alert(database[0]['word']);
         
         //jsonArray['word'] = listOfWords[i];  
@@ -509,13 +548,14 @@ my two mistresses: what a beast am I to slack it!`,
         //jsonData[k] = jsonArray;
         //jsonArrayArray = [{jsonArray}];
         //database.concat(jsonArray);
-      //the variable database contains all the arrays when the button exported is clicked it good be ok to make a download of the file available to the user
-      //===========end creates a new line in the big database============/
-      //============end adds the text of today in the big database =====//
+        //the variable database contains all the arrays when the button exported is clicked it good be ok to make a download of the file available to the user
+        //===========end creates a new line in the big database============/
+        //============end adds the text of today in the big database =====//
           
         
       }
     } 
+    //====:::::::::ENCODE BIG DATABASE AND EXPORT TO JSON:::::://
     // that's all -- make the same array without the date field----and export that file. It is ready for use by our application.
     //see above
 
@@ -525,10 +565,18 @@ my two mistresses: what a beast am I to slack it!`,
     //create two buttons as in my first html page in php
     //first button you can download big database and file for the app
     //second button you can download words selected by date
+    //====:::::::::END ENCODE BIG DATABASE AND EXPORT TO JSON:::::://
     //==============END ADD NEW WORDS TO DATABASE============================//
     //==============DATABASE WITH DATA ENTRY DATES======================//
-
     //import the big database and keep only the items with the data entry date the user specified in the submission form
+    //prerequisites: to have saved the big database as a file on the computer beforehand
+    //- integrate the function containing the actions taken to loaded the audio files as an integrated component in another component (so that our variables remain accessible by our application)
+    //and to have reloaded it on the server
+    //importedJsonDatabase 
+    //for each line it dates columns includes data entry date
+    // save the line to an other array 
+    //this new array serves as audio player displayer for the app
+    
     //npm i react-datepicker
     //check if the database array is readable from the new function created linked with the click of the button to find words from the database by date
     //second install react date picker and check the validity of the format of the date with the format of the date in the big database array
@@ -540,21 +588,23 @@ my two mistresses: what a beast am I to slack it!`,
   //}
 
   handleSubmit = event => {
+
     const { name, email } = this.state;
     //alert(`Your state values: \n 
     //        name: ${name} \n 
     const date = this.state;
-    this.setState({
-      printTests:
-        date
-    });
+    //this.setState({
+    //  printTests:
+    //    date
+    //});
 //        email: ${email} \n` + this.state.value);
-    this.handleText();
     event.preventDefault();
+    this.handleText();
+    //event.preventDefault();
   }
-  handleChange = (event) => {
-    this.setState({value: event.target.value});
-  }
+  //handleChange = (event) => {
+    //this.setState({value: event.target.value});
+  //}
 
   render() {
     return (
@@ -587,10 +637,24 @@ my two mistresses: what a beast am I to slack it!`,
         </div>
         <label>
           Essay:
-          <textarea placeholder="Enter a text" value={this.state.value} onChange={this.handleChange} /> //value=this.state.value
+          <textarea placeholder="Enter a text" value={this.state.value} /> //onChange={this.handleChange} /> //value=this.state.value
         </label>
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
-        <div>{this.state.printTests}</div>
+        <div className="submit-date">
+          <label htmlFor='date'>Date</label>
+          <input
+            name='date'
+            className={`form-control ${this.state.dateError ? 'is-invalid' : ''}`}
+            id='date'
+            placeholder='Enter date'
+            value={this.state.date}
+            onChange={this.handleDateChange}
+            onBlur={this.validateDate}
+          />
+          <div className='invalid-feedback'>{this.state.dateError}</div>
+          <input type="submit" value="submit_date" className='btn btn-success btn-block' />  
+        </div>
+        //<div>{this.state.printTests}</div>
       </form>
     );
   }
@@ -599,4 +663,4 @@ my two mistresses: what a beast am I to slack it!`,
 //button type'submit' className'btn btn-success btn-block'
           //Submit
         //button
-ReactDOM.render(<RegistrationForm />, document.getElementById('root'));
+ReactDOM.render(<BasicForm />, document.getElementById('root'));
