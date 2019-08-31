@@ -201,106 +201,46 @@ class BasicForm extends React.Component {
            <div>
              <RegistrationForm />
            </div>
-           <div>
-             <DateForm />
-           </div>
            <div className={`form-group${item.id}`}> 
-             <label htmlFor={`wordinput${item.id}`}>Word</label>
-             <li key={item.id}>{item.name} {item.price}</li>
+              <label htmlFor={`wordinput${item.id}`}>Word</label>
+              <li key={item.id}>{item.name} {item.price}</li>
 
-             <input
-               name={item.name}
-               className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
-               id={`wordinput${item.id}`}
-               placeholder='Enter word'
-               key={item.id}
-               value={this.state.inputValue}
-               onClick={this.handleWordInput}
-               onFocus={this.handleWordInput}
-               onChange={e => this.setState({ inputValue: e.target.value }) }
-               
-             />
-             <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
-               click me
-             </button>
-             <button onClick={this.displayAudio}>
-               start over
-             </button>
-           </div>
-             <div>{this.state.wordtest}</div>
-             <div>{this.state.checkInput}</div>
-             <div>{this.state.checkTarget}</div>
-             <div>{this.state.variableErrors}</div>
-             <div>
-               {this.state.items.map(item =>
-                 <audio className={item.name} key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.name} controls={this.state.controls}> 
-                   <source src={`${item.name}.mp3`} className={item.name}  type='audio/mpeg'></source>
-                 </audio>
-               )}<br />
-             </div>
-
+              <input
+                name={item.name}
+                className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
+                id={`wordinput${item.id}`}
+                placeholder='Enter word'
+                key={item.id}
+                value={this.state.inputValue}
+                onClick={this.handleWordInput}
+                onFocus={this.handleWordInput}
+                onChange={e => this.setState({ inputValue: e.target.value }) }
+                
+              />
+              <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
+                click me
+              </button>
+              <button onClick={this.displayAudio}>
+                start over
+              </button>
+              <div>{this.state.wordtest}</div>
+              <div>{this.state.checkInput}</div>
+              <div>{this.state.checkTarget}</div>
+              <div>{this.state.variableErrors}</div>
+              <div>
+                {this.state.items.map(item =>
+                  <audio className={item.name} key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.name} controls={this.state.controls}> 
+                    <source src={`${item.name}.mp3`} className={item.name}  type='audio/mpeg'></source>
+                  </audio>
+                )}<br />
+              </div>
+            </div>
           </form>
     );
   }
 }
 
 //ReactDOM.render(<BasicForm />, document.getElementById('root'));
-class DateForm extends React.Component {
-  state = {
-    date: new Date(),
-    dataEntry: []
-  }
-
-  onChange = date => this.setState({ date })
-  handleSubmitDate = date => {
-    const database = this.state; //database is the loaded JSON array
-    const dataEntry = this.state;
-    if (this.state.database && this.state.database.length) {
-      if (this.state.database.length > 0) {
-        for (let k = 0; k < this.state.database.length; k++) { // database is the big database
-          if (this.state.database[k]['dates'].includes(this.state.date)) {
-            if (this.state.dataEntry && this.state.dataEntry.length) {
-              if (this.state.dataEntry.length > 0) {
-                const database = this.state;
-                const dataEntry=this.state;
-                dataEntry[dataEntry.length] = database[k];
-                dataEntry[dataEntry.length]['id'] = dataEntry.length;
-              } else if (this.state.dataEntry.length === 0) {
-                const database = this.state;
-                const dataEntry=this.state;
-                this.state.dataEntry[0] = database[k];
-                this.state.dataEntry[0]['id'] = 0;
-              }
-            } else if (this.state.dataEntry === null) {
-              const database = this.state;
-              const dataEntry=[];
-              this.state.dataEntry[dataEntry.length] = database[k];
-              this.state.dataEntry[0]['id'] = 0;
-            }
-          
-
-            //same conditions as those for database, but verifying the length of dataEntry array before appending items, and before exporting them as a json file
-            //this.state.dataEntrythis.state.database[k] = ;
-                          
-          }
-        }
-      }
-    }
-  }
-  render() {
-    return (
-      <form onSubmit={this.handleSubmitDate}>
-      <div>
-        <DatePicker
-          onChange={this.onChange}
-          value={this.state.date}
-        />
-      </div>
-      <input type="submit" value="Submit" className='btn btn-success btn-block' />  
-      </form>
-    );
-  }  
-}
 
 class RegistrationForm extends React.Component {
   constructor(props) {
@@ -340,8 +280,7 @@ my two mistresses: what a beast am I to slack it!`,
       jsonArrayArray:[],
       jsonArrayForMerge2:[],
       listItems:[],
-      //date:'',
-      date:new Date(),
+      date:'',
       wordsFromLoadedText:[],
       textError:'',
       database:[],
@@ -362,7 +301,6 @@ my two mistresses: what a beast am I to slack it!`,
       dateOfTheDay:[],
       datesFromDatabase:[],
       concatAll:null,
-      displayDate:null,
       updateDates:[],
       duplicate:null,
       arrays:[],
@@ -373,18 +311,18 @@ my two mistresses: what a beast am I to slack it!`,
       
     };
     //this.handleChange = this.handleChange.bind(this);
-    this.handleSubmitText = this.handleSubmitText.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
-    //const that = this;
-    //const today = new Date();
-    //const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    const that = this;
+    const today = new Date();
+    const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
     
-    //that.setState({
-    //  date:
-    //    date
-    //});
+    that.setState({
+      date:
+        date
+    });
   }
 
   handleNameChange = event => {
@@ -438,9 +376,8 @@ my two mistresses: what a beast am I to slack it!`,
     //const list = this.state;
     const database = [];
     //alert('database'+this.state.database);
-    //const displayDate = '2019/05/05';
-    //const date = new Date.now();
-    //alert(this.state.date);
+    const date = this.state;
+    alert(this.state.date);
     //const x = this.state;
     //const jsonArrayArray = this.state;
     //const list = 
@@ -511,7 +448,7 @@ my two mistresses: what a beast am I to slack it!`,
       //soit exporter le fichier comme json et le réouvrir pour faire fonctionner l'application soit utiliser les mots de la base de donnée sauvegardée en mémoire pour exécuter l'application (option la plus rapide)
       //variable contenant une liste d'arrays devant être exportés au format JSON pour être lisibles par l'application il faudra donner des instructions à l'utilisateur pour sauvegarder le fichier dans une fonction 
       //alertwordsFromLoadedText[i);
-      jsonArray['dates'] = [this.state.displayDate];
+      jsonArray['dates'] = [this.state.date];
       //alert(jsonArray['dates']);
       //for (var k = 0; k < jsonArray.length; k++) {
         //const l=k;
@@ -527,22 +464,20 @@ my two mistresses: what a beast am I to slack it!`,
       const duplicate = 0;
       //if (this.state.database && this.state.database.length) {
       //TO DO write the functions corresponding to the clicking of the submit date button
-      //DONE set api for date insertions with charts of each month like a calendar
+      //TO DO set api for date insertions with charts of each month like a calendar
       //TO DO write the upload and export api functions in the corresponding functions
       //if (database.length > 0) { 
       if (this.state.database && this.state.database.length) {
         if (this.state.database.length > 0) {
           for (let k = 0; k < this.state.database.length; k++) { // database is the big database
             if (this.state.database[k]['word'] === jsonArray['word'])  {
-              if (this.state.database[k]['dates'].includes(this.state.displayDate)) {
+              if (this.state.database[k]['dates'].includes(this.state.date) === false)  {
       //==adds the date of today in the line of the duplicate in the big database==/
-                const date = new Date.now();
-                //const dateOfTheDay = [this.state.displayDate];
-                const dateOfTheDay = date.getMonth()+'/'+date.getDate()+'/'+date.getFullYear();
+                const dateOfTheDay = [this.state.date];
                 const datesFromDatabase = this.state.database[k]['dates'];
                 const updateDates = dateOfTheDay.concat(datesFromDatabase);
                 this.state.database[k]['dates'] = updateDates;
-                const duplicate=1;
+                duplicate=1;
                 //alert('dates');
               }
             }
@@ -568,8 +503,8 @@ my two mistresses: what a beast am I to slack it!`,
             const database = this.state; 
             //alert('length bigger than 0', database.length);
 
-            database[database.length] = jsonArray;
-            database[database.length]['id'] = this.state.database.length; //the id is equal to the length of the array
+            this.state.database[this.state.database.length] = jsonArray;
+            this.state.database[this.state.database.length]['id'] = this.state.database.length; //the id is equal to the length of the array
             //alert(this.state.database.length);
             //database[database.length]['id'] = jsonArray['id'];
             //database[database.length]['dates'] = jsonArray['dates'];
@@ -653,13 +588,12 @@ my two mistresses: what a beast am I to slack it!`,
   } 
   //}
 
-
-  handleSubmitText = event => {
+  handleSubmit = event => {
 
     const { name, email } = this.state;
     //alert(`Your state values: \n 
     //        name: ${name} \n 
-    //const date = this.state;
+    const date = this.state;
     //this.setState({
     //  printTests:
     //    date
@@ -672,11 +606,10 @@ my two mistresses: what a beast am I to slack it!`,
   //handleChange = (event) => {
     //this.setState({value: event.target.value});
   //}
-  //handleDateChange = date => this.setState({date});
-  
+
   render() {
     return (
-      <form onSubmit={this.handleSubmitText}>
+      <form onSubmit={this.handleSubmit}>
         <div className='form-group'>
           <label htmlFor='name'>Name</label>
           <input
@@ -707,6 +640,8 @@ my two mistresses: what a beast am I to slack it!`,
           Essay:
           <textarea placeholder="Enter a text" value={this.state.value} /> //onChange={this.handleChange} /> //value=this.state.value
         </label>
+        <DatePicker onChange={this.handleDateChange} />
+        <div>{this.state.date}</div>
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
          
       </form>
