@@ -252,19 +252,35 @@ class DateForm extends React.Component {
     this.state = {
       date: new Date(),
       selectedDate:'',
+      dataArray:null,
       dateObject:null,
       database:[],
       data:null,
       json:null,
+      obj: [],
+      data:'', 
+      shortArray:'',
+      text:null,
+      url:null,
       mydatabase:[],
       dataEntry: []
     }
-    this.json = {}  
+    //const obj = {a: 123, b: "4 5 6"};
+    //const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+    this.json = {};
   }
 
   componentDidMount() {
     //const database = this.state;
-    this.loadJson();
+    //this.loadJson();
+    //const text = "some text i want to export";
+    //const data = new Blob([this.state.text], {type: 'text/plain'});
+    //const url = URL.createObjectURL(data);
+    //window.URL.revokeObjectURL(url);
+    //document.getElementById('download_link').href = this.state.url;
+    //const obj = {a: 123, b: "4 5 6"};
+    //const shortArray = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.state.obj)); 
+    
     axios.get(`./database.json`)
       .then(res => {
         const database = res.data.items.map(obj => obj);
@@ -326,6 +342,7 @@ class DateForm extends React.Component {
       .then(res => {
         const database = res.data.items.map(obj => obj);
         this.setState({ database });
+        console.log(database[0]);
         //alert(this.state.database[5]['dates']);
         //console.log(items.find((o) => o.id === 2).name);
         //console.log("mesg");
@@ -340,8 +357,9 @@ class DateForm extends React.Component {
     this.importDatabase();
     //X (import) (database)
     //this.setState({date});
-    const database = this.state; //database is the loaded JSON array
-    const dataEntry = this.state;
+    const database = this.state.database; //database is the loaded JSON array
+    const dataEntry = this.state.dataEntry;
+    //const date = this.state;
     //alert(this.state.date.getDate());
     //const date = this.state;
     //const dateObject = this.state.date;
@@ -359,20 +377,20 @@ class DateForm extends React.Component {
               if (this.state.dataEntry.length > 0) {
                 const database = this.state;
                 const dataEntry=this.state;
-                dataEntry[dataEntry.length] = database.line;
-                dataEntry[dataEntry.length]['id'] = dataEntry.length;
-                delete(dataEntry[dataEntry.length]['dates']);
+                this.state.dataEntry[this.state.dataEntry.length] = this.state.database[k];
+                this.state.dataEntry[this.state.dataEntry.length]['id'] = this.state.dataEntry.length;
+                delete(this.state.dataEntry[this.state.dataEntry.length]['dates']);
               } else if (this.state.dataEntry.length === 0) {
                 const database = this.state;
                 const dataEntry=this.state;
-                this.state.dataEntry[0] = database.line;
+                this.state.dataEntry[0] = this.state.database[k];
                 this.state.dataEntry[0]['id'] = 0;
                 delete(this.state.dataEntry[0]['dates']);
               }
             } else if (this.state.dataEntry === null) {
               const database = this.state;
               const dataEntry=[];
-              this.state.dataEntry[dataEntry.length] = database.line;
+              this.state.dataEntry[dataEntry.length] = database[k];
               this.state.dataEntry[0]['id'] = 0;
               delete(this.state.dataEntry[0]['dates']);
             }
@@ -385,12 +403,39 @@ class DateForm extends React.Component {
         }
       }
     }
+    //$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#container');
 
+  }
+  download = (event) => {
+    const obj = {a: 123, b: "4 5 6"};
+    const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+    this.setState({data: data});
+    
+  }
+  downloadLink = () => {
+    //const text="Some Data I export";
+    //const 
+
+    const dataEntry = this.state.dataEntry;
+    const dataArray=new Blob([JSON.stringify(dataEntry, null, 2)], {type: 'application/json'});
+    //const data=new Blob([text], {type: 'text/plain'});
+
+    const url = window.URL.createObjectURL(dataArray);
+    //window.URL.revokeObjectURL(url);
+
+    document.getElementById('download_link').href = url;
+    //event.preventDefault();
+  }
     //X (export) (dataEntry -> items)
+  jsjQuery = (event) => {
+    event.preventDefault();
+    const obj = {a: 123, b: "4 5 6"};
+    const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
   }
   render() {
     return (
       <form onSubmit={this.handleSubmitDate}>
+      <a id="download_link" onClick={this.downloadLink} download="items.json" href="" >Download as Text File</a>
       <div>
         <DatePicker
           onChange={this.onChange}
@@ -399,13 +444,16 @@ class DateForm extends React.Component {
       </div>
       <div>
         <input onClick={this.handleDateChange} type="submit" value="Submit" className='btn btn-success btn-block' />  
-        <button onClick={this.saveJson}>SAVE to LocalStorage</button> 
-        <button onClick={this.loadJson}>LOAD to LocalStorage</button> 
       </div>
       </form>
     );
   }  
 }
+//<button onClick={this.saveJson}>SAVE to LocalStorage</button> 
+//<button onClick={this.loadJson}>LOAD to LocalStorage</button> 
+//<button download={`data.json`} onClick={this.jsjQuery} href={this.state.data}>LOAD to LocalStorage</button> 
+//<button download={`my_exported_file.txt`} onClick={this.downloadLink} href={``}>LOAD to LocalStorage</button> 
+
 
 class RegistrationForm extends React.Component {
   constructor(props) {
@@ -447,7 +495,8 @@ my two mistresses: what a beast am I to slack it!`,
       listItems:[],
       //date:'',
       date:new Date(),
-      wordsFromLoadedText:[],
+      wordsFromLoadedText:null,
+      blobData:[],
       textError:'',
       database:[],
       j:null,
@@ -463,6 +512,7 @@ my two mistresses: what a beast am I to slack it!`,
       bigDatabase:[],
       nameError: '',
       concatArray:null,
+      downloadArray:[],
       listOfWords:[],
       dateOfTheDay:[],
       datesFromDatabase:[],
@@ -585,11 +635,12 @@ my two mistresses: what a beast am I to slack it!`,
       //<p>{item}</p>
     //)));
     //const i = this.state;
-    const wordsFromLoadedText = [];
+    //const wordsFromLoadedText = [];
     const jsonArrayForMerge2=[]; 
     //const jsonArray = [];
     for (var i = 0; i < listOfWords.length; i++) {
       //const i = this.state;
+      const wordsFromLoadedText = this.state.wordsFromLoadedText;
       //const j=i;
       //alert(list[i]);
       const jsonArray = [];
@@ -623,8 +674,10 @@ my two mistresses: what a beast am I to slack it!`,
       //});
       // //=====================makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===// 
       //const jsonArrayForMerge2 = jsonArray; 
-      wordsFromLoadedText[i] = jsonArray; 
+      this.state.wordsFromLoadedText= []; //pb length array
+      this.state.wordsFromLoadedText[i]['word'] = this.state.listOfWords[i]; 
       //X (export) (wordsFromLoadedText -> items)
+      
       //soit exporter le fichier comme json et le réouvrir pour faire fonctionner l'application soit utiliser les mots de la base de donnée sauvegardée en mémoire pour exécuter l'application (option la plus rapide)
       //variable contenant une liste d'arrays devant être exportés au format JSON pour être lisibles par l'application il faudra donner des instructions à l'utilisateur pour sauvegarder le fichier dans une fonction 
       //alertwordsFromLoadedText[i);
@@ -740,6 +793,7 @@ my two mistresses: what a beast am I to slack it!`,
         
       }
     } 
+    
     //====:::::::::ENCODE BIG DATABASE AND EXPORT TO JSON:::::://
     //X (export) (database)
     // that's all -- make the same array without the date field----and export that file. It is ready for use by our application.
@@ -793,7 +847,12 @@ my two mistresses: what a beast am I to slack it!`,
     //this.setState({value: event.target.value});
   //}
   handleDateChange = date => this.setState({date});
-  
+  downloadItems = (event) => {
+    const downloadArray = this.state.wordsFromLoadedText; 
+    const blobData = new Blob([JSON.stringify(downloadArray,null,2)], {type: 'application/json'});
+    const url = window.URL.createObjectURL(blobData);
+    document.getElementById('download_items').href = url;
+  } 
   render() {
     return (
       <form onSubmit={this.handleSubmitText}>
@@ -828,7 +887,8 @@ my two mistresses: what a beast am I to slack it!`,
           <textarea placeholder="Enter a text" value={this.state.value} /> //onChange={this.handleChange} /> //value=this.state.value
         </label>
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
-         
+        <a id="download_items" onClick={this.downloadItems} download={`items.json`} href={``} >Download Words From The Text Just Loaded</a>
+ 
       </form>
     );
   }
