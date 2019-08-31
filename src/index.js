@@ -453,6 +453,8 @@ my two mistresses: what a beast am I to slack it!`,
 
         //const l =k;
       const duplicate = 0;
+        //if (this.state.database && this.state.database.length) {
+   //TO DO modify if statement to meet requirements of array length
       if (database.length > 0) { 
         for (let k = 0; k < database.length; k++) { // database is the big database
           if (database[k]['word'] === jsonArray['word'])  {
@@ -493,7 +495,7 @@ my two mistresses: what a beast am I to slack it!`,
           database[0]['dates'] = jsonArray['dates'];
         }
  
-        alert(database[0]['word']);
+        //alert(database[0]['word']);
         
         //jsonArray['word'] = listOfWords[i];  
         //jsonArray['id'] = i;
