@@ -10,6 +10,7 @@ const s = document.createElement("script");
 s.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js";
 s.onload = function(e){ /* now that its loaded, do something */ }; 
 document.head.appendChild(s); 
+const LOCALSTORAGE_KEY = 'items';
 class BasicForm extends React.Component {
   constructor(props) {
     super(props);
@@ -246,23 +247,92 @@ class BasicForm extends React.Component {
 
 //ReactDOM.render(<BasicForm />, document.getElementById('root'));
 class DateForm extends React.Component {
-  state = {
-    date: new Date(),
-    selectedDate:'',
-    dateObject:null,
-    database:[],
-    dataEntry: []
+  constructor(props) {
+    super(props)
+    this.state = {
+      date: new Date(),
+      selectedDate:'',
+      dateObject:null,
+      database:[],
+      data:null,
+      json:null,
+      mydatabase:[],
+      dataEntry: []
+    }
+    this.json = {}  
   }
 
+  componentDidMount() {
+    //const database = this.state;
+    this.loadJson();
+    axios.get(`./database.json`)
+      .then(res => {
+        const database = res.data.items.map(obj => obj);
+        this.setState({ database });
+        alert(this.state.database[5]['dates']);
+        //console.log(items.find((o) => o.id === 2).name);
+        //console.log("mesg");
+      });
+    //axios.get(`./database.json`)
+    //fetch(`./database.json`)
+      //.then(response => response.json())
+      //.then(json => this.setState({ json }));
+      //{
+        //const database = res.data.data.children.map(obj => obj.data);
+        //this.setState({ database });
+      //});
 
+  }
+  validateJson = (json) => {
+    const validJson = this.state;
 
-  onChange = date => this.setState({ date })
+    try{
+      const validJson = JSON.stringify(this.state.json, null, 2);
+    } catch(e) {
+      throw e
+    }
+   
+    return validJson;
+
+  }
+
+  loadJson = () => {
+    const database = this.state;
+    const json = window.localStorage.getItem(LOCALSTORAGE_KEY) || JSON.stringify(database, null,2);
+    this.setState({ json });
+  }
+
+  saveJson = () => {
+    const validJson = this.validateJson(this.state.json);
+
+    if (!validJson) return;
+
+    window.localStorage.setItem(
+      LOCALSTORAGE_KEY,
+      validJson
+    )
+  }
+
+  handleJsonChange = e => this.setState({
+    json: this.state.database 
+  })
+  onChange = date => {
+    const database = this.state;
+    this.setState({ date });
+
+  }
   handleSubmitDate = date => {
+    //this.handleDateChange();
+    //const database = this.state;
+    this.setState({json: this.state.database});
+
+    //this.onChange();
     //X (import) (database)
     //this.setState({date});
     const database = this.state; //database is the loaded JSON array
     const dataEntry = this.state;
     //alert(this.state.date.getDate());
+    //const date = this.state;
     //const dateObject = this.state.date;
     this.state.selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
     
@@ -270,29 +340,32 @@ class DateForm extends React.Component {
     if (this.state.database && this.state.database.length) {
       if (this.state.database.length > 0) {
         for (let k = 0; k < this.state.database.length; k++) { // database is the big database
+        //this.state.database.map(line => {
+        //if (this.state.database.length > 6) {
+          //alert(this.state.database[49]['word']);
           if (this.state.database[k]['dates'].includes(this.state.selectedDate)) {
             if (this.state.dataEntry && this.state.dataEntry.length) {
               if (this.state.dataEntry.length > 0) {
                 const database = this.state;
                 const dataEntry=this.state;
-                dataEntry[dataEntry.length] = database[k];
+                dataEntry[dataEntry.length] = database.line;
                 dataEntry[dataEntry.length]['id'] = dataEntry.length;
                 delete(dataEntry[dataEntry.length]['dates']);
               } else if (this.state.dataEntry.length === 0) {
                 const database = this.state;
                 const dataEntry=this.state;
-                this.state.dataEntry[0] = database[k];
+                this.state.dataEntry[0] = database.line;
                 this.state.dataEntry[0]['id'] = 0;
                 delete(this.state.dataEntry[0]['dates']);
               }
             } else if (this.state.dataEntry === null) {
               const database = this.state;
               const dataEntry=[];
-              this.state.dataEntry[dataEntry.length] = database[k];
+              this.state.dataEntry[dataEntry.length] = database.line;
               this.state.dataEntry[0]['id'] = 0;
               delete(this.state.dataEntry[0]['dates']);
             }
-          
+            //alert(this.state.database); 
 
             //same conditions as those for database, but verifying the length of dataEntry array before appending items, and before exporting them as a json file
             //this.state.dataEntrythis.state.database[k] = ;
@@ -301,6 +374,7 @@ class DateForm extends React.Component {
         }
       }
     }
+
     //X (export) (dataEntry -> items)
   }
   render() {
@@ -312,7 +386,11 @@ class DateForm extends React.Component {
           value={this.state.date}
         />
       </div>
-      <input type="submit" value="Submit" className='btn btn-success btn-block' />  
+      <div>
+        <input onClick={this.handleDateChange} type="submit" value="Submit" className='btn btn-success btn-block' />  
+        <button onClick={this.saveJson}>SAVE to LocalStorage</button> 
+        <button onClick={this.loadJson}>LOAD to LocalStorage</button> 
+      </div>
       </form>
     );
   }  
@@ -500,7 +578,7 @@ my two mistresses: what a beast am I to slack it!`,
       //const jsonArray = this.setState({
         //word:
           //list[i],
-        //id:
+       //id:
           //i,
         //dates:
           //date
@@ -693,7 +771,7 @@ my two mistresses: what a beast am I to slack it!`,
   //handleChange = (event) => {
     //this.setState({value: event.target.value});
   //}
-  //handleDateChange = date => this.setState({date});
+  handleDateChange = date => this.setState({date});
   
   render() {
     return (
