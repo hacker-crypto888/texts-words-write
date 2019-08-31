@@ -248,34 +248,49 @@ class BasicForm extends React.Component {
 class DateForm extends React.Component {
   state = {
     date: new Date(),
+    selectedDate:'',
+    dateObject:null,
+    database:[],
     dataEntry: []
   }
 
+
+
   onChange = date => this.setState({ date })
   handleSubmitDate = date => {
+    //X (import) (database)
+    //this.setState({date});
     const database = this.state; //database is the loaded JSON array
     const dataEntry = this.state;
+    //alert(this.state.date.getDate());
+    //const dateObject = this.state.date;
+    this.state.selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+    
+    //alert(this.state.selectedDate);
     if (this.state.database && this.state.database.length) {
       if (this.state.database.length > 0) {
         for (let k = 0; k < this.state.database.length; k++) { // database is the big database
-          if (this.state.database[k]['dates'].includes(this.state.date)) {
+          if (this.state.database[k]['dates'].includes(this.state.selectedDate)) {
             if (this.state.dataEntry && this.state.dataEntry.length) {
               if (this.state.dataEntry.length > 0) {
                 const database = this.state;
                 const dataEntry=this.state;
                 dataEntry[dataEntry.length] = database[k];
                 dataEntry[dataEntry.length]['id'] = dataEntry.length;
+                delete(dataEntry[dataEntry.length]['dates']);
               } else if (this.state.dataEntry.length === 0) {
                 const database = this.state;
                 const dataEntry=this.state;
                 this.state.dataEntry[0] = database[k];
                 this.state.dataEntry[0]['id'] = 0;
+                delete(this.state.dataEntry[0]['dates']);
               }
             } else if (this.state.dataEntry === null) {
               const database = this.state;
               const dataEntry=[];
               this.state.dataEntry[dataEntry.length] = database[k];
               this.state.dataEntry[0]['id'] = 0;
+              delete(this.state.dataEntry[0]['dates']);
             }
           
 
@@ -286,6 +301,7 @@ class DateForm extends React.Component {
         }
       }
     }
+    //X (export) (dataEntry -> items)
   }
   render() {
     return (
@@ -437,6 +453,7 @@ my two mistresses: what a beast am I to slack it!`,
     //PREG SPLIT NO EMPTY = remove all punctuation signs and spaces and split into array of words
     //const list = this.state;
     const database = [];
+    //X (import) (database)
     //alert('database'+this.state.database);
     //const displayDate = '2019/05/05';
     //const date = new Date.now();
@@ -508,6 +525,7 @@ my two mistresses: what a beast am I to slack it!`,
       // //=====================makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===// 
       //const jsonArrayForMerge2 = jsonArray; 
       wordsFromLoadedText[i] = jsonArray; 
+      //X (export) (wordsFromLoadedText -> items)
       //soit exporter le fichier comme json et le réouvrir pour faire fonctionner l'application soit utiliser les mots de la base de donnée sauvegardée en mémoire pour exécuter l'application (option la plus rapide)
       //variable contenant une liste d'arrays devant être exportés au format JSON pour être lisibles par l'application il faudra donner des instructions à l'utilisateur pour sauvegarder le fichier dans une fonction 
       //alertwordsFromLoadedText[i);
@@ -536,9 +554,11 @@ my two mistresses: what a beast am I to slack it!`,
             if (this.state.database[k]['word'] === jsonArray['word'])  {
               if (this.state.database[k]['dates'].includes(this.state.displayDate)) {
       //==adds the date of today in the line of the duplicate in the big database==/
-                const date = new Date.now();
+                const date = new Date();
                 //const dateOfTheDay = [this.state.displayDate];
-                const dateOfTheDay = date.getMonth()+'/'+date.getDate()+'/'+date.getFullYear();
+                const dateOfTheDay = [this.state];
+                this.state.dateOfTheDay = [(this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear()];
+
                 const datesFromDatabase = this.state.database[k]['dates'];
                 const updateDates = dateOfTheDay.concat(datesFromDatabase);
                 this.state.database[k]['dates'] = updateDates;
@@ -622,6 +642,7 @@ my two mistresses: what a beast am I to slack it!`,
       }
     } 
     //====:::::::::ENCODE BIG DATABASE AND EXPORT TO JSON:::::://
+    //X (export) (database)
     // that's all -- make the same array without the date field----and export that file. It is ready for use by our application.
     //see above
 
