@@ -269,7 +269,7 @@ class DateForm extends React.Component {
       .then(res => {
         const database = res.data.items.map(obj => obj);
         this.setState({ database });
-        alert(this.state.database[5]['dates']);
+        //alert(this.state.database[5]['dates']);
         //console.log(items.find((o) => o.id === 2).name);
         //console.log("mesg");
       });
@@ -321,12 +321,23 @@ class DateForm extends React.Component {
     this.setState({ date });
 
   }
+  importDatabase = event => {
+    axios.get(`./database.json`)
+      .then(res => {
+        const database = res.data.items.map(obj => obj);
+        this.setState({ database });
+        //alert(this.state.database[5]['dates']);
+        //console.log(items.find((o) => o.id === 2).name);
+        //console.log("mesg");
+      });
+  }
   handleSubmitDate = date => {
     //this.handleDateChange();
     //const database = this.state;
     this.setState({json: this.state.database});
-
+ 
     //this.onChange();
+    this.importDatabase();
     //X (import) (database)
     //this.setState({date});
     const database = this.state; //database is the loaded JSON array
@@ -509,8 +520,8 @@ my two mistresses: what a beast am I to slack it!`,
     const { email } = this.state;
     this.setState({
       emailError:
-        email.length > 3 ? null : 'Email must be longer than 3 characters'
-    });
+        email.length > 3 ? null : 'Email must be longer than 3 characters' 
+      });
   }
   //validateText = () => {
   //  const { text } = this.state;
@@ -518,7 +529,16 @@ my two mistresses: what a beast am I to slack it!`,
   //    textError:
   //      text.length > 3 ? null : 'Email must be longer than 3 characters'
   //  });
- 
+  importAllWords = (event) => {
+    axios.get(`./database.json`)
+      .then(res => {
+        const database = res.data.items.map(obj => obj);
+        this.setState({ database });
+        //console.log(.find((o) => o.id === 2).name);
+        //console.log("mesg");
+      });
+  }
+
   handleText = (event) => {
     //event.preventDefault();
     alert(`The text you \n
@@ -531,6 +551,7 @@ my two mistresses: what a beast am I to slack it!`,
     //PREG SPLIT NO EMPTY = remove all punctuation signs and spaces and split into array of words
     //const list = this.state;
     const database = [];
+    this.importAllWords();
     //X (import) (database)
     //alert('database'+this.state.database);
     //const displayDate = '2019/05/05';
