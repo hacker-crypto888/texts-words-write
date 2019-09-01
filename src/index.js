@@ -383,12 +383,12 @@ class DateForm extends React.Component {
               } else if (this.state.dataEntry.length === 0) {
                 const database = this.state;
                 const dataEntry=this.state;
-                this.state.dataEntry[0] = this.state.database[k];
+                this.state.dataEntry[0] = this.state.database[k]; //i assume the line of the database array has three columns for a word
                 this.state.dataEntry[0]['id'] = 0;
                 delete(this.state.dataEntry[0]['dates']);
               }
             } else if (this.state.dataEntry === null) {
-              const database = this.state;
+              const database = this.state.database;
               const dataEntry=[];
               this.state.dataEntry[dataEntry.length] = database[k];
               this.state.dataEntry[0]['id'] = 0;
@@ -516,6 +516,7 @@ my two mistresses: what a beast am I to slack it!`,
       listOfWords:[],
       dateOfTheDay:[],
       datesFromDatabase:[],
+      loadedText:[],
       concatAll:null,
       displayDate:null,
       updateDates:[],
@@ -645,9 +646,10 @@ my two mistresses: what a beast am I to slack it!`,
       //alert(list[i]);
       const jsonArray = [];
       jsonArray['word'] = listOfWords[i];  
-      //alert(jsonArray['word']); 
+      //alert(); 
       jsonArray['id'] = i;
       //const jsonArray = this.setState({
+      //const loadedText = this.state;
         //word:
           //list[i],
        //id:
@@ -674,8 +676,26 @@ my two mistresses: what a beast am I to slack it!`,
       //});
       // //=====================makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===// 
       //const jsonArrayForMerge2 = jsonArray; 
-      this.state.wordsFromLoadedText= []; //pb length array
-      this.state.wordsFromLoadedText[i]['word'] = this.state.listOfWords[i]; 
+      //this.state.wordsFromLoadedText= []; //pb length array
+      if (this.state.loadedText && this.state.loadedText.length) {
+        const i = this.state;
+        const loadedText = this.state;
+        loadedText['items'][i] = [];
+	this.state.loadedText['items'][i]['word'] = this.state.listOfWords[this.state.i];
+        //console.log(this
+
+      } 
+      if (this.state.loadedText === null) {
+        const i = this.state;
+        const loadedText = this.state;
+        loadedText['items'][0] = [];
+        loadedText['items'][0] = jsonArray;
+        //this.state.loadedText['items'][0]['word'] = listOfWords[this.state.i];
+        //this.state.loadedText['items'][0]['id'] = this.state.i;
+        //console.log(this.state.listOfWords[this.state.i]);
+        console.log(this.state.loadedText['items'][this.state.i]['word']);
+      }
+        
       //X (export) (wordsFromLoadedText -> items)
       
       //soit exporter le fichier comme json et le réouvrir pour faire fonctionner l'application soit utiliser les mots de la base de donnée sauvegardée en mémoire pour exécuter l'application (option la plus rapide)
@@ -848,10 +868,13 @@ my two mistresses: what a beast am I to slack it!`,
   //}
   handleDateChange = date => this.setState({date});
   downloadItems = (event) => {
-    const downloadArray = this.state.wordsFromLoadedText; 
-    const blobData = new Blob([JSON.stringify(downloadArray,null,2)], {type: 'application/json'});
-    const url = window.URL.createObjectURL(blobData);
-    document.getElementById('download_items').href = url;
+    //this.preventDefault();
+    if (this.state.loadedText && this.state.loadedText.length === this.state.listOfWords.length) {
+      const downloadArray = this.state.loadedText; 
+      const blobData = new Blob([JSON.stringify(downloadArray,null,2)], {type: 'application/json'});
+      const url = window.URL.createObjectURL(blobData);
+      document.getElementById('download_items').href = url;
+    }
   } 
   render() {
     return (
