@@ -515,14 +515,35 @@ my two mistresses: what a beast am I to slack it!`,
       dateOfTheDay:[],
       datesFromDatabase:[],
       loadedText:[],
+      m: null,
+      n: null,
       concatAll:null,
       displayDate:null,
       updateDates:[],
+      concatData:null,
+      jsonDataItems:[],
+      jsonData:[],
+      updateDates:[],
+      Words:[],
+      map:null,
+      items:null,
       duplicate:null,
       arrays:[],
+      wordsIdMap:new Map(),
+      jsonItemsMap:new Map(),
+      newItem:null,
       testdatabase:[],
       seconddatabase:[],
+      arrayToJson:null,
+      jsonArray:{},
+      convertToJson:null,
+      setWordId:new Set(),
+      result:[],
+      replacer:null,
+      concatOldItems:[],
+      concatNewItem:[],
       x:[],
+      a:null,
       emailError: '',
       dt:null,
       file:null,
@@ -531,8 +552,11 @@ my two mistresses: what a beast am I to slack it!`,
       img_src:null,
       objectURL:null,
       myBlob:null,
-      myImage:null
-      
+      myImage:null,
+      noFileType:null,
+      fileName:null,
+      fileDownload:null,
+      fileUpload:null
     };
     //this.handleChange = this.handleChange.bind(this);
     this.handleSubmitText = this.handleSubmitText.bind(this);
@@ -541,6 +565,8 @@ my two mistresses: what a beast am I to slack it!`,
   componentDidMount() {
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
+        this.a.removeAttribute("href");
+
 
   }
 
@@ -584,75 +610,35 @@ my two mistresses: what a beast am I to slack it!`,
            entered: \n` + this.state.value);
     const importText = this.state.value;
     const database = [];
-    this.importAllWords();
+    //this.importAllWords();
     const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
     const listOfWords = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
       return element !== null;
     });
-    const jsonArrayForMerge2=[]; 
-    for (var i = 0; i < listOfWords.length; i++) {
-      const wordsFromLoadedText = this.state.wordsFromLoadedText;
-      const jsonArray = [];
-      jsonArray['word'] = listOfWords[i];  
-      jsonArray['id'] = i;
-      if (this.state.loadedText && this.state.loadedText.length) {
-        const i = this.state;
-        const loadedText = this.state;
-        loadedText['items'][i] = [];
-	this.state.loadedText['items'][i]['word'] = this.state.listOfWords[this.state.i];
-      } 
-      if (this.state.loadedText === null) {
-        const i = this.state;
-        const loadedText = this.state;
-        loadedText['items'][0] = [];
-        loadedText['items'][0] = jsonArray;
-        console.log(this.state.loadedText['items'][this.state.i]['word']);
+    //create the file to make th eapp work now
+    const setWordId = new Set();
+    for (var i=0; i < listOfWords.length; i++) {
+      if (listOfWords[i] !== "") {
+        setWordId.add({word: listOfWords[i], id: setWordId.size});
+        console.log(setWordId);
       }
-        
-      jsonArray['dates'] = [this.state.displayDate];
-      const duplicate = 0;
-      if (this.state.database && this.state.database.length) {
-        if (this.state.database.length > 0) {
-          for (let k = 0; k < this.state.database.length; k++) { // database is the big database
-            if (this.state.database[k]['word'] === jsonArray['word'])  {
-              if (this.state.database[k]['dates'].includes(this.state.displayDate)) {
-                const date = new Date();
-                const dateOfTheDay = [this.state];
-                this.state.dateOfTheDay = [(this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear()];
 
-                const datesFromDatabase = this.state.database[k]['dates'];
-                const updateDates = dateOfTheDay.concat(datesFromDatabase);
-                this.state.database[k]['dates'] = updateDates;
-                const duplicate=1;
-              }
-            }
-          }
-        }
-      } 
-      if (duplicate === 0) {
-        if ((this.state.database) || (this.state.database.length)) {
-          if (this.state.database.length > 0) {
-            const database = this.state; 
+    }
+    const jsonItemsMap = new Map();
+    jsonItemsMap.set('items', [...setWordId]);
+    const jsonData = Object.fromEntries(jsonItemsMap.entries());
+    alert([...setWordId]);
+    const result = {};
+    this.state.result = [...setWordId];
+    console.log(this.state.result);
+    const jsonArray = {["items"]: [...setWordId]};
+    this.a.setAttribute("href","items.json");
 
-            database[database.length] = jsonArray;
-            database[database.length]['id'] = this.state.database.length; //the id is equal to the length of the array
-          } else if (this.state.database.length === 0) {
-            const database = this.state;
-            this.state.database[0] = jsonArray;
-            this.state.database[0]['id'] = 0;
-          }
-        } else if (this.state.database === null) {
-        
-          const database = this.state; //big database 
-          this.state.database[0] = jsonArray;
-          this.state.database[0]['id'] = 0;
-        }
-      }
-    } 
   } 
 
   handleSubmitText = event => {
-    const { name, email } = this.state;
+    const { name, email, value } = this.state;
+    //this.setState({value: event.target.value});
     event.preventDefault();
     this.handleText();
   }
@@ -660,12 +646,14 @@ my two mistresses: what a beast am I to slack it!`,
   handleDateChange = date => this.setState({date});
 
   downloadItems = (event) => {
-    if (this.state.loadedText && this.state.loadedText.length === this.state.listOfWords.length) {
-      const downloadArray = this.state.loadedText; 
-      const blobData = new Blob([JSON.stringify(downloadArray,null,2)], {type: 'application/json'});
-      const url = window.URL.createObjectURL(blobData);
-      document.getElementById('download_items').href = url;
-    }
+    console.log(this.state.result);
+    const result = this.state;
+    const jsonArray = this.state;
+    const setWordId = this.state;
+    const downloadArray = this.state.result;
+    const blobData = new Blob([JSON.stringify({"items": this.state.result},null,2)], {type: 'application/json'});
+    const url = window.URL.createObjectURL(blobData);
+    document.getElementById('download_items').href = url;
   } 
 
   windowdrop = (event) => {
@@ -702,47 +690,126 @@ my two mistresses: what a beast am I to slack it!`,
                         console.log(files[0].type);
                         console.log(files[0].name);
 			this.dropbox(files);
+			//===JSON UPLOAD===//
+			for (let i=0; i<files.length; i++) {
+                            const file = files[i];
+			    if (file.name === "database.json") {
+			    	this.sendFile(file);
+			    }
+			}
+			//===END JSON UPLOAD===//
     }
+  }
+
+  sendFile = (file) => {
+    //console.log(file.name);
+    //const uri = `index.php`;
+    //const xhr = new XMLHttpRequest();
+    const fd = new FormData();
+    
+    //xhr.open("POST", uri, true);
+    //xhr.onreadystatechange = function() {
+    //    if (xhr.readyState == 4 && xhr.status == 200) {
+    //        alert(xhr.responseText); // handle response.
+    //    }
+    //};
+    fd.append('myFile', file);
+    // Initiate a multipart/form-data upload
+    //xhr.send(fd);
+    //console.log(fd.get('myFile'));
+    //console.log(xhr[0]);
+    const options = {
+      method: 'POST',
+      body: fd
+    };
+    fetch(URL.createObjectURL(file))
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(myBlob) {
+      console.log(myBlob);
+      //console.log(URL.createObjectURL(myBlob));
+      //console.log(myBlob);
+    });
+    this.incrementDatabase();
   }
 
   dropbox = (files) => {
 		for (let i = 0; i < files.length; i++) {
 			const file = files[i];
 			
-			if (!file.type.startsWith('image/')){ continue }
-			
+			if (!file.type.startsWith('image/') && !file.type.startsWith('application/') && !file.type.startsWith('text/') && !file.type ===('')){ continue }
 			const img = document.createElement("img");
 			img.classList.add("obj");
+			const myImage = new Image(60,60);
+			myImage.src = `application.png`;
+			const noFileType = new Image(60,60);
+			noFileType.src = `notype.png`;
 
-			img.file = files[0];
+			img.file = file;
 			
 
                         img.height = 60;
                         img.width = 60;
 
 
-//fetch(`application.png`)}
-//				.then(function(response) { return response.blob(); console.log(file.type); })
-//				.then(function(myBlob) { 
-//					const objectURL = new Blob(myBlob.toDataURL("image/png")); 
-//					img.file = objectURL; })
-//			};
-			//if (file.type.startsWith('image/')){ continue }
-			//if (file.type.startsWith('image/')){ continue }
 			
-			const preview = document.getElementById("dropzone");
-			preview.appendChild(img); // Assuming that "preview" is the div output where the content will be displayed.
+			const preview = document.getElementById("preview");
+			//const preview = document.getElementById("dropzone");
+			if(file.type.startsWith('image/')) { preview.appendChild(img); } // Assuming that "preview" is the div output where the content will be displayed.
+			if(file.type.startsWith('application/')) { preview.appendChild(myImage); } // Assuming that "preview" is the div output where the content will be displayed.
+			if(file.type.startsWith('text/')) { preview.appendChild(myImage); } // Assuming that "preview" is the div output where the content will be displayed.
+			if(file.type===('')) { preview.appendChild(noFileType); } // Assuming that "preview" is the div output where the content will be displayed.
+                        //===FILE PREVIEW AFTER DROP==//
+			const fileName = document.createElement('a');
+			fileName.textContent = file.name+ ' (preview)';
+			fileName.href = URL.createObjectURL(file);
+			fileName.target = "_blank";
+			preview.appendChild(fileName);
+                        //===END FILE PREVIEW AFTER DROP==//
+
+			//====UPLOAD JSON=====//
+			const fileUpload = document.createElement('a');
+			//====END UPLOAD JSON=====//
 			
+			//====DOWNLOAD JSON===//
+			//const fileDownload = document.createElement('a');
+    			//const blobData = new Blob([JSON.stringify({"items": this.state.result},null,2)], {type: 'application/json'}); /* the blob must contains database content */
+			//fileDownload.href = window.URL.createObjectURL(blobData);
+			//fileDownload.download = file;
+			//====END DOWNLOAD JSON===//
+
+			preview.appendChild(document.createElement('br'));
 			const reader = new FileReader();
 			reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img); //if the file is an image, insert the content of the imageas the image in the dropbox
 			reader.readAsDataURL(file);
 		}
   }
 
+  previewFile = (file) => {
+    
+  }
+
+  handleTextChange = (event) => {
+    this.setState({
+      value:
+        event.target.value
+    });
+  }
+
+  //incrementDatabase = (event) => {
+  //  const nbDatabase = this.state;
+  //  this.setState({
+  //    nbDatabase:
+  //      this.nbDatabase + 1
+  //  });
+  //}
+
   render() {
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmitText}>
-  			<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
+  	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
+        <div id={`preview`}></div>
         <div className='form-group'>
           <label htmlFor='name'>Name</label>
           <input
@@ -771,11 +838,11 @@ my two mistresses: what a beast am I to slack it!`,
         </div>
         <label>
           Essay:
-          <textarea placeholder="Enter a text" value={this.state.value} /> //onChange={this.handleChange} /> //value=this.state.value
+          <textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
         </label>
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
-        <a id="download_items" onClick={this.downloadItems} download={`items.json`} href={``} >Download Words From The Text Just Loaded</a>
-        <a id="application" download={`application.png`} href={``} >Download Words From The Text Just Loaded</a>
+        <a id="download_items" ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} >Download Words From The Text Just Loaded</a>
+
  
       </form>
     );
