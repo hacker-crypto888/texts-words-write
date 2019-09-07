@@ -493,14 +493,12 @@ my two mistresses: what a beast am I to slack it!`,
       jsonArrayArray:[],
       jsonArrayForMerge2:[],
       listItems:[],
-      //date:'',
       date:new Date(),
       wordsFromLoadedText:null,
       blobData:[],
       textError:'',
       database:[],
       j:null,
-      //printTests:'',
       jsonData:[],
       today:'',
       word:{},
@@ -525,7 +523,15 @@ my two mistresses: what a beast am I to slack it!`,
       testdatabase:[],
       seconddatabase:[],
       x:[],
-      emailError: ''
+      emailError: '',
+      dt:null,
+      file:null,
+      preview:null,
+      img:null,
+      img_src:null,
+      objectURL:null,
+      myBlob:null,
+      myImage:null
       
     };
     //this.handleChange = this.handleChange.bind(this);
@@ -533,14 +539,9 @@ my two mistresses: what a beast am I to slack it!`,
   }
 
   componentDidMount() {
-    //const that = this;
-    //const today = new Date();
-    //const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-    
-    //that.setState({
-    //  date:
-    //    date
-    //});
+    window.addEventListener('dragover',this.windowdragover);
+    window.addEventListener('drop',this.windowdrop);
+
   }
 
   handleNameChange = event => {
@@ -548,10 +549,6 @@ my two mistresses: what a beast am I to slack it!`,
       this.validateName();
     });
   };
-
-  //handleTextChange = event => {
-  //  this.setState({ text: event.target.value });
-  //};
 
   handleEmailChange = event => {
     this.setState({ email: event.target.value }, () => {
@@ -574,160 +571,52 @@ my two mistresses: what a beast am I to slack it!`,
         email.length > 3 ? null : 'Email must be longer than 3 characters' 
       });
   }
-  //validateText = () => {
-  //  const { text } = this.state;
-  //  this.setState({
-  //    textError:
-  //      text.length > 3 ? null : 'Email must be longer than 3 characters'
-  //  });
   importAllWords = (event) => {
     axios.get(`./database.json`)
       .then(res => {
         const database = res.data.items.map(obj => obj);
         this.setState({ database });
-        //console.log(.find((o) => o.id === 2).name);
-        //console.log("mesg");
       });
   }
 
   handleText = (event) => {
-    //event.preventDefault();
     alert(`The text you \n
            entered: \n` + this.state.value);
-    //======================SUBMIT TEXT FUNCTION ===========================//
-    //assign value of entered text to variable
     const importText = this.state.value;
-    //=======================	END SUBMIT TEXT FUNCTION =================//
-    //==============ADD NEW WORDS TO DATABASE============================//
-    //PREG SPLIT NO EMPTY = remove all punctuation signs and spaces and split into array of words
-    //const list = this.state;
     const database = [];
     this.importAllWords();
-    //X (import) (database)
-    //alert('database'+this.state.database);
-    //const displayDate = '2019/05/05';
-    //const date = new Date.now();
-    //alert(this.state.date);
-    //const x = this.state;
-    //const jsonArrayArray = this.state;
-    //const list = 
-    // array unique = only keep one item of each value
     const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-    //x(list);
-     
-    // second verification = remove all additional signs of each word (keep only a-z and A-Z character of the words)
     const listOfWords = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
       return element !== null;
     });
-    //alert(list[0]);
-    //alert(list[10]);
-    //alert(list[20]);
-    // put all the words in lower cases
-    //list = list;
-
-    //remove the "null" from the array
-    //list = list.filter(function( element ) {
-      //return element !== null;
-    //});
-    // for each word, 
-
-    //make an array containing date, id and word save each array to a bigger array then save this bigger array in a file and keep this array --- that will be needed for what comes next
-    //alert(this.state.list.map(item => (
-      //<p>{item}</p>
-    //)));
-    //const i = this.state;
-    //const wordsFromLoadedText = [];
     const jsonArrayForMerge2=[]; 
-    //const jsonArray = [];
     for (var i = 0; i < listOfWords.length; i++) {
-      //const i = this.state;
       const wordsFromLoadedText = this.state.wordsFromLoadedText;
-      //const j=i;
-      //alert(list[i]);
       const jsonArray = [];
       jsonArray['word'] = listOfWords[i];  
-      //alert(); 
       jsonArray['id'] = i;
-      //const jsonArray = this.setState({
-      //const loadedText = this.state;
-        //word:
-          //list[i],
-       //id:
-          //i,
-        //dates:
-          //date
-      //});
-      //const concat = []; 
-      //concat.concat(word);
-      //alert(concat,'word');
-      //this.setState({printTests: i});
-    // Runs 5 times, with values of step 0 through 4.
-
-      //const jsonArray = this.state;
-      //const jsonArray=this.state;
-      //alert(`{list[{i}]}`);
-      //alert(list[i]);
-      //const jsonArray['word']=list[i];
-      //jsonArray.setState({
-        //word:
-          //list[j],
-        //id:
-          //j,
-      //});
-      // //=====================makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===// 
-      //const jsonArrayForMerge2 = jsonArray; 
-      //this.state.wordsFromLoadedText= []; //pb length array
       if (this.state.loadedText && this.state.loadedText.length) {
         const i = this.state;
         const loadedText = this.state;
         loadedText['items'][i] = [];
 	this.state.loadedText['items'][i]['word'] = this.state.listOfWords[this.state.i];
-        //console.log(this
-
       } 
       if (this.state.loadedText === null) {
         const i = this.state;
         const loadedText = this.state;
         loadedText['items'][0] = [];
         loadedText['items'][0] = jsonArray;
-        //this.state.loadedText['items'][0]['word'] = listOfWords[this.state.i];
-        //this.state.loadedText['items'][0]['id'] = this.state.i;
-        //console.log(this.state.listOfWords[this.state.i]);
         console.log(this.state.loadedText['items'][this.state.i]['word']);
       }
         
-      //X (export) (wordsFromLoadedText -> items)
-      
-      //soit exporter le fichier comme json et le réouvrir pour faire fonctionner l'application soit utiliser les mots de la base de donnée sauvegardée en mémoire pour exécuter l'application (option la plus rapide)
-      //variable contenant une liste d'arrays devant être exportés au format JSON pour être lisibles par l'application il faudra donner des instructions à l'utilisateur pour sauvegarder le fichier dans une fonction 
-      //alertwordsFromLoadedText[i);
       jsonArray['dates'] = [this.state.displayDate];
-      //alert(jsonArray['dates']);
-      //for (var k = 0; k < jsonArray.length; k++) {
-        //const l=k;
-        //alert(jsonArray[l]); 
-      //}
-      //=====================end makes a list of the words to be played today when the user chooses the option Play the words of text just loaded===//
-
-      //============ adds the text of today in the big database =====//
-
-          //console.log('Walking east one step');
-
-        //const l =k;
       const duplicate = 0;
-      //if (this.state.database && this.state.database.length) {
-      //TO DO write the functions corresponding to the clicking of the submit date button
-      //DONE set api for date insertions with charts of each month like a calendar
-      //TO DO write the upload and export api functions in the corresponding functions
-      //if (database.length > 0) { 
       if (this.state.database && this.state.database.length) {
         if (this.state.database.length > 0) {
           for (let k = 0; k < this.state.database.length; k++) { // database is the big database
             if (this.state.database[k]['word'] === jsonArray['word'])  {
               if (this.state.database[k]['dates'].includes(this.state.displayDate)) {
-      //==adds the date of today in the line of the duplicate in the big database==/
                 const date = new Date();
-                //const dateOfTheDay = [this.state.displayDate];
                 const dateOfTheDay = [this.state];
                 this.state.dateOfTheDay = [(this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear()];
 
@@ -735,140 +624,42 @@ my two mistresses: what a beast am I to slack it!`,
                 const updateDates = dateOfTheDay.concat(datesFromDatabase);
                 this.state.database[k]['dates'] = updateDates;
                 const duplicate=1;
-                //alert('dates');
               }
             }
           }
         }
-      //============end adds the date of today in the right line of the duplicate in the big database====/
       } 
-        //===========creates a new line in the big database============/
-        //jsonArray['dates']= [date]; //date is date of the day, see DidMountComponent 
-        //alert(JSON.stringify(jsonArray['dates']));
-        //alert(jsonArray['dates'][0]);
-        //alert(jsonArray['id']);
-        ///const jsonArray = [];
       if (duplicate === 0) {
-        //const jsonArray = this.state;
-
-
-        //const listOfWords = this.state;
-        //const i = this.state; 
         if ((this.state.database) || (this.state.database.length)) {
           if (this.state.database.length > 0) {
-            //const databaseLength = database.length;
             const database = this.state; 
-            //alert('length bigger than 0', database.length);
 
             database[database.length] = jsonArray;
             database[database.length]['id'] = this.state.database.length; //the id is equal to the length of the array
-            //alert(this.state.database.length);
-            //database[database.length]['id'] = jsonArray['id'];
-            //database[database.length]['dates'] = jsonArray['dates'];
           } else if (this.state.database.length === 0) {
-            //const database = this.state; 
-            //alert('length smaller than 0');
             const database = this.state;
-            //const seconddatabase = [['']];
-            //const testdatabase = [['']];
-            //const database = [].concat(seconddatabase, testdatabase);
-            //database[0] = [];
             this.state.database[0] = jsonArray;
             this.state.database[0]['id'] = 0;
-            //alert(this.state.database.length)
-            //alert(this.state.database[0]['word']);
-            //alert(database[0]['word']);
-            //database[0]['word'] = jsonArray['word'];
-            //database[0]['id'] = jsonArray['id'];
-            //alert(jsonArray['id']);
-            //database[0]['dates'] = jsonArray['dates'];
           }
         } else if (this.state.database === null) {
         
-          //alert('null array');
           const database = this.state; //big database 
-          //database[0] = [];
           this.state.database[0] = jsonArray;
           this.state.database[0]['id'] = 0;
         }
-
-        //alert(database[0]['word']);
-        
-        //jsonArray['word'] = listOfWords[i];  
-        //jsonArray['id'] = i;
-        //jsonArray['dates'] = [this.state.date];
-
-        //const bigDatabase = this.state.database;
-        //const concatAll = [].concat(bigDatabase, concatArray);
-        //alert(jsonArray['word']);
-        //const database = concatAll;
-        //alert(database);
-        //jsonData[k] = jsonArray;
-        //jsonArrayArray = [{jsonArray}];
-        //database.concat(jsonArray);
-        //the variable database contains all the arrays when the button exported is clicked it good be ok to make a download of the file available to the user
-        //===========end creates a new line in the big database============/
-        //============end adds the text of today in the big database =====//
-          
-        
       }
     } 
-    
-    //====:::::::::ENCODE BIG DATABASE AND EXPORT TO JSON:::::://
-    //X (export) (database)
-    // that's all -- make the same array without the date field----and export that file. It is ready for use by our application.
-    //see above
-
-    //if this word and date already existed in the file only add the date to the word that already exists 
-    //not done yet
-    // the user can upload and download the database JSON file with ajax and apis....
-    //create two buttons as in my first html page in php
-    //first button you can download big database and file for the app
-    //second button you can download words selected by date
-    //====:::::::::END ENCODE BIG DATABASE AND EXPORT TO JSON:::::://
-    //==============END ADD NEW WORDS TO DATABASE============================//
-    //==============DATABASE WITH DATA ENTRY DATES======================//
-    //import the big database and keep only the items with the data entry date the user specified in the submission form
-    //prerequisites: to have saved the big database as a file on the computer beforehand
-    //- integrate the function containing the actions taken to loaded the audio files as an integrated component in another component (so that our variables remain accessible by our application)
-    //and to have reloaded it on the server
-    //importedJsonDatabase 
-    //for each line it dates columns includes data entry date
-    // save the line to an other array 
-    //this new array serves as audio player displayer for the app
-    
-    //npm i react-datepicker
-    //check if the database array is readable from the new function created linked with the click of the button to find words from the database by date
-    //second install react date picker and check the validity of the format of the date with the format of the date in the big database array
-    //lastly, if everything works fine, bind the picking of the date with the selection of the right words (most by the use of an iterative array)
-    //==============END DATABASE WITH DATA ENTRY DATES======================//
-
-
   } 
-  //}
-
 
   handleSubmitText = event => {
-
     const { name, email } = this.state;
-    //alert(`Your state values: \n 
-    //        name: ${name} \n 
-    //const date = this.state;
-    //this.setState({
-    //  printTests:
-    //    date
-    //});
-//        email: ${email} \n` + this.state.value);
     event.preventDefault();
     this.handleText();
-    //event.preventDefault();
   }
-  //handleChange = (event) => {
-    //this.setState({value: event.target.value});
-  //}
+
   handleDateChange = date => this.setState({date});
+
   downloadItems = (event) => {
-    //this.preventDefault();
     if (this.state.loadedText && this.state.loadedText.length === this.state.listOfWords.length) {
       const downloadArray = this.state.loadedText; 
       const blobData = new Blob([JSON.stringify(downloadArray,null,2)], {type: 'application/json'});
@@ -876,9 +667,82 @@ my two mistresses: what a beast am I to slack it!`,
       document.getElementById('download_items').href = url;
     }
   } 
+
+  windowdrop = (event) => {
+    event.preventDefault();
+  }
+
+  windowdragover = (event) => {
+    event.preventDefault();
+  }
+
+  onDragEnter = (event) => {
+		const dt = event.dataTransfer;
+    if(dt.files.length) {
+			event.stopPropagation();
+			event.preventDefault();
+    }
+  }
+
+  onDragOver = (event) => {
+		const dt = event.dataTransfer;
+    if(dt.files.length) {
+			event.stopPropagation();
+			event.preventDefault();
+    }
+  }
+
+  onDrop = (event) => {
+		event.stopPropagation();
+		event.preventDefault();
+		const dt = event.dataTransfer;
+
+    if(dt.files.length) {
+			const files = dt.files;
+                        console.log(files[0].type);
+                        console.log(files[0].name);
+			this.dropbox(files);
+    }
+  }
+
+  dropbox = (files) => {
+		for (let i = 0; i < files.length; i++) {
+			const file = files[i];
+			
+			if (!file.type.startsWith('image/')){ continue }
+			
+			const img = document.createElement("img");
+			img.classList.add("obj");
+
+			img.file = files[0];
+			
+
+                        img.height = 60;
+                        img.width = 60;
+
+
+//fetch(`application.png`)}
+//				.then(function(response) { return response.blob(); console.log(file.type); })
+//				.then(function(myBlob) { 
+//					const objectURL = new Blob(myBlob.toDataURL("image/png")); 
+//					img.file = objectURL; })
+//			};
+			//if (file.type.startsWith('image/')){ continue }
+			//if (file.type.startsWith('image/')){ continue }
+			
+			const preview = document.getElementById("dropzone");
+			preview.appendChild(img); // Assuming that "preview" is the div output where the content will be displayed.
+			
+			const reader = new FileReader();
+			reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img); //if the file is an image, insert the content of the imageas the image in the dropbox
+			reader.readAsDataURL(file);
+		}
+  }
+
   render() {
     return (
-      <form onSubmit={this.handleSubmitText}>
+      <form enctype={`multipart/form-data`} onSubmit={this.handleSubmitText}>
+  			<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div className='form-group'>
           <label htmlFor='name'>Name</label>
           <input
@@ -911,13 +775,11 @@ my two mistresses: what a beast am I to slack it!`,
         </label>
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
         <a id="download_items" onClick={this.downloadItems} download={`items.json`} href={``} >Download Words From The Text Just Loaded</a>
+        <a id="application" download={`application.png`} href={``} >Download Words From The Text Just Loaded</a>
  
       </form>
     );
   }
 }
 
-//button type'submit' className'btn btn-success btn-block'
-          //Submit
-        //button
 ReactDOM.render(<BasicForm />, document.getElementById('root'));
