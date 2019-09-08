@@ -405,7 +405,7 @@ class DateForm extends React.Component {
     }
     //$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#container');
 
-  }
+ }
   download = (event) => {
     const obj = {a: 123, b: "4 5 6"};
     const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
@@ -435,7 +435,7 @@ class DateForm extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmitDate}>
-      <a id="download_link" onClick={this.downloadLink} download="items.json" href="" >Download as Text File</a>
+      <label>Load words by date</label>
       <div>
         <DatePicker
           onChange={this.onChange}
@@ -563,7 +563,11 @@ my two mistresses: what a beast am I to slack it!`,
       bigDatabase:null,
       uniqueArray:null,
       lineOfArray:null,
-      currentText:null
+      currentText:null,
+      jsonSecondConfirm:false,
+      databaseIsLoaded:false,
+      droppedFiles:null,
+      loadByDateConfirm:2
     };
     //this.handleChange = this.handleChange.bind(this);
     this.handleSubmitText = this.handleSubmitText.bind(this);
@@ -573,6 +577,7 @@ my two mistresses: what a beast am I to slack it!`,
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
         this.a.removeAttribute("href");
+    document.getElementById('noDatabaseFile').addEventListener('checked', this.checkBox);
 
 
   }
@@ -613,8 +618,8 @@ my two mistresses: what a beast am I to slack it!`,
   }
 
   handleText = (event) => {
-    alert(`The text you \n
-           entered: \n` + this.state.value);
+    //const myBlob = this.state;
+
     const importText = this.state.value;
     const database = [];
     //this.importAllWords();
@@ -634,12 +639,20 @@ my two mistresses: what a beast am I to slack it!`,
     const jsonItemsMap = new Map();
     jsonItemsMap.set('items', [...setWordId]);
     const jsonData = Object.fromEntries(jsonItemsMap.entries());
-    alert([...setWordId]);
+    if (this.state.value === null) {
+      alert("you entered no text")
+    } else {
+      alert(`The text you \n
+             entered: \n` + this.state.value);
+      alert([...setWordId]);
+    }
     const result = {};
     this.state.result = [...setWordId];
     console.log(this.state.result);
     //const jsonArray = {["items"]: [...setWordId]};
-    this.a.setAttribute("href","items.json");
+    if (this.state.value !== null) {
+      this.a.setAttribute("href","items.json");
+    }
     //the database.json file must be uploaded before the textis uploaded to merge the two easily 
     //====updatethedate field of each item in thedatabase=========//
     //====writes the current date=====//
@@ -649,54 +662,60 @@ my two mistresses: what a beast am I to slack it!`,
    
     //==== updatethedate field of each item in thedatabase=========//
     //====writes the date of today to the bi database for the words already present===// 
-    const myBlob = this.state;
+    //const myBlob = this.state;
     console.log(this.state.noDatabaseFile);
-    console.log(this.state.myBlob);
+    if (this.state.myItems !== undefined) {
+      console.log(this.state.myItems.length);
+      console.log(this.state.myItems[6]['word']);
+    } else if (this.state.myItems === undefined && document.getElementById('noDatabaseFile').checked === false) {
+      this.alertNoDatabaseFile();
+    }
+    if (document.getElementById('noDatabaseFile').checked === true && this.state.myItems === ([]||undefined)) {
+    }
     console.log(this.state.result);
-    if(this.noDatabaseFile === false && this.state.result.length && this.state.myBlob.length) {
+    if(this.state.myItems !== undefined && this.state.result.length && this.state.myItems.length) {
       //add texts to new word to the big db
       const result = this.state;
-      const myBlob = this.state;
-      for (var i = 0;i<=this.state.result.length;i++) {
-        for (var j=0;j<=this.state.myBlob.length;j++) {
-          if (this.state.result[i]['word'] === this.state.myBlob[j]['word'] && !myBlob[j]['dates'].includes(this.state.today)) { // if the word from the new textalready exists and the big db does not contain current date
-            this.state.myBlob[j]['dates'].push(this.state.today);
+      const myItems = this.state;
+      for (var i = 0;i<this.state.result.length;i++) {
+        for (var j=0;j<this.state.myItems.length;j++) {
+          console.log(i);
+          console.log(j);
+          console.log(this.state.result[i]);
+          console.log(this.state.myItems[j]);
+          if (this.state.result[i]['word'] === this.state.myItems[j]['word'] && !this.state.myItems[j]['dates'].includes(this.state.today)) { // if the word from the new textalready exists and the big db does not contain current date
+            this.state.myItems[j]['dates'].push(this.state.today);
           }
         }
       }
-    //====end writes the date of today to the bi database for the words already present===// 
-    //====end updatethedate field of each item in thedatabase=========//
-    //==new set of all values of big database==//
-      const bigDatabase = new Set();
-      for (var i = 0;i<=myBlob.length;i++) {
-        bigDatabase.add(myBlob[i]);
-         
-      }
-    //==end new set of all values of big database==//
-      console.log(bigDatabase);
-      //===new set of words from the current text==//
-      const currentText = new Set();
-      for (var i = 0;i<=result.length;i++) {
-        currentText.add(result[i]);
-      } 
-      console.log(currentText);
-      //===end new set of words from the current text==//
+      console.log(this.state.myItems.length);
+      //====end writes the date of today to the bi database for the words already present===// 
+      //====end updatethedate field of each item in thedatabase=========//
+      //==new set of all values of big database==//
+      //const bigDatabase = [...this.state.myItems];
+    ////==end new set of all values of big database==//
+      //console.log(bigDatabase);
 
       //==array of words from the big database==//
       const uniqueArray = [];
      
-      for (let line of bigDatabase) {
-        uniqueArray.push(line.word);
+      for (var i=0;i<this.state.myItems.length;i++) { //myItems = database.json
+							//result = items.json
+						//
+        console.log(this.state.myItems[i].word);
+        if (!this.state.myItems[i].word === null) {
+          uniqueArray.push(this.state.myItems[i].word);
+        }
       } 
-      console.log(uniqueArray);
+      console.log(this.state.uniqueArray);
       //==end array of words from the big database==//
       //==add array of current words==//
-      for (var i=0; i<=listOfWords.length;i++){
-        if (this.state.listOfWords[i] !== "" && !uniqueArray.includes(this.state.listOfWords[i])) {
-          bigDatabase.add({word: listOfWords[i], id: bigDatabase.size, dates: [...new Set().add(today)]})
+      for (var i=0; i<=this.state.listOfWords.length;i++){
+        if (this.state.listOfWords[i] !== "" && !this.state.uniqueArray.includes(this.state.listOfWords[i])) {
+          this.state.myItems.push({word: listOfWords[i], id: this.state.myItems.length, dates: [this.state.today]});
         }
       }
-      console.log(bigDatabase);
+      console.log(this.state.myItems);
       //==end add array of current words==//
       //===download file containing all teh words including that of the new text===//
       //tellthe user to save the files in the right directories=====//
@@ -706,7 +725,7 @@ my two mistresses: what a beast am I to slack it!`,
   } 
 
   handleSubmitText = event => {
-    const { name, email, value } = this.state;
+    const { name, email, value, myBlob } = this.state;
     //this.setState({value: event.target.value});
     event.preventDefault();
     this.handleText();
@@ -792,17 +811,31 @@ my two mistresses: what a beast am I to slack it!`,
       body: fd
     };
     fetch(URL.createObjectURL(file))
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(myBlub) {
-      console.log(myBlub); //database.json
-      //console.log(URL.createObjectURL(myBlob));
-      const myBlob = myBlub;
-      console.log(myBlob); //database.json
-      //console.log(URL.createObjectURL(myBlob));
-    });
-    //this.incrementDatabase();
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myBlub) {
+        console.log(myBlub); //database.json
+        //console.log(URL.createObjectURL(myBlob));
+        const myBlob = [...Object.values(myBlub.items)];
+        ///this.setState({...myBlub.items});
+        console.log(myBlob); //database.json
+        console.log(file.name);
+        return myBlob;
+        //console.log(URL.createObjectURL(myBlob));
+      })
+      .then(thirdres => {
+        const myItems = thirdres.map(obj => obj);
+        this.setState({myItems});
+        console.log(myItems);
+        //document.getElementById('noDatabaseFile').setAttribute('checked',false);
+        document.getElementById('noDatabaseFile').removeAttribute('checked');
+        const databaseIsLoaded = this.state;
+        this.state.databaseIsLoaded = true;         
+      })
+      //this.setState({myBlob});
+    console.log(this.state.myBlob);
+      //this.incrementDatabase();
   }
 
   dropbox = (files) => {
@@ -833,6 +866,7 @@ my two mistresses: what a beast am I to slack it!`,
 			if(file.type===('')) { preview.appendChild(noFileType); } // Assuming that "preview" is the div output where the content will be displayed.
                         //===FILE PREVIEW AFTER DROP==//
 			const fileName = document.createElement('a');
+                        fileName.className += '.obj';
 			fileName.textContent = file.name+ ' (preview)';
 			fileName.href = URL.createObjectURL(file);
 			fileName.target = "_blank";
@@ -884,25 +918,89 @@ my two mistresses: what a beast am I to slack it!`,
       noDatabaseFile:
         event.target.value
     });
+
+
+
+
     if (event.target.checked) {
       this.setState({
         noDatabaseFile:
           true
       });
-    } else if(!event.target.checked) {
+      document.getElementById('dropzone').hidden = true;
+      console.log("checkbox");
+      //if (this.state.loadByDateConfirm >0 && this.state.databaseIsLoaded === false && window.confirm("text or database was not loaded. ok to load text or database. cancel to load only text.")) {
+      
+      //}
+      if (this.state.databaseIsLoaded === true && window.confirm("the database is to be removed. To remove the database anyway, press ok. Press cancel to keep your database loaded in the dropzone.")) {
+        this.state.databaseIsLoaded = false;
+        this.state.myItems = [];
+        const droppedFiles = document.getElementById('preview');
+        while (droppedFiles.hasChildNodes()) {
+          droppedFiles.removeChild(droppedFiles.firstChild);  
+        }
+      }
+    }
+    if(!event.target.checked) {
       this.setState({
         noDatabaseFile:
           false 
       });
+      document.getElementById('dropzone').hidden = false;
+      console.log("uncheck box");
+      console.log(this.state.jsonSecondConfirm);
+      const jsonSecondConfirm = this.state;
+      if (this.state.jsonSecondConfirm === true) {
+        this.state.jsonSecondConfirm = false;
+        if (window.confirm("you confirmed that you had no json to upload. Ok to drop a json from your computer. Cancel to load words from a new text")) {
+        } else {
+          document.getElementById('dropzone').hidden = true;
+          document.getElementById('noDatabaseFile').checked = true;
+        } 
+      }
+
+
+    }
+    if(event.target.checked === false) {
+      document.getElementById('dropzone').removeAttribute('checked');
+      
+      document.getElementById('dropzone').hidden = false;
+      console.log("uncheck box");
+
+
+  
     }
   }
-
+  alertNoDatabaseFile = (event) => {
+    if (document.getElementById('noDatabaseFile').checked = true && window.confirm("You did not upload any database.json file. Ok to continue. Cancel to upload words from previous sessions by date.")) {
+      //const noDatabaseFile = this.state; 
+      //this.setState({
+      //  noDatabaseFile:
+      //    true 
+      //});
+      document.getElementById('noDatabaseFile').checked = true;
+      const jsonSecondConfirm = this.state;
+      this.state.jsonSecondConfirm = true;
+      console.log("alert");
+      //const noDatabaseFile = this.state; 
+      //this.setState({
+      //  noDatabaseFile:
+      //    document.getElementById('noDatabaseFile').checked 
+      //});
+      //document.getElementById('noDatabaseFile').value = document.getElementById('noDatabaseFile').checked;
+      document.getElementById('dropzone').hidden = true;
+      
+    } else {
+      document.getElementById('noDatabaseFile').removeAttribute('checked');   
+    }
+    
+  }
   render() {
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmitText}>
         <div>
           <input type="checkbox" id={`noDatabaseFile`} value={this.state.noDatabaseFile} onChange={this.checkBox} />
-          <label for="subscribeNews">Je n'ai pas de <b>database.json</b></label>
+          <label for="subscribeNews">I have no database.json</label>
         </div>
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
