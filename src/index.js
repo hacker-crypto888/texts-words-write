@@ -570,7 +570,12 @@ my two mistresses: what a beast am I to slack it!`,
       loadByDateConfirm:2,
       mapJson:null,
       mapText:null,
-      newWord:null
+      newWord:null,
+      setWord:null,
+      setWordsFromText:null,
+      setWordsFromDatabase:null,
+      wordsFromDatabase:null,
+      wordsFromText:null
     };
     //this.handleChange = this.handleChange.bind(this);
     this.handleSubmitText = this.handleSubmitText.bind(this);
@@ -639,6 +644,14 @@ my two mistresses: what a beast am I to slack it!`,
       }
 
     }
+    const setWordsFromText = new Set();
+    for (var i=0; i < listOfWords.length; i++) {
+      if (listOfWords[i] !== "") {
+        setWordsFromText.add({word: listOfWords[i]});
+        console.log(setWordsFromText);
+      }
+
+    }
     const jsonItemsMap = new Map();
     jsonItemsMap.set('items', [...setWordId]);
     const jsonData = Object.fromEntries(jsonItemsMap.entries());
@@ -686,7 +699,7 @@ my two mistresses: what a beast am I to slack it!`,
       const mapJson = new Map(Object.entries(this.state.myItems));
       //console.log(this.state.listOfWords);
       //const mapText = new Set(listOfWords);
-      console.log(this.state.listOfWords);
+      console.log(setWordsFromText);
       //listOfWords.forEach(function(word) {
       //  //const newWord = { word: this.state.word };
       //  //mapText.set(this.state.newWord);
@@ -699,10 +712,45 @@ my two mistresses: what a beast am I to slack it!`,
       //for (let line of listOfWords.keys()) {
         //console.log(line)
       //} 
+      const setWordsFromDatabase = new Set();
       for (let line of mapJson.values()) {
         //...
+        setWordsFromDatabase.add({word: line.word});
       }
+      console.log(setWordsFromDatabase.values());
+      const wordsFromDatabase = setWordsFromDatabase.values();
+      const wordsFromText = setWordsFromText.values();
+      for (let line of mapJson.values()) {
+        //...
+        //console.log(line.word);
+        //if (wordsFromDatabase.includes(line.word
+        const currentDate = new Date();
+        const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+        console.log(line.dates);
+        console.log(setWordsFromText);
+        console.log(setWordsFromText.has({word: line.word}));
+        console.log(line.dates.includes(this.state.today));
+        if(setWordsFromText.has({word: line.word}) && !(line.dates.includes(this.state.today))) {
+          console.log(wordsFromText);
+          console.log(line); 
+          //line.dates.push(this.state.today);
+          console.log(line.dates);
+          //remove value from set
+        } 
+        
+      }
+      //restOfWords
+      for (let line of mapJson.values()) {
+        //...
+        //console.log(line.word);
+        //if (wordsFromDatabase.includes(line.word
+          //console.log(line); 
+        //wordsFromDatabase.push(new Date()); 
+        
+      }
+      
       console.log(mapJson);
+
     }
     
 
@@ -819,7 +867,7 @@ my two mistresses: what a beast am I to slack it!`,
       })
       //this.setState({myBlob});
     console.log(this.state.myBlob);
-      //this.incrementDatabase();
+    //this.incrementDatabase();
   }
 
   dropbox = (files) => {
