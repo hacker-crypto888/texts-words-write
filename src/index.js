@@ -798,8 +798,9 @@ my two mistresses: what a beast am I to slack it!`,
     .then(function(myBlub) {
       console.log(myBlub); //database.json
       //console.log(URL.createObjectURL(myBlob));
-      console.log(Array.from(myBlub));
       const myBlob = myBlub;
+      console.log(myBlob); //database.json
+      //console.log(URL.createObjectURL(myBlob));
     });
     //this.incrementDatabase();
   }
@@ -877,11 +878,30 @@ my two mistresses: what a beast am I to slack it!`,
   //  });
   //}
 
+  checkBox = (event) => {
+    const noDatabaseFile = this.state; 
+    this.setState({
+      noDatabaseFile:
+        event.target.value
+    });
+    if (event.target.checked) {
+      this.setState({
+        noDatabaseFile:
+          true
+      });
+    } else if(!event.target.checked) {
+      this.setState({
+        noDatabaseFile:
+          false 
+      });
+    }
+  }
+
   render() {
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmitText}>
         <div>
-          <input type="checkbox" id={`noDatabaseFile`} value={this.state.noDatabaseFile} />
+          <input type="checkbox" id={`noDatabaseFile`} value={this.state.noDatabaseFile} onChange={this.checkBox} />
           <label for="subscribeNews">Je n'ai pas de <b>database.json</b></label>
         </div>
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
