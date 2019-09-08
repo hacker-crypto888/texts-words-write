@@ -685,16 +685,14 @@ my two mistresses: what a beast am I to slack it!`,
       const listOfWords = this.state;
       const mapJson = new Map(Object.entries(this.state.myItems));
       //console.log(this.state.listOfWords);
-      //const mapText = new Set(listOfWords);
-      console.log(this.state.listOfWords);
-      //listOfWords.forEach(function(word) {
-      //  //const newWord = { word: this.state.word };
-      //  //mapText.set(this.state.newWord);
-      //  console.log(word);
-      //});
+      const mapText = new Set();
+      this.state.listOfWords.forEach(function(word) {
+        const newWord = { word: this.state.word };
+        mapText.set(newWord);
+      });
      
-      ////const mapText = new Set(Object.entries(this.state.listOfWords));
-      //console.log(this.state.mapText); 
+      //const mapText = new Set(Object.entries(this.state.listOfWords));
+      console.log(this.state.mapText); 
       //database json line by line
       //for (let line of listOfWords.keys()) {
         //console.log(line)
