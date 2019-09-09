@@ -575,7 +575,10 @@ my two mistresses: what a beast am I to slack it!`,
       setWordsFromText:null,
       setWordsFromDatabase:null,
       wordsFromDatabase:null,
-      wordsFromText:null
+      wordsFromText:null,
+      allMyItems:null,
+      downloadAll:null,
+      downloadLink:null
     };
     //this.handleChange = this.handleChange.bind(this);
     this.handleSubmitText = this.handleSubmitText.bind(this);
@@ -647,7 +650,7 @@ my two mistresses: what a beast am I to slack it!`,
     const setWordsFromText = new Set();
     for (var i=0; i < listOfWords.length; i++) {
       if (listOfWords[i] !== "") {
-        setWordsFromText.add({word: listOfWords[i]});
+        setWordsFromText.add(listOfWords[i]);
         console.log(setWordsFromText);
       }
 
@@ -692,10 +695,11 @@ my two mistresses: what a beast am I to slack it!`,
     console.log(this.state.result);
     if(this.state.myItems !== undefined && this.state.result.length && this.state.myItems.length) {
       console.log("database and text loadded");
-      //add texts to new word to the big db
+      //array objects
       const result = this.state;
       const myItems = this.state;
       const listOfWords = this.state;
+      
       const mapJson = new Map(Object.entries(this.state.myItems));
       //console.log(this.state.listOfWords);
       //const mapText = new Set(listOfWords);
@@ -715,44 +719,99 @@ my two mistresses: what a beast am I to slack it!`,
       const setWordsFromDatabase = new Set();
       for (let line of mapJson.values()) {
         //...
-        setWordsFromDatabase.add({word: line.word});
+        setWordsFromDatabase.add(line.word);
+        //console.log(setWordsFromDatabase.has(line.word));
       }
       console.log(setWordsFromDatabase.values());
+      console.log(setWordsFromDatabase);
       const wordsFromDatabase = setWordsFromDatabase.values();
-      const wordsFromText = setWordsFromText.values();
+
       for (let line of mapJson.values()) {
         //...
         //console.log(line.word);
         //if (wordsFromDatabase.includes(line.word
         const currentDate = new Date();
         const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
-        console.log(line.dates);
-        console.log(setWordsFromText);
-        console.log(setWordsFromText.has({word: line.word}));
-        console.log(line.dates.includes(this.state.today));
-        if(setWordsFromText.has({word: line.word}) && !(line.dates.includes(this.state.today))) {
-          console.log(wordsFromText);
-          console.log(line); 
+        //console.log(line.dates);
+        //console.log(setWordsFromDatabase.has("minutes"));
+        //console.log(setWordsFromText.has({word: "minutes"}));
+        //console.log(line.dates.includes(this.state.today));
+        //if(setWordsFromText.has({word: line.word}) && !(line.dates.includes(this.state.today))) {
+          //console.log(wordsFromText);
+          //console.log(line); 
           //line.dates.push(this.state.today);
-          console.log(line.dates);
+          //console.log(line.dates);
           //remove value from set
-        } 
+        //} 
         
       }
       //restOfWords
-      for (let line of mapJson.values()) {
+      const wordsFromText = Array.from(setWordsFromText);
+      for (let line of setWordsFromDatabase) {
         //...
         //console.log(line.word);
         //if (wordsFromDatabase.includes(line.word
           //console.log(line); 
         //wordsFromDatabase.push(new Date()); 
+        if (Array.from(setWordsFromText).includes(line)) {
+          //console.log(line);
+          this.state.myItems.forEach(function(element) {
+            const currentDate = new Date();
+            const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+            //console.log(today);
+            if (element.word === line && !element.dates.includes(today)) {
+              //console.log(element)
+              //adds new date
+              //console.log(today);
+              element.dates.push(today);
+              //console.log(element.dates)
+              //removes this element from the words from the text
+              wordsFromText.forEach(function(item, index, object) {
+                if (item === line) {
+                  object.splice(index, 1); //the item is removed
+                  console.log(wordsFromText.length);
+                }
+              });
+            }
+          }); 
+        }
         
       }
-      
-      console.log(mapJson);
+      //add the new elements 
+      console.log(this.state.myItems);
+      const allMyItems = Array.from(this.state.myItems);
+      wordsFromText.forEach(function(item,index,object) {
+        const currentDate = new Date();
+        const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+        
+        const newItem = new Object();
+        newItem.word = item;
+        newItem.id = allMyItems.length;
+        newItem.dates = [today];
+        //myItems.splice(-1, 0, newItem);
+
+        allMyItems.push(newItem);
+        console.log(allMyItems.length);
+
+      }); 
+      //console.log(mapJson);
+      const downloadAll = document.getElementById("download_all_items");
+      //const preview = document.getElementById("dropzone");
+
+      // oFileType); } // Assuming that "preview" is the div output where the content will be displayed.
+      //===FILE PREVIEW AFTER DROP==//
+      this.state.allMyItems = this.state;
+      const downloadLink = document.createElement('a');
+      downloadLink.className += '.obj';
+      downloadLink.textContent = 'Download all items as JSON';
+      downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": allMyItems},null,2)], {type: 'application/json'}));
+      //downloadLink.target = "_blank";
+      downloadLink.target = "database.json";
+      downloadAll.appendChild(downloadLink);
 
     }
-    
+
+   
 
   } 
 
@@ -1068,6 +1127,7 @@ my two mistresses: what a beast am I to slack it!`,
         </label>
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
         <a id="download_items" ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} >Download Words From The Text Just Loaded</a>
+        <div id={`download_all_items`}></div> 
 
  
       </form>
