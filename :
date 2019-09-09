@@ -250,188 +250,133 @@ class DateForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      date: new Date(),
+      date: '',
       selectedDate:'',
       dataArray:null,
       dateObject:null,
       database:[],
       data:null,
       json:null,
-      obj: [],
+
       data:'', 
       shortArray:'',
       text:null,
       url:null,
+      valueArray:[],
       mydatabase:[],
-      dataEntry: []
+      dataEntry: [],
+      response:null,
+      myBlob:null,
+      myDatabase:null,
+      myBlub:null,
+      today:null,
+      currentDate:new Date(),
+
+      mynewDb:null,
+      response:null,
+      res:null,
+      element:null,
+      myNewBlob:null,
+      jsonString:null,
+      myItems:null,
+      myItemsByDate:null,
+      allItemsByDate:null,
+      jsonContent:null
+      
     }
-    //const obj = {a: 123, b: "4 5 6"};
-    //const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
-    this.json = {};
   }
 
   componentDidMount() {
-    //const database = this.state;
-    //this.loadJson();
-    //const text = "some text i want to export";
-    //const data = new Blob([this.state.text], {type: 'text/plain'});
-    //const url = URL.createObjectURL(data);
-    //window.URL.revokeObjectURL(url);
-    //document.getElementById('download_link').href = this.state.url;
-    //const obj = {a: 123, b: "4 5 6"};
-    //const shortArray = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.state.obj)); 
-    
-    axios.get(`./database.json`)
-      .then(res => {
-        const database = res.data.items.map(obj => obj);
-        this.setState({ database });
-        //alert(this.state.database[5]['dates']);
-        //console.log(items.find((o) => o.id === 2).name);
-        //console.log("mesg");
-      });
-    //axios.get(`./database.json`)
-    //fetch(`./database.json`)
-      //.then(response => response.json())
-      //.then(json => this.setState({ json }));
-      //{
-        //const database = res.data.data.children.map(obj => obj.data);
-        //this.setState({ database });
-      //});
 
-  }
-  validateJson = (json) => {
-    const validJson = this.state;
-
-    try{
-      const validJson = JSON.stringify(this.state.json, null, 2);
-    } catch(e) {
-      throw e
-    }
-   
-    return validJson;
-
+    //const date = new Date();
+    //this.setState({ date });
+    //const currentDate = new Date();
   }
 
-  loadJson = () => {
-    const database = this.state;
-    const json = window.localStorage.getItem(LOCALSTORAGE_KEY) || JSON.stringify(database, null,2);
-    this.setState({ json });
-  }
+  onChange = (date) => {
 
-  saveJson = () => {
-    const validJson = this.validateJson(this.state.json);
-
-    if (!validJson) return;
-
-    window.localStorage.setItem(
-      LOCALSTORAGE_KEY,
-      validJson
-    )
-  }
-
-  handleJsonChange = e => this.setState({
-    json: this.state.database 
-  })
-  onChange = date => {
-    const database = this.state;
     this.setState({ date });
 
+    //const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+    //console.log(selectedDate);
   }
-  importDatabase = event => {
-    axios.get(`./database.json`)
-      .then(res => {
-        const database = res.data.items.map(obj => obj);
-        this.setState({ database });
-        console.log(database[0]);
-        //alert(this.state.database[5]['dates']);
-        //console.log(items.find((o) => o.id === 2).name);
-        //console.log("mesg");
-      });
-  }
-  handleSubmitDate = date => {
-    //this.handleDateChange();
-    //const database = this.state;
-    this.setState({json: this.state.database});
- 
-    //this.onChange();
-    this.importDatabase();
-    //X (import) (database)
-    //this.setState({date});
-    const database = this.state.database; //database is the loaded JSON array
-    const dataEntry = this.state.dataEntry;
-    //const date = this.state;
-    //alert(this.state.date.getDate());
-    //const date = this.state;
-    //const dateObject = this.state.date;
-    this.state.selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
-    
-    //alert(this.state.selectedDate);
-    if (this.state.database && this.state.database.length) {
-      if (this.state.database.length > 0) {
-        for (let k = 0; k < this.state.database.length; k++) { // database is the big database
-        //this.state.database.map(line => {
-        //if (this.state.database.length > 6) {
-          //alert(this.state.database[49]['word']);
-          if (this.state.database[k]['dates'].includes(this.state.selectedDate)) {
-            if (this.state.dataEntry && this.state.dataEntry.length) {
-              if (this.state.dataEntry.length > 0) {
-                const database = this.state;
-                const dataEntry=this.state;
-                this.state.dataEntry[this.state.dataEntry.length] = this.state.database[k];
-                this.state.dataEntry[this.state.dataEntry.length]['id'] = this.state.dataEntry.length;
-                delete(this.state.dataEntry[this.state.dataEntry.length]['dates']);
-              } else if (this.state.dataEntry.length === 0) {
-                const database = this.state;
-                const dataEntry=this.state;
-                this.state.dataEntry[0] = this.state.database[k]; //i assume the line of the database array has three columns for a word
-                this.state.dataEntry[0]['id'] = 0;
-                delete(this.state.dataEntry[0]['dates']);
-              }
-            } else if (this.state.dataEntry === null) {
-              const database = this.state.database;
-              const dataEntry=[];
-              this.state.dataEntry[dataEntry.length] = database[k];
-              this.state.dataEntry[0]['id'] = 0;
-              delete(this.state.dataEntry[0]['dates']);
-            }
-            //alert(this.state.database); 
 
-            //same conditions as those for database, but verifying the length of dataEntry array before appending items, and before exporting them as a json file
-            //this.state.dataEntrythis.state.database[k] = ;
-                          
-          }
-        }
-      }
-    }
-    //$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#container');
+  
+  
+  loadJson = (event) => {
 
- }
-  download = (event) => {
-    const obj = {a: 123, b: "4 5 6"};
-    const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
-    this.setState({data: data});
+
+    const valueArray ={};
+    const downloadAll = document.getElementById("download_all_items");
+    const jsonString = document.createElement('p');
+    const downloadLink = document.createElement('a');
+    downloadLink.className += '.obj';
+    downloadLink.textContent = 'load by date JSON';
+    jsonString.hidden = true;
+    jsonString.id = "jsonString";
+    jsonString.textContent = "";
+
+
+    fetch(`./database.json`)
+      .then(function(response) {
+        return response.json()
+      })
+      .then(function(myBlob) {
+        const myBlub = [...Object.values(myBlob.items)];
+        //this.setState({myBlub});
+        //console.log(myBlub);
+        //downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": myBlub},null,2)], {type: 'application/json'}));
+        jsonString.textContent += [JSON.stringify({"items": myBlub},null,2)];
+        downloadAll.appendChild(jsonString);
+        console.log(jsonString.textContent);
+        //downloadLink.textContent += JSON.stringify([...myBlub]);
+        //const jsonString = [JSON.stringify([...myBlub])];
+      })
+
+
+
+    downloadLink.target = "database.json";
+    //downloadAll.appendChild(downloadLink);
+    const jsonString = document.getElementById('jsonString');
+
+    const myDatabase = JSON.parse(jsonString.textContent);
+    //console.log(this.state.myDatabase);
+    const myItems = [...Object.values(myDatabase.items)];
+    //console.log(myItems); 
+    //console.log(this.state.valueArray);
     
   }
-  downloadLink = () => {
-    //const text="Some Data I export";
-    //const 
 
-    const dataEntry = this.state.dataEntry;
-    const dataArray=new Blob([JSON.stringify(dataEntry, null, 2)], {type: 'application/json'});
-    //const data=new Blob([text], {type: 'text/plain'});
+  handleSubmitDate = (event) => {
 
-    const url = window.URL.createObjectURL(dataArray);
-    //window.URL.revokeObjectURL(url);
+    //const currentDate = new Date();
+    //console.log(this.state.jsonString);
+    //console.log(this.state.myItems);
+    this.loadJson();
+    //const {myItems} = this.state;
+    ////console.log(this.state.myItems);
+    //const myItemsByDate = new Set(); 
+    //this.state.myItems.forEach(function(item, index, object) {
+    //  const date = this.state;
+    //  console.log(item);
+    //  const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+    //  if (item.dates.includes(selectedDate)) {
+    //    myItemsByDate.add({word: item.word, id: myItemsByDate.size});
+    //  }
 
-    document.getElementById('download_link').href = url;
-    //event.preventDefault();
+    //});
+    //const allItemsByDate = this.state;
+    //const downloadLink = document.createElement('a');
+    //const downloadAll = this.state;
+    //downloadLink.className += '.obj';
+    //downloadLink.textContent = 'All my items by date';
+    //downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": allItemsByDate},null,2)], {type: 'application/json'}));
+    ////downloadLink.target = "_blank";
+    //downloadLink.target = "items.json";
+    //downloadAll.appendChild(downloadLink);
+        
   }
-    //X (export) (dataEntry -> items)
-  jsjQuery = (event) => {
-    event.preventDefault();
-    const obj = {a: 123, b: "4 5 6"};
-    const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
-  }
+
   render() {
     return (
       <form onSubmit={this.handleSubmitDate}>
@@ -443,7 +388,7 @@ class DateForm extends React.Component {
         />
       </div>
       <div>
-        <input onClick={this.handleDateChange} type="submit" value="Submit" className='btn btn-success btn-block' />  
+        <input type="submit" value="Submit" className='btn btn-success btn-block' />  
       </div>
       </form>
     );
@@ -567,7 +512,18 @@ my two mistresses: what a beast am I to slack it!`,
       jsonSecondConfirm:false,
       databaseIsLoaded:false,
       droppedFiles:null,
-      loadByDateConfirm:2
+      loadByDateConfirm:2,
+      mapJson:null,
+      mapText:null,
+      newWord:null,
+      setWord:null,
+      setWordsFromText:null,
+      setWordsFromDatabase:null,
+      wordsFromDatabase:null,
+      wordsFromText:null,
+      allMyItems:null,
+      downloadAll:null,
+      downloadLink:null
     };
     //this.handleChange = this.handleChange.bind(this);
     this.handleSubmitText = this.handleSubmitText.bind(this);
@@ -636,6 +592,14 @@ my two mistresses: what a beast am I to slack it!`,
       }
 
     }
+    const setWordsFromText = new Set();
+    for (var i=0; i < listOfWords.length; i++) {
+      if (listOfWords[i] !== "") {
+        setWordsFromText.add(listOfWords[i]);
+        console.log(setWordsFromText);
+      }
+
+    }
     const jsonItemsMap = new Map();
     jsonItemsMap.set('items', [...setWordId]);
     const jsonData = Object.fromEntries(jsonItemsMap.entries());
@@ -670,89 +634,129 @@ my two mistresses: what a beast am I to slack it!`,
     } else if (this.state.myItems === undefined && document.getElementById('noDatabaseFile').checked === false) {
       this.alertNoDatabaseFile();
     }
-    if (document.getElementById('noDatabaseFile').checked === true) {
-      const importtext = this.state.value;
-      const database = [];
-      //this.importAllWords();
-      const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-      const listOfWords = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-        return element !== null;
-      });
-      //create the file to make th eapp work now
-      const setWordId = new Set();
-      for (var i=0; i < listOfWords.length; i++) {
-        if (listOfWords[i] !== "") {
-          setWordId.add({word: listOfWords[i], id: setWordId.size});
-          console.log(setWordId);
-        }
-
-      }
-      const jsonItemsMap = new Map();
-      jsonItemsMap.set('items', [...setWordId]);
-      const jsonData = Object.fromEntries(jsonItemsMap.entries());
-      if (this.state.value === null) {
-        alert("you entered no text")
-      } else {
-        alert(`The text you \n
-               entered: \n` + this.state.value);
-        alert([...setWordId]);
-      }
-      const result = {};
-      this.state.result = [...setWordId];
-      console.log(this.state.result);
-      //const jsonArray = {["items"]: [...setWordId]};
-      if (this.state.value !== null) {
-        this.a.setAttribute("href","items.json");
-      }
+    if (document.getElementById('noDatabaseFile').checked === true && this.state.myItems === ([]||undefined)) {
     }
-    //}
+    //======ADD NEW WORDS TO DATABASE========//
     console.log(this.state.result);
     if(this.state.myItems !== undefined && this.state.result.length && this.state.myItems.length) {
-      //add texts to new word to the big db
+      console.log("database and text loadded");
+      //array objects
       const result = this.state;
       const myItems = this.state;
-      for (var i = 0;i<this.state.result.length;i++) {
-        for (var j=0;j<this.state.myItems.length;j++) {
-          console.log(i);
-          console.log(j);
-          console.log(this.state.result[i]);
-          console.log(this.state.myItems[j]);
-          if (this.state.result[i]['word'] === this.state.myItems[j]['word'] && !this.state.myItems[j]['dates'].includes(this.state.today)) { // if the word from the new textalready exists and the big db does not contain current date
-            this.state.myItems[j]['dates'].push(this.state.today);
-          }
-        }
-      }
-      console.log(this.state.myItems.length);
-      //====end writes the date of today to the bi database for the words already present===// 
-      //====end updatethedate field of each item in thedatabase=========//
-      //==new set of all values of big database==//
-      //const bigDatabase = [...this.state.myItems];
-    ////==end new set of all values of big database==//
-      //console.log(bigDatabase);
-
-      //==array of words from the big database==//
-      const uniqueArray = [];
+      const listOfWords = this.state;
+      
+      const mapJson = new Map(Object.entries(this.state.myItems));
+      //console.log(this.state.listOfWords);
+      //const mapText = new Set(listOfWords);
+      console.log(setWordsFromText);
+      //listOfWords.forEach(function(word) {
+      //  //const newWord = { word: this.state.word };
+      //  //mapText.set(this.state.newWord);
+      //  console.log(word);
+      //});
      
-      for (var i=0;i<this.state.myItems.length;i++) {
-        console.log(this.state.myItems[i].word);
-        if (!this.state.myItems[i].word === null) {
-          uniqueArray.push(this.state.myItems[i].word);
-        }
-      } 
-      console.log(this.state.uniqueArray);
-      //==end array of words from the big database==//
-      //==add array of current words==//
-      for (var i=0; i<=this.state.listOfWords.length;i++){
-        if (this.state.listOfWords[i] !== "" && !this.state.uniqueArray.includes(this.state.listOfWords[i])) {
-          this.state.myItems.push({word: listOfWords[i], id: this.state.myItems.length, dates: [this.state.today]});
-        }
+      ////const mapText = new Set(Object.entries(this.state.listOfWords));
+      //console.log(this.state.mapText); 
+      //database json line by line
+      //for (let line of listOfWords.keys()) {
+        //console.log(line)
+      //} 
+      const setWordsFromDatabase = new Set();
+      for (let line of mapJson.values()) {
+        //...
+        setWordsFromDatabase.add(line.word);
+        //console.log(setWordsFromDatabase.has(line.word));
       }
+      console.log(setWordsFromDatabase.values());
+      console.log(setWordsFromDatabase);
+      const wordsFromDatabase = setWordsFromDatabase.values();
+
+      for (let line of mapJson.values()) {
+        //...
+        //console.log(line.word);
+        //if (wordsFromDatabase.includes(line.word
+        const currentDate = new Date();
+        const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+        //console.log(line.dates);
+        //console.log(setWordsFromDatabase.has("minutes"));
+        //console.log(setWordsFromText.has({word: "minutes"}));
+        //console.log(line.dates.includes(this.state.today));
+        //if(setWordsFromText.has({word: line.word}) && !(line.dates.includes(this.state.today))) {
+          //console.log(wordsFromText);
+          //console.log(line); 
+          //line.dates.push(this.state.today);
+          //console.log(line.dates);
+          //remove value from set
+        //} 
+        
+      }
+      //restOfWords
+      const wordsFromText = Array.from(setWordsFromText);
+      for (let line of setWordsFromDatabase) {
+        //...
+        //console.log(line.word);
+        //if (wordsFromDatabase.includes(line.word
+          //console.log(line); 
+        //wordsFromDatabase.push(new Date()); 
+        if (Array.from(setWordsFromText).includes(line)) {
+          //console.log(line);
+          this.state.myItems.forEach(function(element) {
+            const currentDate = new Date();
+            const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+            //console.log(today);
+            if (element.word === line && !element.dates.includes(today)) {
+              //console.log(element)
+              //adds new date
+              //console.log(today);
+              element.dates.push(today);
+              //console.log(element.dates)
+              //removes this element from the words from the text
+              wordsFromText.forEach(function(item, index, object) {
+                if (item === line) {
+                  object.splice(index, 1); //the item is removed
+                  console.log(wordsFromText.length);
+                }
+              });
+            }
+          }); 
+        }
+        
+      }
+      //add the new elements 
       console.log(this.state.myItems);
-      //==end add array of current words==//
-      //===download file containing all teh words including that of the new text===//
-      //tellthe user to save the files in the right directories=====//
+      const allMyItems = Array.from(this.state.myItems);
+      wordsFromText.forEach(function(item,index,object) {
+        const currentDate = new Date();
+        const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+        
+        const newItem = new Object();
+        newItem.word = item;
+        newItem.id = allMyItems.length;
+        newItem.dates = [today];
+        //myItems.splice(-1, 0, newItem);
+
+        allMyItems.push(newItem);
+        console.log(allMyItems.length);
+
+      }); 
+      //console.log(mapJson);
+      const downloadAll = document.getElementById("download_all_items");
+      //const preview = document.getElementById("dropzone");
+
+      // oFileType); } // Assuming that "preview" is the div output where the content will be displayed.
+      //===FILE PREVIEW AFTER DROP==//
+      this.state.allMyItems = this.state;
+      const downloadLink = document.createElement('a');
+      downloadLink.className += '.obj';
+      downloadLink.textContent = 'Download all items as JSON';
+      downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": allMyItems},null,2)], {type: 'application/json'}));
+      //downloadLink.target = "_blank";
+      downloadLink.target = "database.json";
+      downloadAll.appendChild(downloadLink);
+
     }
-    
+
+   
 
   } 
 
@@ -867,7 +871,7 @@ my two mistresses: what a beast am I to slack it!`,
       })
       //this.setState({myBlob});
     console.log(this.state.myBlob);
-      //this.incrementDatabase();
+    //this.incrementDatabase();
   }
 
   dropbox = (files) => {
@@ -961,9 +965,9 @@ my two mistresses: what a beast am I to slack it!`,
       });
       document.getElementById('dropzone').hidden = true;
       console.log("checkbox");
-      if (this.state.loadByDateConfirm >0 && this.state.databaseIsLoaded === false && window.confirm("no text was loaded.")) {
+      //if (this.state.loadByDateConfirm >0 && this.state.databaseIsLoaded === false && window.confirm("text or database was not loaded. ok to load text or database. cancel to load only text.")) {
       
-      }
+      //}
       if (this.state.databaseIsLoaded === true && window.confirm("the database is to be removed. To remove the database anyway, press ok. Press cancel to keep your database loaded in the dropzone.")) {
         this.state.databaseIsLoaded = false;
         this.state.myItems = [];
@@ -1068,6 +1072,7 @@ my two mistresses: what a beast am I to slack it!`,
         </label>
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
         <a id="download_items" ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} >Download Words From The Text Just Loaded</a>
+        <div id={`download_all_items`}></div> 
 
  
       </form>

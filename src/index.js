@@ -250,200 +250,158 @@ class DateForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      date: new Date(),
+      date: '',
       selectedDate:'',
       dataArray:null,
       dateObject:null,
       database:[],
       data:null,
       json:null,
-      obj: [],
+
       data:'', 
       shortArray:'',
       text:null,
       url:null,
-      mydatabase:[],
-      dataEntry: []
+      valueArray:null,
+      mydatabase:null,
+      dataEntry: null,
+      response:null,
+      myBlob:null,
+      myDatabase:null,
+      myBlub:null,
+      today:null,
+      currentDate:new Date(),
+
+      mynewDb:null,
+      response:null,
+      res:null,
+      element:null,
+      myNewBlob:null,
+      jsonString:null,
+      myItems:null,
+      myItemsByDate:null,
+      allItemsByDate:null,
+      jsonContent:"",
+      contentList:null,
+      mydatepicker:null,
+      jsonValue:""
+      
     }
-    //const obj = {a: 123, b: "4 5 6"};
-    //const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
-    this.json = {};
   }
 
   componentDidMount() {
-    //const database = this.state;
-    //this.loadJson();
-    //const text = "some text i want to export";
-    //const data = new Blob([this.state.text], {type: 'text/plain'});
-    //const url = URL.createObjectURL(data);
-    //window.URL.revokeObjectURL(url);
-    //document.getElementById('download_link').href = this.state.url;
-    //const obj = {a: 123, b: "4 5 6"};
-    //const shortArray = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.state.obj)); 
+    //at the beginning and after the change of the date with the picker (use this.setState)
+    const date = new Date();
+    this.setState({date});
     
-    axios.get(`./database.json`)
-      .then(res => {
-        const database = res.data.items.map(obj => obj);
-        this.setState({ database });
-        //alert(this.state.database[5]['dates']);
-        //console.log(items.find((o) => o.id === 2).name);
-        //console.log("mesg");
-      });
-    //axios.get(`./database.json`)
-    //fetch(`./database.json`)
-      //.then(response => response.json())
-      //.then(json => this.setState({ json }));
-      //{
-        //const database = res.data.data.children.map(obj => obj.data);
-        //this.setState({ database });
-      //});
-
-  }
-  validateJson = (json) => {
-    const validJson = this.state;
-
-    try{
-      const validJson = JSON.stringify(this.state.json, null, 2);
-    } catch(e) {
-      throw e
-    }
-   
-    return validJson;
-
+    //const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+    //this.onChange(date);
+    //const currentDate = new Date();
   }
 
-  loadJson = () => {
-    const database = this.state;
-    const json = window.localStorage.getItem(LOCALSTORAGE_KEY) || JSON.stringify(database, null,2);
-    this.setState({ json });
-  }
+  onChange = (date) => {
 
-  saveJson = () => {
-    const validJson = this.validateJson(this.state.json);
-
-    if (!validJson) return;
-
-    window.localStorage.setItem(
-      LOCALSTORAGE_KEY,
-      validJson
-    )
-  }
-
-  handleJsonChange = e => this.setState({
-    json: this.state.database 
-  })
-  onChange = date => {
-    const database = this.state;
     this.setState({ date });
 
+    //at any moment in the program (setState was already used)
+    //const date = this.state.date;
+    //const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+    //console.log(selectedDate);
   }
-  importDatabase = event => {
-    axios.get(`./database.json`)
-      .then(res => {
-        const database = res.data.items.map(obj => obj);
-        this.setState({ database });
-        console.log(database[0]);
-        //alert(this.state.database[5]['dates']);
-        //console.log(items.find((o) => o.id === 2).name);
-        //console.log("mesg");
-      });
-  }
-  handleSubmitDate = date => {
-    //this.handleDateChange();
-    //const database = this.state;
-    this.setState({json: this.state.database});
- 
-    //this.onChange();
-    this.importDatabase();
-    //X (import) (database)
-    //this.setState({date});
-    const database = this.state.database; //database is the loaded JSON array
-    const dataEntry = this.state.dataEntry;
-    //const date = this.state;
-    //alert(this.state.date.getDate());
-    //const date = this.state;
-    //const dateObject = this.state.date;
-    this.state.selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
-    
-    //alert(this.state.selectedDate);
-    if (this.state.database && this.state.database.length) {
-      if (this.state.database.length > 0) {
-        for (let k = 0; k < this.state.database.length; k++) { // database is the big database
-        //this.state.database.map(line => {
-        //if (this.state.database.length > 6) {
-          //alert(this.state.database[49]['word']);
-          if (this.state.database[k]['dates'].includes(this.state.selectedDate)) {
-            if (this.state.dataEntry && this.state.dataEntry.length) {
-              if (this.state.dataEntry.length > 0) {
-                const database = this.state;
-                const dataEntry=this.state;
-                this.state.dataEntry[this.state.dataEntry.length] = this.state.database[k];
-                this.state.dataEntry[this.state.dataEntry.length]['id'] = this.state.dataEntry.length;
-                delete(this.state.dataEntry[this.state.dataEntry.length]['dates']);
-              } else if (this.state.dataEntry.length === 0) {
-                const database = this.state;
-                const dataEntry=this.state;
-                this.state.dataEntry[0] = this.state.database[k]; //i assume the line of the database array has three columns for a word
-                this.state.dataEntry[0]['id'] = 0;
-                delete(this.state.dataEntry[0]['dates']);
-              }
-            } else if (this.state.dataEntry === null) {
-              const database = this.state.database;
-              const dataEntry=[];
-              this.state.dataEntry[dataEntry.length] = database[k];
-              this.state.dataEntry[0]['id'] = 0;
-              delete(this.state.dataEntry[0]['dates']);
-            }
-            //alert(this.state.database); 
 
-            //same conditions as those for database, but verifying the length of dataEntry array before appending items, and before exporting them as a json file
-            //this.state.dataEntrythis.state.database[k] = ;
-                          
-          }
-        }
-      }
+  
+  
+  loadJson = (event) => {
+
+    const valueArray ={};
+
+    if (!document.getElementById('jsonString')) {
+      const downloadAll = document.getElementById("download_all_items");
+      const jsonString = document.createElement('div');
+      const downloadLink = document.createElement('input');
+      const jsonValue = '';
+      downloadLink.className += '.obj';
+      downloadLink.innerHTML = 'load by date JSON';
+      //jsonString.hidden = true;
+      downloadLink.target = "database.json";
+      jsonString.id = "jsonString";
+      jsonString.innerHTML = this.state.jsonValue;
+      downloadAll.appendChild(jsonString);
     }
-    //$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#container');
-
- }
-  download = (event) => {
-    const obj = {a: 123, b: "4 5 6"};
-    const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
-    this.setState({data: data});
     
-  }
-  downloadLink = () => {
-    //const text="Some Data I export";
-    //const 
 
-    const dataEntry = this.state.dataEntry;
-    const dataArray=new Blob([JSON.stringify(dataEntry, null, 2)], {type: 'application/json'});
-    //const data=new Blob([text], {type: 'text/plain'});
+    this.handleJsonString(); 
 
-    const url = window.URL.createObjectURL(dataArray);
-    //window.URL.revokeObjectURL(url);
 
-    document.getElementById('download_link').href = url;
-    //event.preventDefault();
+
+
+    fetch(`./database.json`)
+      .then(function(response) {
+        return response.json()
+      })
+      .then(function(myBlob) {
+        const myBlub = [...Object.values(myBlob.items)];
+        //this.setState({myBlub});
+        //console.log(myBlub);
+        //downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": myBlub},null,2)], {type: 'application/json'}));
+        const jsonValue = JSON.stringify(myBlub);
+        document.getElementById("jsonString").innerHTML = JSON.stringify(myBlub);
+        //console.log(jsonString.textContent);
+        //downloadLink.textContent += JSON.stringify([...myBlub]);
+        //const jsonString = [JSON.stringify([...myBlub])];
+      })
   }
-    //X (export) (dataEntry -> items)
-  jsjQuery = (event) => {
-    event.preventDefault();
-    const obj = {a: 123, b: "4 5 6"};
-    const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+  handleJsonString = (event) => {
+
+    console.log(document.getElementById('jsonString').childNodes[0]);
+
   }
+
+  handleSubmitDate = (event) => {
+
+
+    //console.log(this.state.myItems);
+    const date = this.state;
+    //const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+    //const {myItems} = this.state;
+    ////console.log(this.state.myItems);
+    //const myItemsByDate = new Set(); 
+    //this.state.myItems.forEach(function(item, index, object) {
+
+    //  console.log(item);
+
+    //  if (item.dates.includes(selectedDate)) {
+    //    myItemsByDate.add({word: item.word, id: myItemsByDate.size});
+    //  }
+
+    //});
+    this.loadJson();
+    this.handleJsonString(); 
+    //const allItemsByDate = this.state;
+    //const downloadLink = document.createElement('a');
+    //const downloadAll = this.state;
+    //downloadLink.className += '.obj';
+    //downloadLink.textContent = 'All my items by date';
+    //downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": allItemsByDate},null,2)], {type: 'application/json'}));
+    ////downloadLink.target = "_blank";
+    //downloadLink.target = "items.json";
+    //downloadAll.appendChild(downloadLink);
+        
+  }
+
   render() {
     return (
       <form onSubmit={this.handleSubmitDate}>
       <label>Load words by date</label>
       <div>
         <DatePicker
+          //onChange={this.onChange}
           onChange={this.onChange}
           value={this.state.date}
         />
       </div>
       <div>
-        <input onClick={this.handleDateChange} type="submit" value="Submit" className='btn btn-success btn-block' />  
+        <input type="submit" value="Submit" className='btn btn-success btn-block' />  
       </div>
       </form>
     );
