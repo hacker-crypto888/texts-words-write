@@ -67,12 +67,9 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 L'utilisateur peut :
 
 - [x] entrer un texte
-
 - [x] charger les mots par date
-
 - [x] charger un texte dans une zone de texte
-
-- [ ] charger un fichier texte
+- [ ] charger un fichier texte
 
 Sur la page des bases de données, il doit être écrit : "Voici le texte que vous avez entré"/"Voici la date que vous avez sélectionnée", puis, en dessous : "Voici la base de mots qui y est associée". ( à l'intérieur du programme, on doit pouvoir trouver les dates dans le tableau contenant les mots).
 
