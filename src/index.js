@@ -362,7 +362,7 @@ class DateForm extends React.Component {
         if (!document.getElementById('database_file')) { 
           const downloadAll = document.getElementById("inputJson");
           const addLink = document.createElement('a');
-          addLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": content},null,2)], {type: 'application/json'}));
+          addLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": JSON.parse(content)},null,2)], {type: 'application/json'}));
           addLink.innerHTML = 'download full database JSON file';
           addLink.target = 'database.json';
           addLink.id = 'database_file';
@@ -374,14 +374,17 @@ class DateForm extends React.Component {
         const myItems = JSON.parse(content);
         console.log(myItems);
         const myItemsByDate = new Set();
+        console.log(selectedDate); 
         myItems.forEach(function(item, index, object) {
-          if(item.dates.includes(selectedDate)){
+          if(myItems[index].dates.includes(selectedDate)){
             myItemsByDate.add(item); 
+            
           }
         })
         const outputJson = document.getElementById("outputJson");
         const outputLink = document.createElement('a');
-        outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": myItemsByDate},null,2)], {type: 'application/json'}));
+        console.log(myItemsByDate);
+        outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
         outputLink.innerHTML = "download JSON file (date of data entry:"+selectedDate+ ")";
         outputLink.target = 'items.json';
         outputLink.id = 'items_by_date';
@@ -395,33 +398,10 @@ class DateForm extends React.Component {
   }
 
   handleSubmitDate = (event) => {
-
-
-    //console.log(this.state.myItems);
-    const date = this.state;
-    //const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
-    //const {myItems} = this.state;
-    ////console.log(this.state.myItems);
-    //const myItemsByDate = new Set(); 
-    //this.state.myItems.forEach(function(item, index, object) {
-
-    //  console.log(item);
-
-    //  if (item.dates.includes(selectedDate)) {
-    //    myItemsByDate.add({word: item.word, id: myItemsByDate.size});
-    //  }
-
-    //});
-    this.loadJson();
-    //const allItemsByDate = this.state;
-    //const downloadLink = document.createElement('a');
-    //const downloadAll = this.state;
-    //downloadLink.className += '.obj';
-    //downloadLink.textContent = 'All my items by date';
-    //downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": allItemsByDate},null,2)], {type: 'application/json'}));
-    ////downloadLink.target = "_blank";
-    //downloadLink.target = "items.json";
-    //downloadAll.appendChild(downloadLink);
+    if (window.confirm('If you loaded your database in the public/ directory of your app, you can press ok and have the form load the right file. Else, press cancel and repeat the steps above.')) {
+      const date = this.state;
+      this.loadJson();
+    }
         
   }
 
@@ -1095,7 +1075,7 @@ my two mistresses: what a beast am I to slack it!`,
     }
   }
   alertNoDatabaseFile = (event) => {
-    if (document.getElementById('noDatabaseFile').checked = true && window.confirm("You did not upload any database.json file. Ok to continue. Cancel to upload words from previous sessions by date.")) {
+    if (document.getElementById('noDatabaseFile').checked = true && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
       //const noDatabaseFile = this.state; 
       //this.setState({
       //  noDatabaseFile:
