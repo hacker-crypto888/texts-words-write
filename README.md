@@ -4,6 +4,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### `npm install --save`
+
+Install all the dependencies in the development mode.<br>
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+The page will reload if you make edits.<br>
+You will also see any lint errors in the console.
+
 ### `npm start`
 
 Runs the app in the development mode.<br>
@@ -26,16 +34,6 @@ The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
 ## Learn More
 
@@ -63,7 +61,74 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/ad
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
 
-### `npm run build` fails to minify
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
-# repo for my laptop only
+# Mon IU (Interface Utilisateur) / My UI (User Interface)
+
+L'utilisateur peut :
+
+- [x] entrer un texte
+
+- [x] charger les mots par date 
+
+- [x] charger un texte dans une zone de texte 
+
+- [ ] charger un texte dans une zone "Charger un fichier texte" 
+
+Sur la page des bases de données, il doit être écrit : "Voici le texte que vous avez entré"/"Voici la date que vous avez sélectionnée", puis, en dessous : "Voici la base de mots qui y est associée". ( à l'intérieur du programme, on doit pouvoir trouver les dates dans le tableau contenant les mots).
+
+La base de données contient 3 colonnes : id (string type), mot (string type), date (array type).
+
+Le programme récupère la base de mots sous la forme d'un fichier JSON.
+
+
+L'utilisateur peut : 
+
+- [x] jouer les mots un par un, les écrire et avoir une validation instantanée
+
+- [ ] jouer tous les mots / play all the words
+
+
+L'utilisateur peut :
+
+- [x] créer un fichier JSON qui a comme colonnes : date, nom de fichier
+- [x] créer un formulaire pour créer ce fichier JSON
+- [x] écrire le programme qui utilise le fichier JSON pour charger une liste de mots
+
+Form Submission Fields / Les champs de formulaires
+
+- [x] Name
+- [x] Email
+- [x] Text of the day
+- [x] Date
+- [ ] parse text in French
+- [ ] parse text in English
+
+Output Files
+
+- [x] Mega database containing words from text of previous days and the texts entered today
+- [x] File containing the words selected with the submission form 
+
+## Database files
+
+        Words from text of the day 
+
+- Text -> file
+
+- Open file with text -> split into list of words
+
+Save the words in DB
+    
+- Open big database with "id", "word", and "date" columns
+
+- update = Append new words to the base
+
+Start the app
+
+- Write a simple JSON file with columns "id" and "word" and start the app 
+
+
+        Selection of words in the database using date of data entry
+
+- Open big database 
+
+- Save words matching the specified date of data entry in a JSON file with "id" and "word" columns, then start the app
