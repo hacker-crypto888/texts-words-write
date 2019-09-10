@@ -574,7 +574,8 @@ my two mistresses: what a beast am I to slack it!`,
       wordsFromText:null,
       allMyItems:null,
       downloadAll:null,
-      downloadLink:null
+      downloadLink:null,
+      databaseJson:null
     };
     //this.handleChange = this.handleChange.bind(this);
     this.handleSubmitText = this.handleSubmitText.bind(this);
@@ -669,6 +670,31 @@ my two mistresses: what a beast am I to slack it!`,
       this.a.setAttribute("href","items.json");
     }
     //the database.json file must be uploaded before the textis uploaded to merge the two easily 
+    const wordsFromText = Array.from(setWordsFromText);
+    const databaseJson = Array();
+    wordsFromText.forEach(function(item,index,object) {
+      const currentDate = new Date();
+      const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+        
+      const newItem = new Object();
+      newItem.word = item;
+      newItem.id = databaseJson.length;
+      newItem.dates = [today];
+      //myItems.splice(-1, 0, newItem);
+
+      databaseJson.push(newItem);
+      console.log(databaseJson.length);
+
+    }); 
+    const downloadAll = document.getElementById('download_all_items');
+    const downloadLink = document.createElement('a');
+    downloadLink.className += '.obj';
+    downloadLink.textContent = 'Download all new items as a new JSON database';
+    downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": databaseJson},null,2)], {type: 'application/json'}));
+    //downloadLink.target = "_blank";
+    downloadLink.target = "database.json";
+    downloadAll.appendChild(downloadLink);
+    
     //====updatethedate field of each item in thedatabase=========//
     //====writes the current date=====//
     const currentDate = new Date();
