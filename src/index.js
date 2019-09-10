@@ -204,7 +204,7 @@ class BasicForm extends React.Component {
            <div className={`form-group${item.id}`}> 
              <label htmlFor={`wordinput${item.id}`}>My App To Spell And Write Words</label>
              <li>Fill in a simple form and start using the app</li>
-             <li>Easy Registration Forms with Upload File Fields</li>
+             <li>Registration Forms with Upload File Fields</li>
              <li>Load your own text and browse your own user history of spelling and writing sessions</li>
 
              <input
@@ -430,11 +430,11 @@ class DateForm extends React.Component {
           value={this.state.date}
         />
       </div>
-      <div id={`inputJson`}></div>
-      <div id={`outputJson`}></div>
       <div>
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
       </div>
+      <div id={`inputJson`}></div>
+      <div id={`outputJson`}></div>
       </form>
     );
   }  
