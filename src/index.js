@@ -386,7 +386,7 @@ class DateForm extends React.Component {
         console.log(myItemsByDate);
         outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
         outputLink.innerHTML = "download JSON file (date of data entry:"+selectedDate+ ")";
-        outputLink.target = 'items.json';
+        outputLink.download = 'items.json';
         outputLink.id = 'items_by_date';
         outputJson.appendChild(outputLink);
         alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
