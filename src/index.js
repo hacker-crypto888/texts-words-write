@@ -398,7 +398,7 @@ class DateForm extends React.Component {
   }
 
   handleSubmitDate = (event) => {
-    if (window.confirm('If you loaded your database in the public/ directory of your app, you can press ok and have the form load the right file. Else, press cancel and repeat the steps above.')) {
+    if (window.confirm('If you saved your database in the public/ directory of your app, you can press ok and have the form load the right file. Else, press cancel and repeat the steps above.')) {
       const date = this.state;
       this.loadJson();
     }
