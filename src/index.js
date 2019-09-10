@@ -431,7 +431,7 @@ class DateForm extends React.Component {
         />
       </div>
       <div>
-        <input type="submit" value="Submit" className='btn btn-success btn-block' />  
+        <input type="submit" value="Submit selected date" className='btn btn-success btn-block' />  
       </div>
       <div id={`inputJson`}></div>
       <div id={`outputJson`}></div>
@@ -1123,38 +1123,13 @@ my two mistresses: what a beast am I to slack it!`,
         </div>
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
-        <div className='form-group'>
-          <label htmlFor='name'>Name</label>
-          <input
-            name='name'
-            className={`form-control ${this.state.nameError ? 'is-invalid' : ''}`}
-            id='name'
-            placeholder='Enter name'
-            value={this.state.name}
-            onChange={this.handleNameChange}
-            onBlur={this.validateName}
-          />
-          <div className='invalid-feedback'>{this.state.nameError}</div>
-        </div>
-        <div className='form-group'>
-          <label htmlFor='email'>Email</label>
-          <input
-            name='email'
-            className={`form-control ${this.state.emailError ? 'is-invalid' : ''}`}
-            id='email'
-            placeholder='Enter email'
-            value={this.state.email}
-            onChange={this.handleEmailChange}
-            onBlur={this.validateEmail}
-          />
-          <div className='invalid-feedback'>{this.state.emailError}</div>
-        </div>
+
         <label id={`labelText`}>
-          Text:
-        <br /><textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
+          Your Text:
+          <br /><textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
         </label>
 
-        <input type="submit" value="Submit" className='btn btn-success btn-block' />  
+        <input type="submit" value="Submit entered text" className='btn btn-success btn-block' />  
         <a id="download_items" ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
@@ -1166,3 +1141,29 @@ my two mistresses: what a beast am I to slack it!`,
 }
 
 ReactDOM.render(<BasicForm />, document.getElementById('root'));
+        //<div className='form-group'>
+        //  <label htmlFor='name'>Name</label>
+        //  <input
+        //    name='name'
+        //    className={`form-control ${this.state.nameError ? 'is-invalid' : ''}`}
+        //    id='name'
+        //    placeholder='Enter name'
+        //    value={this.state.name}
+        //    onChange={this.handleNameChange}
+        //    onBlur={this.validateName}
+        //  />
+        //  <div className='invalid-feedback'>{this.state.nameError}</div>
+        //</div>
+        //<div className='form-group'>
+        //  <label htmlFor='email'>Email</label>
+        //  <input
+        //    name='email'
+        //    className={`form-control ${this.state.emailError ? 'is-invalid' : ''}`}
+        //    id='email'
+        //    placeholder='Enter email'
+        //    value={this.state.email}
+        //    onChange={this.handleEmailChange}
+        //    onBlur={this.validateEmail}
+        //  />
+        //  <div className='invalid-feedback'>{this.state.emailError}</div>
+        //</div>
