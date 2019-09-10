@@ -328,7 +328,7 @@ class DateForm extends React.Component {
       downloadLink.className += '.obj';
       downloadLink.innerHTML = 'load by date JSON';
       //jsonString.hidden = true;
-      downloadLink.target = "database.json";
+      downloadLink.download = "database.json";
       jsonString.id = "jsonString";
       jsonString.value = this.state.jsonValue;
       jsonString.hidden = true; 
@@ -658,9 +658,12 @@ my two mistresses: what a beast am I to slack it!`,
     if (this.state.value === null) {
       alert("you entered no text")
     } else {
-      alert(`The text you \n
+  
+      if(!document.getElementById('download_items').href) {
+        alert(`The text you \n
              entered: \n` + this.state.value);
-      alert([...setWordId]);
+      }
+      //alert([...setWordId]);
     }
     const result = {};
     this.state.result = [...setWordId];
@@ -686,15 +689,18 @@ my two mistresses: what a beast am I to slack it!`,
       console.log(databaseJson.length);
 
     }); 
-    const downloadAll = document.getElementById('download_all_items');
-    const downloadLink = document.createElement('a');
-    downloadLink.className += '.obj';
-    downloadLink.textContent = 'Download all new items as a new JSON database';
-    downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": databaseJson},null,2)], {type: 'application/json'}));
-    //downloadLink.target = "_blank";
-    downloadLink.target = "database.json";
-    downloadAll.appendChild(downloadLink);
-    
+    if(document.getElementById('noDatabaseFile').checked) {
+      const downloadAll = document.getElementById('download_all_items');
+      const downloadLink = document.createElement('a');
+      downloadLink.className += '.obj';
+      downloadLink.textContent = 'Download all new items as a new JSON database';
+      downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": databaseJson},null,2)], {type: 'application/json'}));
+      downloadLink.download = "database.json";
+      //downloadLink.target = "./";
+      downloadAll.appendChild(downloadLink);
+      this.databasejson();
+    }
+    //else alet no Database file
     //====updatethedate field of each item in thedatabase=========//
     //====writes the current date=====//
     const currentDate = new Date();
@@ -828,7 +834,7 @@ my two mistresses: what a beast am I to slack it!`,
       downloadLink.textContent = 'Download all items as JSON';
       downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": allMyItems},null,2)], {type: 'application/json'}));
       //downloadLink.target = "_blank";
-      downloadLink.target = "database.json";
+      downloadLink.download = "database.json";
       downloadAll.appendChild(downloadLink);
 
     }
@@ -845,7 +851,10 @@ my two mistresses: what a beast am I to slack it!`,
   }
 
   handleDateChange = date => this.setState({date});
-
+  databasejson = (event) => { 
+    //document.getElementById('download_zone')
+    alert('save your file under public/ directory of your app');
+  }
   downloadItems = (event) => {
     console.log(this.state.result);
     const result = this.state;
@@ -1015,6 +1024,7 @@ my two mistresses: what a beast am I to slack it!`,
       value:
         event.target.value
     });
+    //on Change of text ... /* text content of download all items must be empty*/
   }
 
   //incrementDatabase = (event) => {
@@ -1102,6 +1112,7 @@ my two mistresses: what a beast am I to slack it!`,
       //});
       //document.getElementById('noDatabaseFile').value = document.getElementById('noDatabaseFile').checked;
       document.getElementById('dropzone').hidden = true;
+      this.handleText();
       
     } else {
       document.getElementById('noDatabaseFile').removeAttribute('checked');   
@@ -1150,6 +1161,7 @@ my two mistresses: what a beast am I to slack it!`,
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
         <a id="download_items" ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} >Download Words From The Text Just Loaded</a>
         <div id={`download_all_items`}></div> 
+        <div id={`download_zone`}></div> 
 
  
       </form>
