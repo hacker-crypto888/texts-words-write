@@ -68,7 +68,7 @@ L'utilisateur peut :
 
 - [x] entrer un texte
 - [x] charger les mots par date
-- [x] charger un texte dans une zone de texte
+- [x] charger un texte dans une zone de texte
 - [ ] charger un fichier texte
 
 Sur la page des bases de données, il doit être écrit : "Voici le texte que vous avez entré"/"Voici la date que vous avez sélectionnée", puis, en dessous : "Voici la base de mots qui y est associée". ( à l'intérieur du programme, on doit pouvoir trouver les dates dans le tableau contenant les mots).
@@ -82,7 +82,7 @@ L'utilisateur peut :
 
 - [x] jouer les mots un par un, les écrire et avoir une validation instantanée
 
-- [ ] jouer tous les mots / play all the words
+- [ ] jouer tous les mots-play all the words
 
 
 L'utilisateur peut :
