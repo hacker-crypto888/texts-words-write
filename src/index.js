@@ -271,7 +271,7 @@ class DateForm extends React.Component {
       myBlub:null,
       today:null,
       currentDate:new Date(),
-
+      downloadLink:null,
       mynewDb:null,
       response:null,
       res:null,
@@ -284,7 +284,12 @@ class DateForm extends React.Component {
       jsonContent:"",
       contentList:null,
       mydatepicker:null,
-      jsonValue:""
+      jsonValue:"",
+      content:"",
+      addLink:'',
+      outputJson:null,
+      outputLink:null,
+      saveFile:null
       
     }
   }
@@ -305,7 +310,7 @@ class DateForm extends React.Component {
 
     //at any moment in the program (setState was already used)
     //const date = this.state.date;
-    //const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+
     //console.log(selectedDate);
   }
 
@@ -316,8 +321,8 @@ class DateForm extends React.Component {
     const valueArray ={};
 
     if (!document.getElementById('jsonString')) {
-      const downloadAll = document.getElementById("download_all_items");
-      const jsonString = document.createElement('div');
+      const downloadAll = document.getElementById("inputJson");
+      const jsonString = document.createElement('input');
       const downloadLink = document.createElement('input');
       const jsonValue = '';
       downloadLink.className += '.obj';
@@ -325,12 +330,17 @@ class DateForm extends React.Component {
       //jsonString.hidden = true;
       downloadLink.target = "database.json";
       jsonString.id = "jsonString";
-      jsonString.innerHTML = this.state.jsonValue;
+      jsonString.value = this.state.jsonValue;
+      jsonString.hidden = true; 
+      jsonString.onChange = this.handleJsonString;
       downloadAll.appendChild(jsonString);
     }
     
 
-    this.handleJsonString(); 
+    const date = this.state;
+    const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+    console.log(this.state.date); 
+    console.log(selectedDate); 
 
 
 
@@ -344,16 +354,43 @@ class DateForm extends React.Component {
         //this.setState({myBlub});
         //console.log(myBlub);
         //downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": myBlub},null,2)], {type: 'application/json'}));
-        const jsonValue = JSON.stringify(myBlub);
-        document.getElementById("jsonString").innerHTML = JSON.stringify(myBlub);
-        //console.log(jsonString.textContent);
-        //downloadLink.textContent += JSON.stringify([...myBlub]);
-        //const jsonString = [JSON.stringify([...myBlub])];
+        //const jsonValue = JSON.stringify(myBlub);
+        document.getElementById("jsonString").value = JSON.stringify(myBlub);
+        const content = document.getElementById('jsonString').value;
+        console.log(content);
+        //======re-display download link for database.json (once)=====//
+        if (!document.getElementById('database_file')) { 
+          const downloadAll = document.getElementById("inputJson");
+          const addLink = document.createElement('a');
+          addLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": content},null,2)], {type: 'application/json'}));
+          addLink.innerHTML = 'download full database JSON file';
+          addLink.target = 'database.json';
+          addLink.id = 'database_file';
+          downloadAll.appendChild(addLink);
+          const saveFile = document.createElement('p');
+          saveFile.textContent = "Don't forget to save your database JSON file under the public/ directory of your app";
+        }
+        //sort items by date and append to array
+        const myItems = JSON.parse(content);
+        console.log(myItems);
+        const myItemsByDate = new Set();
+        myItems.forEach(function(item, index, object) {
+          if(item.dates.includes(selectedDate)){
+            myItemsByDate.add(item); 
+          }
+        })
+        const outputJson = document.getElementById("outputJson");
+        const outputLink = document.createElement('a');
+        outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": myItemsByDate},null,2)], {type: 'application/json'}));
+        outputLink.innerHTML = "download JSON file (date of data entry:"+selectedDate+ ")";
+        outputLink.target = 'items.json';
+        outputLink.id = 'items_by_date';
+        outputJson.appendChild(outputLink);
+        alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
       })
   }
   handleJsonString = (event) => {
 
-    console.log(document.getElementById('jsonString').childNodes[0]);
 
   }
 
@@ -376,7 +413,6 @@ class DateForm extends React.Component {
 
     //});
     this.loadJson();
-    this.handleJsonString(); 
     //const allItemsByDate = this.state;
     //const downloadLink = document.createElement('a');
     //const downloadAll = this.state;
@@ -400,6 +436,8 @@ class DateForm extends React.Component {
           value={this.state.date}
         />
       </div>
+      <div id={`inputJson`}></div>
+      <div id={`outputJson`}></div>
       <div>
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
       </div>
