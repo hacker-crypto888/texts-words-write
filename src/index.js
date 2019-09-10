@@ -199,15 +199,13 @@ class BasicForm extends React.Component {
     return(
 
       <form onSubmit={this.handleSubmit}>
-           <div>
-             <RegistrationForm />
-           </div>
-           <div>
-             <DateForm />
-           </div>
+
+
            <div className={`form-group${item.id}`}> 
-             <label htmlFor={`wordinput${item.id}`}>Word</label>
-             <li key={item.id}>{item.name} {item.price}</li>
+             <label htmlFor={`wordinput${item.id}`}>My App To Spell And Write Words</label>
+             <li>Fill in a simple form and start using the app</li>
+             <li>Easy Registration Forms with Upload File Fields</li>
+             <li>Load your own text and browse your own user history of spelling and writing sessions</li>
 
              <input
                name={item.name}
@@ -240,6 +238,22 @@ class BasicForm extends React.Component {
                )}<br />
              </div>
 
+
+          <p>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
+              {`\u2699`} Settings
+            </button>
+          </p>
+          <div class="collapse" id="mysettings">
+            <div class="card card-body">
+              <div>
+                <RegistrationForm />
+              </div>
+              <div id={`myDateForm`}>
+                <DateForm />
+              </div>
+            </div>
+          </div>
           </form>
     );
   }
@@ -364,7 +378,7 @@ class DateForm extends React.Component {
           const addLink = document.createElement('a');
           addLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": JSON.parse(content)},null,2)], {type: 'application/json'}));
           addLink.innerHTML = 'download full database JSON file';
-          addLink.target = 'database.json';
+          addLink.download = 'database.json';
           addLink.id = 'database_file';
           downloadAll.appendChild(addLink);
           const saveFile = document.createElement('p');
@@ -651,6 +665,7 @@ my two mistresses: what a beast am I to slack it!`,
     //const jsonArray = {["items"]: [...setWordId]};
     if (this.state.value !== null) {
       this.a.setAttribute("href","items.json");
+      this.a.textContent = "Download your JSON file with words from the text";
     }
     //the database.json file must be uploaded before the textis uploaded to merge the two easily 
     const wordsFromText = Array.from(setWordsFromText);
@@ -1134,12 +1149,13 @@ my two mistresses: what a beast am I to slack it!`,
           />
           <div className='invalid-feedback'>{this.state.emailError}</div>
         </div>
-        <label>
-          Essay:
-          <textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
+        <label id={`labelText`}>
+          Text:
+        <br /><textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
         </label>
+
         <input type="submit" value="Submit" className='btn btn-success btn-block' />  
-        <a id="download_items" ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} >Download Words From The Text Just Loaded</a>
+        <a id="download_items" ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
 
