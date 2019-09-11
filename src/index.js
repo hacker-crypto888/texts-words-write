@@ -501,7 +501,7 @@ my two mistresses: what a beast am I to slack it!`,
       nameError: '',
       concatArray:null,
       downloadArray:[],
-      listOfWords:[],
+      wordList:[],
       dateOfTheDay:[],
       datesFromDatabase:[],
       loadedText:[],
@@ -626,22 +626,22 @@ my two mistresses: what a beast am I to slack it!`,
     const database = [];
     //this.importAllWords();
     const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-    const listOfWords = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+    const wordList = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
       return element !== null;
     });
     //create the file to make th eapp work now
     const setWordId = new Set();
-    for (var i=0; i < listOfWords.length; i++) {
-      if (listOfWords[i] !== "") {
-        setWordId.add({word: listOfWords[i], id: setWordId.size});
+    for (var i=0; i < wordList.length; i++) {
+      if (wordList[i] !== "") {
+        setWordId.add({word: wordList[i], id: setWordId.size});
         console.log(setWordId);
       }
 
     }
     const setWordsFromText = new Set();
-    for (var i=0; i < listOfWords.length; i++) {
-      if (listOfWords[i] !== "") {
-        setWordsFromText.add(listOfWords[i]);
+    for (var i=0; i < wordList.length; i++) {
+      if (wordList[i] !== "") {
+        setWordsFromText.add(wordList[i]);
         console.log(setWordsFromText);
       }
 
@@ -721,22 +721,22 @@ my two mistresses: what a beast am I to slack it!`,
       //array objects
       const result = this.state;
       const myItems = this.state;
-      const listOfWords = this.state;
+      const wordList = this.state;
       
       const mapJson = new Map(Object.entries(this.state.myItems));
-      //console.log(this.state.listOfWords);
-      //const mapText = new Set(listOfWords);
+      //console.log(this.state.wordList);
+      //const mapText = new Set(wordList);
       console.log(setWordsFromText);
-      //listOfWords.forEach(function(word) {
+      //wordList.forEach(function(word) {
       //  //const newWord = { word: this.state.word };
       //  //mapText.set(this.state.newWord);
       //  console.log(word);
       //});
      
-      ////const mapText = new Set(Object.entries(this.state.listOfWords));
+      ////const mapText = new Set(Object.entries(this.state.wordList));
       //console.log(this.state.mapText); 
       //database json line by line
-      //for (let line of listOfWords.keys()) {
+      //for (let line of wordList.keys()) {
         //console.log(line)
       //} 
       const setWordsFromDatabase = new Set();
