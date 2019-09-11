@@ -11,8 +11,6 @@ class BasicForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      wordinput: '',
-      audioCode:'',
       inputValue:'',
       checkInput:'',
       wordtest:'',
@@ -21,24 +19,14 @@ class BasicForm extends React.Component {
       variableErrors:'',
       mountElements:[],
       controls:true,
-      error: null,
-      isLoaded: false,
-      item: [],
-      item2: [],
       items: [],
-      items_name:[],
       wordinputError: '',
       name: '',
       email: '',
       nameError:'',
       emailError:'',
       user: '',
-      itemname:'',
       audioplayerToggle:"",
-      list_filenames:[],
-      mydate: "20190101",
-      displayPlayer: '',
-      onblur:''
     };
   }
   getInitialState = () => {
@@ -145,20 +133,19 @@ class BasicForm extends React.Component {
     });
   }
   render() { 
-    const item = this.state;
     return(
       <form onSubmit={this.handleSubmit}>
-           <div className={`form-group${item.id}`}> 
-             <label htmlFor={`wordinput${item.id}`}>My App To Spell And Write Words</label>
+           <div className={`form-group`}> 
+             <label htmlFor={`wordinput`}>My App To Spell And Write Words</label>
              <li>Fill in a simple form and start using the app</li>
              <li>Registration Forms with Upload File Fields</li>
              <li>Load your own text and browse your own user history of spelling and writing sessions</li>
              <input
-               name={item.name}
+               //name={`wordinput`}
                className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
-               id={`wordinput${item.id}`}
+               id={`wordinput`}
                placeholder='Enter word'
-               key={item.id}
+               //key={1} // this.state.Key 
                value={this.state.inputValue}
                onClick={this.handleWordInput}
                onFocus={this.handleWordInput}
@@ -209,8 +196,6 @@ class FillInTheDateForm extends React.Component {
     this.state = {
       date: '',
       selectedDate:'',
-      dataArray:null,
-      dateObject:null,
       database:[],
       data:null,
       json:null,
@@ -218,8 +203,6 @@ class FillInTheDateForm extends React.Component {
       text:null,
       url:null,
       valueArray:null,
-      mydatabase:null,
-      dataEntry: null,
       response:null,
       myBlob:null,
       myDatabase:null,
@@ -373,19 +356,14 @@ as my word; but speciously for Master Fenton. Well,
 I must of another errand to Sir John Falstaff from
 my two mistresses: what a beast am I to slack it!`,
       i:null,
-      jsonArray:null,
       text:'',
       importText:'',
-      jsonArrayArray:[],
-      jsonArrayForMerger:[],
       itemList:[],
       date:new Date(),
-      wordsFromLoadedText:null,
       blobData:[],
       textError:'',
       database:[],
       j:null,
-      jsonData:[],
       today:'',
       word:{},
       concat:[],
@@ -402,12 +380,6 @@ my two mistresses: what a beast am I to slack it!`,
       loadedText:[],
       m: null,
       n: null,
-      concatAll:null,
-      dateDisplay:null,
-      updateDates:[],
-      concatData:null,
-      jsonDataItems:[],
-      Words:[],
       map:null,
       items:null,
       duplicate:null,
@@ -416,14 +388,8 @@ my two mistresses: what a beast am I to slack it!`,
       jsonItemsMap:new Map(),
       newItem:null,
       testdatabase:[],
-      seconddatabase:[],
-      arrayToJson:null,
-      convertToJson:null,
-      WordIdKVPairs:new Set(),
+      wordIdKVPairs:new Set(),
       result:[],
-      replacer:null,
-      concatOldItems:[],
-      concatNewItem:[],
       x:[],
       a:null,
       emailError: '',
@@ -431,28 +397,17 @@ my two mistresses: what a beast am I to slack it!`,
       file:null,
       preview:null,
       img:null,
-      img_src:null,
       myBlub:null,
-      objectURL:null,
       myBlob:null,
       myImage:null,
       noFileType:null,
       fileName:null,
-      fileDownload:null,
-      fileUpload:null,
       noDatabaseFile:false,
-      todaysDate:new Date(),
-      uniqueArray:null,
-      lineOfArray:null,
-      currentText:null,
+      daysDate:new Date(),
       jsonSecondConfirm:false,
       databaseIsLoaded:false,
       droppedFiles:null,
-      loadByDateConfirm:2,
       mapJson:null,
-      mapText:null,
-      newWord:null,
-      setWord:null,
       compilationOfWordsFromText:null,
       compilationOfWordsFromDatabase:null,
       wordsFromDatabase:null,
@@ -516,11 +471,11 @@ my two mistresses: what a beast am I to slack it!`,
       return element !== null;
     });
     //create the file to make th eapp work now
-    const WordIdKVPairs = new Set();
+    const wordIdKVPairs = new Set();
     for (var i=0; i < wordList.length; i++) {
       if (wordList[i] !== "") {
-        WordIdKVPairs.add({word: wordList[i], id: WordIdKVPairs.size});
-        console.log(WordIdKVPairs);
+        wordIdKVPairs.add({word: wordList[i], id: wordIdKVPairs.size});
+        console.log(wordIdKVPairs);
       }
     }
     const compilationOfWordsFromText = new Set();
@@ -531,7 +486,7 @@ my two mistresses: what a beast am I to slack it!`,
       }
     }
     const jsonItemsMap = new Map();
-    jsonItemsMap.set('items', [...WordIdKVPairs]);
+    jsonItemsMap.set('items', [...wordIdKVPairs]);
     if (this.state.value === null) {
       alert("you entered no text")
     } else {
@@ -544,7 +499,7 @@ my two mistresses: what a beast am I to slack it!`,
     const result = {};
     this.setState({
       result:
-        [...WordIdKVPairs]
+        [...wordIdKVPairs]
     });
     console.log(this.state.result);
     if (this.state.value !== null) {
@@ -587,7 +542,7 @@ my two mistresses: what a beast am I to slack it!`,
     console.log(this.state.result);
     if(this.state.myItems !== undefined && this.state.result.length && this.state.myItems.length) {
       console.log("database and text loadded");
-      const mapJson = new Map(Object.entries(this.state.myItems));
+      const mapJson = new Map(Object.entries(this.state.myItems)); 
       console.log(compilationOfWordsFromText);
       const compilationOfWordsFromDatabase = new Set();
       for (let line of mapJson.values()) {
