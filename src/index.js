@@ -249,8 +249,8 @@ class BasicForm extends React.Component {
               <div>
                 <RegistrationForm />
               </div>
-              <div id={`myDateForm`}>
-                <DateForm />
+              <div id={`myFillInTheDateForm`}>
+                <FillInTheDateForm />
               </div>
             </div>
           </div>
@@ -260,7 +260,7 @@ class BasicForm extends React.Component {
 }
 
 //ReactDOM.render(<BasicForm />, document.getElementById('root'));
-class DateForm extends React.Component {
+class FillInTheDateForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -284,7 +284,7 @@ class DateForm extends React.Component {
       myDatabase:null,
       myBlub:null,
       today:null,
-      currentDate:new Date(),
+      daysDate:new Date(),
       downloadLink:null,
       mynewDb:null,
       response:null,
@@ -296,9 +296,9 @@ class DateForm extends React.Component {
       myItemsByDate:null,
       allItemsByDate:null,
       jsonContent:"",
-      contentList:null,
+      listContents:null,
       mydatepicker:null,
-      jsonValue:"",
+      jsonContent:"",
       content:"",
       addLink:'',
       outputJson:null,
@@ -313,9 +313,9 @@ class DateForm extends React.Component {
     const date = new Date();
     this.setState({date});
     
-    //const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+    //const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
     //this.onChange(date);
-    //const currentDate = new Date();
+    //const daysDate = new Date();
   }
 
   onChange = (date) => {
@@ -338,13 +338,13 @@ class DateForm extends React.Component {
       const downloadAll = document.getElementById("inputJson");
       const jsonString = document.createElement('input');
       const downloadLink = document.createElement('input');
-      const jsonValue = '';
+      const jsonContent = '';
       downloadLink.className += '.obj';
       downloadLink.innerHTML = 'load by date JSON';
       //jsonString.hidden = true;
       downloadLink.download = "database.json";
       jsonString.id = "jsonString";
-      jsonString.value = this.state.jsonValue;
+      jsonString.value = this.state.jsonContent;
       jsonString.hidden = true; 
       jsonString.onChange = this.handleJsonString;
       downloadAll.appendChild(jsonString);
@@ -368,7 +368,7 @@ class DateForm extends React.Component {
         //this.setState({myBlub});
         //console.log(myBlub);
         //downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": myBlub},null,2)], {type: 'application/json'}));
-        //const jsonValue = JSON.stringify(myBlub);
+        //const jsonContent = JSON.stringify(myBlub);
         document.getElementById("jsonString").value = JSON.stringify(myBlub);
         const content = document.getElementById('jsonString').value;
         console.log(content);
@@ -411,7 +411,7 @@ class DateForm extends React.Component {
 
   }
 
-  handleSubmitDate = (event) => {
+  handleSubmittedDate = (event) => {
     if (window.confirm('If you saved your database in the public/ directory of your app, you can press ok and have the form load the right file. Else, press cancel and repeat the steps above.')) {
       const date = this.state;
       this.loadJson();
@@ -421,7 +421,7 @@ class DateForm extends React.Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmitDate}>
+      <form onSubmit={this.handleSubmittedDate}>
       <label>Load words by date</label>
       <div>
         <DatePicker
@@ -481,8 +481,8 @@ my two mistresses: what a beast am I to slack it!`,
       text:'',
       importText:'',
       jsonArrayArray:[],
-      jsonArrayForMerge2:[],
-      listItems:[],
+      jsonArrayForMerger:[],
+      itemList:[],
       date:new Date(),
       wordsFromLoadedText:null,
       blobData:[],
@@ -502,18 +502,17 @@ my two mistresses: what a beast am I to slack it!`,
       concatArray:null,
       downloadArray:[],
       wordList:[],
-      dateOfTheDay:[],
+      //todaysDate:[],
       datesFromDatabase:[],
       loadedText:[],
       m: null,
       n: null,
       concatAll:null,
-      displayDate:null,
+      dateDisplay:null,
       updateDates:[],
       concatData:null,
       jsonDataItems:[],
       jsonData:[],
-      updateDates:[],
       Words:[],
       map:null,
       items:null,
@@ -527,7 +526,7 @@ my two mistresses: what a beast am I to slack it!`,
       arrayToJson:null,
       jsonArray:{},
       convertToJson:null,
-      setWordId:new Set(),
+      WordIdKVPairs:new Set(),
       result:[],
       replacer:null,
       concatOldItems:[],
@@ -549,7 +548,7 @@ my two mistresses: what a beast am I to slack it!`,
       fileDownload:null,
       fileUpload:null,
       noDatabaseFile:false,
-      currentDate:new Date(),
+      todaysDate:new Date(),
       bigDatabase:null,
       uniqueArray:null,
       lineOfArray:null,
@@ -562,8 +561,8 @@ my two mistresses: what a beast am I to slack it!`,
       mapText:null,
       newWord:null,
       setWord:null,
-      setWordsFromText:null,
-      setWordsFromDatabase:null,
+      compilationOfWordsFromText:null,
+      compilationOfWordsFromDatabase:null,
       wordsFromDatabase:null,
       wordsFromText:null,
       allMyItems:null,
@@ -572,7 +571,7 @@ my two mistresses: what a beast am I to slack it!`,
       databaseJson:null
     };
     //this.handleChange = this.handleChange.bind(this);
-    this.handleSubmitText = this.handleSubmitText.bind(this);
+    this.handleSubmittedText = this.handleSubmittedText.bind(this);
   }
 
   componentDidMount() {
@@ -630,24 +629,24 @@ my two mistresses: what a beast am I to slack it!`,
       return element !== null;
     });
     //create the file to make th eapp work now
-    const setWordId = new Set();
+    const WordIdKVPairs = new Set();
     for (var i=0; i < wordList.length; i++) {
       if (wordList[i] !== "") {
-        setWordId.add({word: wordList[i], id: setWordId.size});
-        console.log(setWordId);
+        WordIdKVPairs.add({word: wordList[i], id: WordIdKVPairs.size});
+        console.log(WordIdKVPairs);
       }
 
     }
-    const setWordsFromText = new Set();
+    const compilationOfWordsFromText = new Set();
     for (var i=0; i < wordList.length; i++) {
       if (wordList[i] !== "") {
-        setWordsFromText.add(wordList[i]);
-        console.log(setWordsFromText);
+        compilationOfWordsFromText.add(wordList[i]);
+        console.log(compilationOfWordsFromText);
       }
 
     }
     const jsonItemsMap = new Map();
-    jsonItemsMap.set('items', [...setWordId]);
+    jsonItemsMap.set('items', [...WordIdKVPairs]);
     const jsonData = Object.fromEntries(jsonItemsMap.entries());
     if (this.state.value === null) {
       alert("you entered no text")
@@ -657,22 +656,22 @@ my two mistresses: what a beast am I to slack it!`,
         alert(`The text you \n
              entered: \n` + this.state.value);
       }
-      //alert([...setWordId]);
+      //alert([...WordIdKVPairs]);
     }
     const result = {};
-    this.state.result = [...setWordId];
+    this.state.result = [...WordIdKVPairs];
     console.log(this.state.result);
-    //const jsonArray = {["items"]: [...setWordId]};
+    //const jsonArray = {["items"]: [...WordIdKVPairs]};
     if (this.state.value !== null) {
       this.a.setAttribute("href","items.json");
       this.a.textContent = "Download your JSON file with words from the text";
     }
     //the database.json file must be uploaded before the textis uploaded to merge the two easily 
-    const wordsFromText = Array.from(setWordsFromText);
+    const wordsFromText = Array.from(compilationOfWordsFromText);
     const databaseJson = Array();
     wordsFromText.forEach(function(item,index,object) {
-      const currentDate = new Date();
-      const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+      const daysDate = new Date();
+      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
         
       const newItem = new Object();
       newItem.word = item;
@@ -698,8 +697,8 @@ my two mistresses: what a beast am I to slack it!`,
     //else alet no Database file
     //====updatethedate field of each item in thedatabase=========//
     //====writes the current date=====//
-    const currentDate = new Date();
-    const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+    const daysDate = new Date();
+    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
     //==== end writes the current date=====//
    
     //==== updatethedate field of each item in thedatabase=========//
@@ -726,7 +725,7 @@ my two mistresses: what a beast am I to slack it!`,
       const mapJson = new Map(Object.entries(this.state.myItems));
       //console.log(this.state.wordList);
       //const mapText = new Set(wordList);
-      console.log(setWordsFromText);
+      console.log(compilationOfWordsFromText);
       //wordList.forEach(function(word) {
       //  //const newWord = { word: this.state.word };
       //  //mapText.set(this.state.newWord);
@@ -739,27 +738,27 @@ my two mistresses: what a beast am I to slack it!`,
       //for (let line of wordList.keys()) {
         //console.log(line)
       //} 
-      const setWordsFromDatabase = new Set();
+      const compilationOfWordsFromDatabase = new Set();
       for (let line of mapJson.values()) {
         //...
-        setWordsFromDatabase.add(line.word);
-        //console.log(setWordsFromDatabase.has(line.word));
+        compilationOfWordsFromDatabase.add(line.word);
+        //console.log(compilationOfWordsFromDatabase.has(line.word));
       }
-      console.log(setWordsFromDatabase.values());
-      console.log(setWordsFromDatabase);
-      const wordsFromDatabase = setWordsFromDatabase.values();
+      console.log(compilationOfWordsFromDatabase.values());
+      console.log(compilationOfWordsFromDatabase);
+      const wordsFromDatabase = compilationOfWordsFromDatabase.values();
 
       for (let line of mapJson.values()) {
         //...
         //console.log(line.word);
         //if (wordsFromDatabase.includes(line.word
-        const currentDate = new Date();
-        const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+        const daysDate = new Date();
+        const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
         //console.log(line.dates);
-        //console.log(setWordsFromDatabase.has("minutes"));
-        //console.log(setWordsFromText.has({word: "minutes"}));
+        //console.log(compilationOfWordsFromDatabase.has("minutes"));
+        //console.log(compilationOfWordsFromText.has({word: "minutes"}));
         //console.log(line.dates.includes(this.state.today));
-        //if(setWordsFromText.has({word: line.word}) && !(line.dates.includes(this.state.today))) {
+        //if(compilationOfWordsFromText.has({word: line.word}) && !(line.dates.includes(this.state.today))) {
           //console.log(wordsFromText);
           //console.log(line); 
           //line.dates.push(this.state.today);
@@ -769,18 +768,18 @@ my two mistresses: what a beast am I to slack it!`,
         
       }
       //restOfWords
-      const wordsFromText = Array.from(setWordsFromText);
-      for (let line of setWordsFromDatabase) {
+      const wordsFromText = Array.from(compilationOfWordsFromText);
+      for (let line of compilationOfWordsFromDatabase) {
         //...
         //console.log(line.word);
         //if (wordsFromDatabase.includes(line.word
           //console.log(line); 
-        //wordsFromDatabase.push(new Date()); 
-        if (Array.from(setWordsFromText).includes(line)) {
+        //wordsFromDatabase.push(new Date());
+        if (Array.from(compilationOfWordsFromText).includes(line)) {
           //console.log(line);
           this.state.myItems.forEach(function(element) {
-            const currentDate = new Date();
-            const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+            const daysDate = new Date();
+            const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
             //console.log(today);
             if (element.word === line && !element.dates.includes(today)) {
               //console.log(element)
@@ -804,8 +803,8 @@ my two mistresses: what a beast am I to slack it!`,
       console.log(this.state.myItems);
       const allMyItems = Array.from(this.state.myItems);
       wordsFromText.forEach(function(item,index,object) {
-        const currentDate = new Date();
-        const today = (currentDate.getMonth()+1)+'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+        const daysDate = new Date();
+        const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
         
         const newItem = new Object();
         newItem.word = item;
@@ -838,7 +837,7 @@ my two mistresses: what a beast am I to slack it!`,
 
   } 
 
-  handleSubmitText = event => {
+  handleSubmittedText = event => {
     const { name, email, value, myBlob } = this.state;
     //this.setState({value: event.target.value});
     event.preventDefault();
@@ -848,13 +847,13 @@ my two mistresses: what a beast am I to slack it!`,
   handleDateChange = date => this.setState({date});
   databasejson = (event) => { 
     //document.getElementById('download_zone')
-    alert('save your file under public/ directory of your app');
+    alert('save your file under the public/ directory of your app');
   }
   downloadItems = (event) => {
     console.log(this.state.result);
     const result = this.state;
     const jsonArray = this.state;
-    const setWordId = this.state;
+    const WordIdKVPairs = this.state;
     const downloadArray = this.state.result;
     const blobData = new Blob([JSON.stringify({"items": this.state.result},null,2)], {type: 'application/json'});
     const url = window.URL.createObjectURL(blobData);
@@ -1083,7 +1082,6 @@ my two mistresses: what a beast am I to slack it!`,
       document.getElementById('dropzone').removeAttribute('checked');
       
       document.getElementById('dropzone').hidden = false;
-      console.log("uncheck box");
 
 
   
@@ -1116,7 +1114,7 @@ my two mistresses: what a beast am I to slack it!`,
   }
   render() {
     return (
-      <form enctype={`multipart/form-data`} onSubmit={this.handleSubmitText}>
+      <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
         <div>
           <input type="checkbox" id={`noDatabaseFile`} value={this.state.noDatabaseFile} onChange={this.checkBox} />
           <label for="subscribeNews">I have no database.json</label>
