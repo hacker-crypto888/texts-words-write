@@ -790,7 +790,7 @@ my two mistresses: what a beast am I to slack it!`,
     }
   }
   alertNoDatabaseFile = (event) => {
-    if (document.getElementById('noDatabaseFile').checked === true && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
+    if (document.getElementById('noDatabaseFile').checked === false && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
       document.getElementById('noDatabaseFile').checked = true;
       this.setState({
         jsonSecondConfirm:
@@ -819,7 +819,6 @@ my two mistresses: what a beast am I to slack it!`,
         </label>
 
         <input type={`submit`} value={`Submit entered text`} className={`btn btn-success btn-block`} />  
-        // eslint-disable-next-line
         <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
