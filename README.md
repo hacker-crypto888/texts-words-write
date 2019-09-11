@@ -62,34 +62,34 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/ad
 This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
 
 
-# Mon IU (Interface Utilisateur) / My UI (User Interface)
+# My UI (User Interface)
 
-L'utilisateur peut :
+The user can:
 
-- [x] entrer un texte
-- [x] charger les mots par date
-- [x] charger un texte dans une zone de texte
-- [ ] charger un fichier texte
+- [x] enter a text
+- [x] load the words by date
+- [x] load a text in a text area
+- [ ] load a text file
 
-Sur la page des bases de données, il doit être écrit : "Voici le texte que vous avez entré"/"Voici la date que vous avez sélectionnée", puis, en dessous : "Voici la base de mots qui y est associée". ( à l'intérieur du programme, on doit pouvoir trouver les dates dans le tableau contenant les mots).
+On the page of databases, there must be written: "Here is the text you entered"/"Here is the date you selected", then, below: "Here is the associated word list". ( in the program, one must be able to find the dates in the chart containing the words).
 
-La base de données contient 3 colonnes : id (string type), mot (string type), date (array type).
+The database contains 3 columns: id (string type), word (string type), date (array type).
 
-Le programme récupère la base de mots sous la forme d'un fichier JSON.
-
-
-L'utilisateur peut : 
-
-- [x] jouer les mots un par un, les écrire et avoir une validation instantanée
-
-- [ ] jouer tous les mots-play all the words
+The program compiles the word list under the form of a JSON file.
 
 
-L'utilisateur peut :
+The user can: 
 
-- [x] créer un fichier JSON qui a comme colonnes : date, nom de fichier
-- [x] créer un formulaire pour créer ce fichier JSON
-- [x] écrire le programme qui utilise le fichier JSON pour charger une liste de mots
+- [x] play the words one by one, write them, and have an instant validation
+
+- [ ] play all the words
+
+
+The user can also:
+
+- [x] create a JSON file which has for columns: date, file name
+- [x] create a form to create this JSON file
+- [x] write the pogram which uses this JSON file to load a word list
 
 Form Submission Fields / Les champs de formulaires
 
@@ -111,13 +111,13 @@ Output Files
 
 - Text -> file
 
-- Open file with text -> split into list of words
+- Open file with text -> split into word list
 
 Save the words in DB
     
 - Open big database with "id", "word", and "date" columns
 
-- update = Append new words to the base
+- update = Append new words to the database
 
 Start the app
 
