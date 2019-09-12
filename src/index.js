@@ -140,6 +140,7 @@ class BasicForm extends React.Component {
              <li>Fill in a simple form and start using the app</li>
              <li>Registration Forms with Upload File Fields</li>
              <li>Load your own text and browse your own user history of spelling and writing sessions</li>
+             <li>Edit your text, re-load, and re-download new output JSON files as many time as needed</li>
              <input
                //name={`wordinput`}
                className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
@@ -415,7 +416,8 @@ my two mistresses: what a beast am I to slack it!`,
       allMyItems:null,
       downloadAll:null,
       downloadLink:null,
-      databaseJson:null
+      databaseJson:null,
+      textAtFileCreation:null
     };
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
   }
@@ -519,14 +521,24 @@ my two mistresses: what a beast am I to slack it!`,
       console.log(databaseJson.length);
     }); 
     if(document.getElementById('noDatabaseFile').checked) {
+      if (this.state.value !== null) {
+        this.a.setAttribute("href","items.json");
+        this.a.textContent = "Download your JSON file with words from the text";
+      }
       const downloadAll = document.getElementById('download_all_items');
       const downloadLink = document.createElement('a');
       downloadLink.className += '.obj';
+      downloadLink.id = "databaseAfterNewText"; //database after new text
       downloadLink.textContent = 'Download all new items as a new JSON database';
       downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": databaseJson},null,2)], {type: 'application/json'}));
       downloadLink.download = "database.json";
       downloadAll.appendChild(downloadLink);
+      //downloadAll.appendChild(document.createElement('br'));
       this.databasejson();
+      this.setState({
+        textAtFileCreation:
+          this.state.value
+      });
     }
     //==== updatethedate field of each item in thedatabase=========//
     console.log(this.state.noDatabaseFile);
@@ -603,6 +615,12 @@ my two mistresses: what a beast am I to slack it!`,
 
   handleSubmittedText = event => {
     event.preventDefault();
+    if(this.state.textAtFileCreation !== null) {
+      document.getElementById('databaseAfterNewText').remove();
+      this.a.removeAttribute('href');
+      this.a.textContent = "";
+      //615
+    }
     this.handleText();
   }
 
@@ -815,6 +833,7 @@ my two mistresses: what a beast am I to slack it!`,
 
         <label id={`labelText`}>
           Your Text:
+
           <br /><textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
         </label>
 
