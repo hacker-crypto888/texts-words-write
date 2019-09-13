@@ -1,3 +1,10 @@
+## My App To Spell And Write Words 
+
+- Fill in a simple form and start using the app
+- Registration Forms with Upload File Fields
+- Load your own text and browse your own user history of spelling and writing sessions
+- Edit your text, re-load, and re-download new output JSON files as many time as needed
+
 ## Please Use These Two Available Scripts
 
 In the project directory, you can run:
