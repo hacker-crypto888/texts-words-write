@@ -11,7 +11,7 @@ In the project directory, you can run:
 
 ### `npm install --save`
 
-Install all the dependencies in the development mode.<br>
+Installs all the dependencies in the development mode.<br>
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br>
@@ -31,6 +31,7 @@ The user must be able to:
 
 - [x] to modify the text without any bug, on the click of the button which has for function to load the next text, if the download link with such id already exists and text changed, do this, replace the items.json download link by a new link and update also the link for the database.json file
 - [ ] load a text file
+- [ ] handle empty date input
 - [x] drop a database json to sort the items by date
 - [x] not to load any text when textarea is empty
 - [ ] display each audio in a carousel and remove slide of carousel once word is written correctly

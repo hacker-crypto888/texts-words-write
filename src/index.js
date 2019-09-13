@@ -27,6 +27,13 @@ class BasicForm extends React.Component {
       emailError:'',
       user: '',
       audioplayerToggle:"",
+      mp3WordList:null,
+      audioId:null,
+      myAudio:null,
+      audioPreview:null,
+      sourceTag:null,
+      theFirstChild:null,
+      sourceFile:null
     };
   }
   getInitialState = () => {
@@ -91,20 +98,59 @@ class BasicForm extends React.Component {
     });
   };
   displayAudio = event => {
-    const audioElements = document.getElementsByTagName('audio');
-    for (var i = 0; i < audioElements.length; i++) {
-      audioElements[i].removeAttribute('controls');
-      audioElements[i].setAttribute('controls','');
-      audioElements[i].pause();
-      audioElements[i].currentTime = 0;
-    };
+    //this is the fetching of the online mp3 database you are going to use
+    //fetch("https://github.com/nathanielove/English-words-pronunciation-mp3-audio-download/blob/master/data.json")
+    const items = this.state;
+    console.log(this.state.items);
+    fetch("https://raw.githubusercontent.com/nathanielove/English-words-pronunciation-mp3-audio-download/master/data.json")
+      .then(function(response){
+        return response.json();
+      })
+      .then(function(mp3WordList){
+        console.log([...Object.entries(mp3WordList)]);
+       
+        items.map(function(item) {
+          const audioPreview = document.createElement('div'); 
+          audioPreview.className=item.name;
+          audioPreview.key=item.id;
+          audioPreview.ref=this.audioSource;
+
+          audioPreview.id=item.name;
+          audioPreview.controls=this.state.controls;
+          audioPreview.onPlay=this.setState({ targetValue: audioPreview.id, controls: audioPreview.controls }); 
+          const theFirstChild = audioPreview.firstChild;
+          const sourceFile = document.createElement('source');
+          sourceFile.src = [...Object.entries(mp3WordList)][item.name]; 
+          sourceFile.className = item.name; 
+          sourceFile.type = 'audio/mpeg'; 
+          audioPreview.insertBefore(sourceFile, theFirstChild);
+          document.getElementById('myAudioFiles').appendChild(audioPreview);
+          document.getElementById('myAudioFiles').appendChild('br');
+        
+        //const audioElements = document.getElementsByTagName('audio');
+        //for (var i = 0; i < audioElements.length; i++) {
+        //  audioElements[i].removeAttribute('controls');
+        //  audioElements[i].setAttribute('controls','');
+        //  audioElements[i].pause();
+        //  audioElements[i].currentTime = 0;
+        //  const audioId = audioElements[i].id;
+        //  console.log(audioId);
+        //  audioElements[i].firstChild.src = [...Object.entries(mp3WordList)][audioId];
+          //console.log(audioElements[i].className);
+          //console.log(audioElements[i]);
+        //};
+        });
+      })
+
+    //this is the list of audio elements you are working on 
+
     this.setState({
       inputValue:
         '',
       targetValue:
         ''
     });
-    console.log(audioElements);
+
   }
   removeAudioPlayer = (props) => {
     const { targetValue, inputValue } = this.state;
@@ -125,6 +171,8 @@ class BasicForm extends React.Component {
       mountElements[0].removeAttribute('controls');
     }
     
+
+    
     this.setState({
       inputValue:
         '',
@@ -133,14 +181,11 @@ class BasicForm extends React.Component {
     });
   }
   render() { 
+    
     return(
       <form onSubmit={this.handleSubmit}>
            <div className={`form-group`}> 
-             <label htmlFor={`wordinput`}>My App To Spell And Write Words</label>
-             <li>Fill in a simple form and start using the app</li>
-             <li>Registration Forms with Upload File Fields</li>
-             <li>Load your own text and browse your own user history of spelling and writing sessions</li>
-             <li>Edit your text, re-load, and re-download new output JSON files as many time as needed</li>
+             <label htmlFor={`wordinput`}></label>
              <input
                //name={`wordinput`}
                className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
@@ -164,6 +209,9 @@ class BasicForm extends React.Component {
              <div>{this.state.checkInput}</div>
              <div>{this.state.checkTarget}</div>
              <div>{this.state.variableErrors}</div>
+             <div id={`myAudioFiles`}></div>
+             <br />
+             <div>==============================</div>
              <div>
                {this.state.items.map(item =>
                  <audio className={item.name} key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.name} controls={this.state.controls}> 
@@ -290,6 +338,7 @@ class FillInTheDateForm extends React.Component {
       downloadAll.appendChild(jsonString);
     }
     const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+    
     console.log(this.state.date); 
     console.log(selectedDate); 
     fetch(`./database.json`)
@@ -338,7 +387,7 @@ class FillInTheDateForm extends React.Component {
           const outputLink = document.createElement('a');
           console.log(myItemsByDate);
           outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
-          outputLink.innerHTML = "download JSON file (date of data entry:"+selectedDate+ ")";
+          outputLink.innerHTML = "download JSON file (date of data entry: "+selectedDate+ ")";
           outputLink.download = 'items.json';
           outputLink.id = 'items_by_date';
           outputJson.appendChild(outputLink);
@@ -421,7 +470,7 @@ class FillInTheDateForm extends React.Component {
           const outputLink = document.createElement('a');
           console.log(myItemsByDate);
           outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
-          outputLink.innerHTML = "download JSON file (date of data entry:"+selectedDate+ ")";
+          outputLink.innerHTML = "download JSON file (date of data entry: "+selectedDate+ ")";
           outputLink.download = 'items.json';
           outputLink.id = 'items_by_date';
           outputJson.appendChild(outputLink);
@@ -910,7 +959,9 @@ my two mistresses: what a beast am I to slack it!`,
     }
   }
 
-  handleDateChange = date => this.setState({date});
+  handleDateChange = date => {
+    this.setState({date});
+  }
   databasejson = (event) => { 
     alert('save your file under the public/ directory of your app');
   }
