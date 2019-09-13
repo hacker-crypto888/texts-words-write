@@ -1,4 +1,4 @@
-import React from 'react'; 
+import React, {setState} from 'react'; 
 import ReactDOM from 'react-dom'; 
 import './index.css';
 import axios from 'axios';
@@ -226,19 +226,49 @@ class FillInTheDateForm extends React.Component {
       addLink:'',
       outputJson:null,
       outputLink:null,
-      saveFile:null
+      files:null,
+      file:null, 
+      img:null,
+      myImage:null,
+      preview:null,
+      fileName:null,
+      reader:null,
+      dt:null,
+      i:null,
+      j:null,
+      k:null,
+      fd:null,
+      response:null,
+      thirdres:null,
+      myBlob:null,
+      myBlub:null,
+      databaseIsLoaded:null,
+      myItems:null,    
+      noFileType:null,
+      importMode:null,    
+      saveFile:null,
+      jsonString:null,
+      downloadAll:null,
+      downloadLink:null
+      
     }
   }
   componentDidMount() {
     const date = new Date();
     this.setState({date});
+    document.getElementById('dropzoneJson').hidden = true;
+    this.setState({
+      importMode:
+        "load"
+    });
+    
   }
   onChange = (date) => {
     this.setState({ date });
   }
   loadJson = (event) => {
     if (!document.getElementById('jsonString')) {
-      const downloadAll = document.getElementById("inputJson");
+      const downloadAll = document.getElementById("inputJsonFile");
       const jsonString = document.createElement('input');
       const downloadLink = document.createElement('input');
       downloadLink.className += '.obj';
@@ -247,7 +277,6 @@ class FillInTheDateForm extends React.Component {
       jsonString.id = "jsonString";
       jsonString.value = this.state.jsonContent;
       jsonString.hidden = true; 
-      jsonString.onChange = this.handleJsonString;
       downloadAll.appendChild(jsonString);
     }
     const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
@@ -264,7 +293,7 @@ class FillInTheDateForm extends React.Component {
         console.log(content);
         //======re-display download link for database.json (once)=====//
         if (!document.getElementById('database_file')) { 
-          const downloadAll = document.getElementById("inputJson");
+          const downloadAll = document.getElementById("inputJsonFile");
           const addLink = document.createElement('a');
           addLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": JSON.parse(content)},null,2)], {type: 'application/json'}));
           addLink.innerHTML = 'download full database JSON file';
@@ -284,24 +313,188 @@ class FillInTheDateForm extends React.Component {
             myItemsByDate.add(item); 
             
           }
-        })
-        const outputJson = document.getElementById("outputJson");
-        const outputLink = document.createElement('a');
-        console.log(myItemsByDate);
-        outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
-        outputLink.innerHTML = "download JSON file (date of data entry:"+selectedDate+ ")";
-        outputLink.download = 'items.json';
-        outputLink.id = 'items_by_date';
-        outputJson.appendChild(outputLink);
-        alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
+        });
+        if ([...myItemsByDate].length){
+          document.getElementById('outputJsonFile').removeChild();
+          document.getElementById('inputJsonFile').removeChild();
+          const outputJson = document.getElementById("outputJsonFile");
+          const outputLink = document.createElement('a');
+          console.log(myItemsByDate);
+          outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
+          outputLink.innerHTML = "download JSON file (date of data entry:"+selectedDate+ ")";
+          outputLink.download = 'items.json';
+          outputLink.id = 'items_by_date';
+          outputJson.appendChild(outputLink);
+          alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
+        } else {
+          const outputJson = document.getElementById("outputJsonFile");
+          const outputLink = document.createElement('p');
+          outputLink.textContent = 'no item corresponds to your request.';
+          outputLink.id = 'noitem';
+          outputJson.appendChild(outputLink);
+        }
+        
       })
-  }
-  handleJsonString = (event) => {
   }
 
   handleSubmittedDate = (event) => {
-    if (window.confirm('If you saved your database in the public/ directory of your app, you can press ok and have the form load the right file. Else, press cancel and repeat the steps above.')) {
+
+
+    if(this.state.importMode === "load" && window.confirm('Are you sure that you saved your database in the public/ directory of your app? Press ok to continue. Else, press cancel to choose an other processing mode.')) {
       this.loadJson();
+    } else {
+    }
+      //you click. how to determine if the database is already loaded and act in function of that. Example: the database is loaded in "my Items" (in the function sendFile (file), so you will just do stuff (like below with what's in "my Items".
+      // other possibility: the database is not loaded, so you will just cancel these operations.
+
+      // drop the json files
+      //generate my Items by date using my Items
+    if (this.state.importMode === "drop") {
+      const myItems = this.state;
+      if (this.state.myItems === null) {
+        alert("The program could not proceed. There must be an error with the file you loaded in the dropzone. Drop a new file and try again.");
+      } else {
+        const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+        //console.log(myItems);
+        const myItemsByDate = new Set();
+        console.log(selectedDate); 
+        if (this.state.myItems.length > 0 && this.state.myItems !== undefined) {
+          this.state.myItems.forEach(function(item, index, object) {
+            if(item.dates.includes(selectedDate)){
+              myItemsByDate.add(item); 
+              
+            }
+          });
+        }
+        if ([...myItemsByDate].length){
+          document.getElementById('noitem').remove();
+          const outputJson = document.getElementById("outputJsonFile");
+          const outputLink = document.createElement('a');
+          console.log(myItemsByDate);
+          outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
+          outputLink.innerHTML = "download JSON file (date of data entry:"+selectedDate+ ")";
+          outputLink.download = 'items.json';
+          outputLink.id = 'items_by_date';
+          outputJson.appendChild(outputLink);
+          alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
+        } else {
+          const outputJson = document.getElementById("outputJsonFile");
+          const outputLink = document.createElement('p');
+          outputLink.textContent = 'no item corresponds to your request.';
+          outputLink.id = 'noitem';
+          outputJson.appendChild(outputLink);
+        }
+        
+      } 
+      
+    }
+
+
+  }
+  dropbox = (files) => {
+		for (let i = 0; i < files.length; i++) {
+			const file = files[i];
+			if (!file.type.startsWith('image/') && !file.type.startsWith('application/') && !file.type.startsWith('text/') && !file.type ===('')){ continue }
+			const img = document.createElement("img");
+			img.classList.add("obj");
+			const myImage = new Image(60,60);
+			myImage.src = `application.png`;
+			const noFileType = new Image(60,60);
+			noFileType.src = `notype.png`;
+			img.file = file;
+                        img.height = 60;
+                        img.width = 60;
+			const preview = document.getElementById("previewMyDatabase");
+			if(file.type.startsWith('image/')) { preview.appendChild(img); } // Assuming that "preview" is the div output where the content will be displayed.
+			if(file.type.startsWith('application/')) { preview.appendChild(myImage); } // Assuming that "preview" is the div output where the content will be displayed.
+			if(file.type.startsWith('text/')) { preview.appendChild(myImage); } // Assuming that "preview" is the div output where the content will be displayed.
+			if(file.type===('')) { preview.appendChild(noFileType); } // Assuming that "preview" is the div output where the content will be displayed.
+                        //===FILE PREVIEW AFTER DROP==//
+			const fileName = document.createElement('a');
+                        fileName.className += '.obj';
+			fileName.textContent = file.name+ ' (preview)';
+			fileName.href = URL.createObjectURL(file);
+			fileName.target = "_blank";
+			preview.appendChild(fileName);
+                        //===END FILE PREVIEW AFTER DROP==//
+
+			preview.appendChild(document.createElement('br'));
+			const reader = new FileReader();
+			reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img); //if the file is an image, insert the content of the imageas the image in the dropbox
+			reader.readAsDataURL(file);
+		}
+  }
+  
+  onDragEnter = (event) => {
+		const dt = event.dataTransfer;
+    if(dt.files.length) {
+			event.stopPropagation();
+			event.preventDefault();
+    }
+  }
+
+  onDragOver = (event) => {
+		const dt = event.dataTransfer;
+    if(dt.files.length) {
+			event.stopPropagation();
+			event.preventDefault();
+    }
+  }
+
+  onDrop = (event) => {
+	event.stopPropagation();
+	event.preventDefault();
+	const dt = event.dataTransfer;
+
+    if(dt.files.length) {
+      const files = dt.files;
+      console.log(files[0].type);
+      console.log(files[0].name);
+      this.dropbox(files);
+      //===JSON UPLOAD===//
+      for (let i=0; i<files.length; i++) {
+          const file = files[i];
+          if (file.name === "database.json") {
+          	this.sendFile(file);
+          }
+      }
+      //===END JSON UPLOAD===//
+    }
+  }
+  sendFile = (file) => {
+    const fd = new FormData();
+    fd.append('myFile', file);
+    fetch(URL.createObjectURL(file))
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myBlub) {
+        console.log(myBlub); //database.json
+        const myBlob = [...Object.values(myBlub.items)];
+        console.log(myBlob); //database.json
+        console.log(file.name);
+        return myBlob;
+      })
+      .then(thirdres => {
+        const myItems = thirdres.map(obj => obj);
+        this.setState({myItems}); 
+        console.log(myItems);
+        this.setState({
+          databaseIsLoaded:
+            true
+        });
+      })
+    console.log(this.state.myBlob);
+  }
+  setImportMode = (event) => {
+    this.setState({
+      importMode:
+        event.target.value
+    });
+    if(this.state.importMode === "drop") {
+      document.getElementById('dropzoneJson').hidden = true;
+    } else {
+      document.getElementById('dropzoneJson').hidden = false;
     }
   }
 
@@ -309,6 +502,15 @@ class FillInTheDateForm extends React.Component {
     return (
       <form onSubmit={this.handleSubmittedDate}>
       <label>Load words by date</label>
+      <div id={`setImportMode`} onChange={event => this.setImportMode(event)}>
+        <input type={`radio`} id={`jsonInPublicDir`} defaultChecked value={`load`} name={`importMode`} />
+        <label for={`jsonInPublicDir`}> I saved my database.json under the public directory of my app</label>
+        <input type={`radio`} id={`dropMyJson`} value={`drop`} name={`importMode`} />
+        <label for={`dropMyJson`}> Rather load my own database.json file</label>
+      </div>
+      
+      <div id={`dropzoneJson`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
+      <div id={`previewMyDatabase`}></div>
       <div>
         <DatePicker
           onChange={this.onChange}
@@ -318,8 +520,8 @@ class FillInTheDateForm extends React.Component {
       <div>
         <input type="submit" value="Submit selected date" className='btn btn-success btn-block' />  
       </div>
-      <div id={`inputJson`}></div>
-      <div id={`outputJson`}></div>
+      <div id={`inputJsonFile`}></div>
+      <div id={`outputJsonFile`}></div>
       </form>
     );
   }  
@@ -490,7 +692,7 @@ my two mistresses: what a beast am I to slack it!`,
     }
     const jsonItemsMap = new Map();
     jsonItemsMap.set('items', [...wordIdKVPairs]);
-    if (this.state.value.replace(/(\r\n|\n|\r)/gm,"") === "") {
+    if (this.state.value.replace(/(\r\n|\n|\r)/gm,"").replace(/[!?:;.,]+/g, '') === "") {
       alert("you entered no text")
     } else {
   
@@ -819,7 +1021,7 @@ my two mistresses: what a beast am I to slack it!`,
     }
   }
   alertNoDatabaseFile = (event) => {
-    if (this.state.value.replace(/(\r\n|\n|\r|?|,|.|;|)/gm,"") !== "" && document.getElementById('noDatabaseFile').checked === false && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
+    if (this.state.value.replace(/(\r\n|\n|\r)/gm,"").replace(/[!?:;.,]+/g, '') !== "" && document.getElementById('noDatabaseFile').checked === false && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
       document.getElementById('noDatabaseFile').checked = true;
       this.setState({
         jsonSecondConfirm:
