@@ -36,24 +36,19 @@ class BasicForm extends React.Component {
       sourceFile:null,
       myBlob:null,
       myBlub:null,
-      myAudioFiles:null
+      myAudioFiles:null,
+      wordInputField:null
     };
   }
   getInitialState = () => {
-    return {
-      controls:
-        true,
-      targetValue:
-        ''
-    }
+    //return {
+    //  controls:
+    //    true,
+    //  targetValue:
+    //    ''
+    //}
   }
-  handleWordInput = (event) => {
-    event.preventDefault();
-    this.btn.removeAttribute("disabled");
-    const targetValue = this.state;
-    console.log({targetValue});
-  }
-  
+
   fieldOnblur = () => {
     this.setState({
       audioplayerToggle:
@@ -68,16 +63,37 @@ class BasicForm extends React.Component {
       .then(res => {
         const items = res.data.items.map(obj => obj);
         this.setState({ items });
-        console.log(items.find((o) => o.id === 2).name);
+        //console.log(items.find((o) => o.id === 2).name);
         console.log("mesg");
       });
   }
   handleSubmit = (event) => {
     event.preventDefault();
   }
+  handleWordInput = (event) => {
+    event.preventDefault();
+    this.btn.removeAttribute("disabled");
+    //const targetValue = this.state;
+    //console.log(targetValue);
+
+    //const { inputValue } = this.state;
+    //const targetValue = document.getElementById('wordinput').dataset.targetValue;
+    //console.log({targetValue});
+    //console.log({inputValue});
+    //this.setState({
+    //  wordtest:
+    //    inputValue === targetValue ? this.removeAudioPlayer() : null,      
+    //  checkInput:
+    //    inputValue === '' ? 'enter a word' : null,
+    //  checkTarget:
+    //    targetValue === '' ? 'play a word' : null
+    //});
+  }
+  
   disableButton = (event) => {
     event.preventDefault();
-    const { targetValue, inputValue } = this.state;
+    const targetValue = document.getElementById('wordinput').dataset.targetValue;
+    const { inputValue } = this.state;
     this.btn.setAttribute("disabled", "disabled");
     console.log({targetValue});
     console.log({inputValue});
@@ -107,23 +123,23 @@ class BasicForm extends React.Component {
       myNode.removeChild(myNode.firstChild);
     }
     const myAudioFiles = document.getElementById('myAudioFiles');
-    const audioFilePreview = document.createElement('audio'); 
-    audioFilePreview.className="jjj";
-    audioFilePreview.key="666";
-    //audiopreview.ref=this.audiosource;
+    //const audioFilePreview = document.createElement('audio'); 
+    //audioFilePreview.className="jjj";
+    //audioFilePreview.key="666";
+    ////audiopreview.ref=this.audiosource;
 
-    audioFilePreview.id="gyg";
-    audioFilePreview.controls=true;
-    myAudioFiles.appendChild(audioFilePreview);
-    //audiopreview.onplay={ targetvalue: audiopreview.id, controls: audiopreview.controls }; 
-    const theFirstChild = audioFilePreview.firstChild;
-    const sourceFile = document.createElement('source');
-    //console.log
-    //sourcefile.src = object.entries(mp3wordlist).item.word[1]; 
-    //console.log( 
-    sourceFile.className = "kljhklj"; 
-    sourceFile.type = 'audio/mpeg'; 
-    audioFilePreview.insertBefore(sourceFile, theFirstChild);
+    //audioFilePreview.id="gyg";
+    //audioFilePreview.controls=true;
+    //myAudioFiles.appendChild(audioFilePreview);
+    ////audiopreview.onplay={ targetvalue: audiopreview.id, controls: audiopreview.controls }; 
+    //const theFirstChild = audioFilePreview.firstChild;
+    //const sourceFile = document.createElement('source');
+    ////console.log
+    ////sourcefile.src = object.entries(mp3wordlist).item.word[1]; 
+    ////console.log( 
+    //sourceFile.className = "kljhklj"; 
+    //sourceFile.type = 'audio/mpeg'; 
+    //audioFilePreview.insertBefore(sourceFile, theFirstChild);
 
     //this is the fetching of the online mp3 database you are going to use
     //fetch("https://github.com/nathanielove/English-words-pronunciation-mp3-audio-download/blob/master/data.json")
@@ -157,11 +173,15 @@ class BasicForm extends React.Component {
               audioFilePreview.id=item.word;
               audioFilePreview.controls=true;
 
-              audioFilePreview.onPlay = (event) => { 
+              audioFilePreview.onplay = (event) => { 
                 
-                const targetValue = item.word;
-                const controls = true; 
-                document.getElementById('wordinput').focus();
+                //const targetValue = audioFilePreview.id;
+                //console.log(targetValue);
+                //this.setState({targetValue});
+                //const controls = true; 
+                const wordInputField = document.getElementById('wordinput');
+                wordInputField.dataset.targetValue = audioFilePreview.id;
+                //document.getElementById('wordinput').focus();
               };
 
               //console.log
@@ -210,46 +230,132 @@ class BasicForm extends React.Component {
 
     //this is the list of audio elements you are working on 
 
-    this.setState({
-      inputValue:
-        '',
-      targetValue:
-        ''
-    });
+    //this.setState({
+    //  inputValue:
+    //    '',
+    //  targetValue:
+    //    ''
+    //});
 
   }
   removeAudioPlayer = (props) => {
-    const { targetValue, inputValue } = this.state;
+    const targetValue = document.getElementById('wordinput').dataset.targetValue;
+    const { inputValue } = this.state;
     this.setState({
       wordtest:
         `Values: \n ${inputValue} / ${targetValue} ok`   
     });
     console.log({targetValue});
-    const mountElements = document.getElementsByClassName(`${targetValue}`);
+    const mountElements = document.getElementById(targetValue);
+    //const myNode = document.getElementById('outputJsonFile');
+    //while(myNode.firstChild) {
+    //  myNode.removeChild(myNode.firstChild);
+    //}
     console.log({mountElements});
     this.setState({
       variableErrors:
         mountElements[0] === undefined ? "Please choose and listen to a word first" : null
     });
-    if (mountElements[0] !== undefined) {
-      mountElements[0].pause();
-      mountElements[0].currentTime = 0;
-      mountElements[0].removeAttribute('controls');
+    if (mountElements !== undefined) {
+      mountElements.pause();
+      mountElements.currentTime = 0;
+      mountElements.removeAttribute('controls');
     }
     
 
     
     this.setState({
       inputValue:
-        '',
-      targetValue:
-        ''
+        ''//,
+      //targetValue:
+      //  ''
     });
   }
+  onDropItems = (event) => {
+		event.stopPropagation();
+		event.preventDefault();
+		const dt = event.dataTransfer;
+
+    if(dt.files.length) {
+      const files = dt.files;
+      console.log(files[0].type);
+      console.log(files[0].name);
+      this.dropbox(files);
+      //===JSON UPLOAD===//
+      for (let i=0; i<files.length; i++) {
+          const file = files[i];
+          if (file.name === "items.json") {
+          	this.sendItems(file);
+          }
+      }
+      //===END JSON UPLOAD===//
+    }
+  }
+
+  sendItems = (file) => {
+    const fd = new FormData();
+    fd.append('myFile', file);
+    fetch(URL.createObjectURL(file))
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myBlub) {
+        console.log(myBlub); //database.json
+        const myBlob = [...Object.values(myBlub.items)];
+        console.log(myBlob); //database.json
+        console.log(file.name);
+        return myBlob;
+      })
+      .then(thirdres => {
+        const myItems = thirdres.map(obj => obj);
+        this.setState({myItems});
+        console.log(myItems);
+        //document.getElementById('noDatabaseFile').removeAttribute('checked');
+        this.setState({
+          itemsAreLoaded:
+            true
+        });
+        if(myItems.length) {
+          if (window.confirm('you just loaded a new items.json. press ok to start a new game. cancel to drop a new items.json file.')) {
+            //display audio
+            //remove new Game button and replace code with the items json loaded
+           
+            //keep new game button with first option and create a second button for dropping files 
+          } else {
+            //clear 
+          }
+        } 
+      })
+    console.log(this.state.myBlob);
+  }
+  setItemsImportMode = (event) => {
+    this.setState({
+      itemsImportMode:
+        event.target.value
+    });
+    if(this.state.itemsImportMode === "dropItems") {
+      document.getElementById('dropzoneItems').hidden = true;
+      const myPreviewNode = document.getElementById('previewMyItems');
+      while(myPreviewNode.firstChild) {
+        myPreviewNode.removeChild(myPreviewNode.firstChild);
+      }
+    } else {    
+      document.getElementById('dropzoneItems').hidden = false;
+    }           
+  }             
+                
   render() { 
     
     return(
       <form onSubmit={this.handleSubmit}>
+           <div id={`setItemsImportMode`} onChange={event => this.setItemsImportMode(event)}>
+             <input type={`radio`} id={`itemsUnderDir`} defaultChecked value={`loadItems`} name={`itemsImportMode`} />
+             <label for={`itemsUnderDir`}> I saved my items.json under the "public" directory of my app</label>
+             <input type={`radio`} id={`dropMyItems`} value={`dropItems`} name={`itemsImportMode`} />
+             <label for={`dropMyItems`}> Rather load my own items.json file</label>
+           </div>
+           <div id={`dropzoneItems`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDropItems} onDragOver={this.onDragOver}></div>
+           <div id={`previewMyItems`}></div>
            <div className={`form-group`}> 
              <label htmlFor={`wordinput`}></label>
              <input
@@ -373,6 +479,7 @@ class FillInTheDateForm extends React.Component {
       importMode:
         "load"
     });
+
     
   }
   onChange = (date) => {
@@ -435,6 +542,9 @@ class FillInTheDateForm extends React.Component {
             
           }
         });
+        if (![...myItemsByDate].length){
+          document.getElementById('database_file').remove(); 
+        }
         if ([...myItemsByDate].length){
           //const myNode = document.getElementById('outputJsonFile');
           //while(myNode.firstChild) {
@@ -808,7 +918,9 @@ my two mistresses: what a beast am I to slack it!`,
       downloadLink:null,
       databaseJson:null,
       textAtFileCreation:null,
-      textareaIsEmpty:null
+      textareaIsEmpty:null,
+      itemsAreLoaded:null,
+      itemsImportMode:null
     };
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
   }
@@ -818,6 +930,10 @@ my two mistresses: what a beast am I to slack it!`,
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
     document.getElementById('noDatabaseFile').addEventListener('checked', this.checkBox);
+    this.setState({
+      itemsImportMode:
+        "loadItems"
+    });
 
 
   }
@@ -880,7 +996,7 @@ my two mistresses: what a beast am I to slack it!`,
     }
     const jsonItemsMap = new Map();
     jsonItemsMap.set('items', [...wordIdKVPairs]);
-    if (this.state.value.replace(/(\r\n|\n|\r)/gm,"").replace(/[!?:;.,]+/g, '') === "") {
+    if (this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") === "") {
       alert("you entered no text")
     } else {
   
@@ -1058,6 +1174,7 @@ my two mistresses: what a beast am I to slack it!`,
     }
   }
 
+
   onDrop = (event) => {
 		event.stopPropagation();
 		event.preventDefault();
@@ -1211,7 +1328,7 @@ my two mistresses: what a beast am I to slack it!`,
     }
   }
   alertNoDatabaseFile = (event) => {
-    if (this.state.value.replace(/(\r\n|\n|\r)/gm,"").replace(/[!?:;.,]+/g, '') !== "" && document.getElementById('noDatabaseFile').checked === false && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
+    if (this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") !== "" && document.getElementById('noDatabaseFile').checked === false && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
       document.getElementById('noDatabaseFile').checked = true;
       this.setState({
         jsonSecondConfirm:
@@ -1224,13 +1341,19 @@ my two mistresses: what a beast am I to slack it!`,
       document.getElementById('noDatabaseFile').removeAttribute('checked');   
     }
   }
+
   render() {
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
+
+        
         <div>
           <input type="checkbox" id={`noDatabaseFile`} value={this.state.noDatabaseFile} onChange={this.checkBox} />
           <label for="subscribeNews">I have no database.json</label>
         </div>
+
+        <div id={`dropzoneJson`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
+        <div id={`previewMyDatabase`}></div>
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
 

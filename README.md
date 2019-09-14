@@ -30,7 +30,7 @@ You will also see any lint errors in the console.
 The user must be able to: 
 
 - [x] to modify the text without any bug, on the click of the button which has for function to load the next text, if the download link with such id already exists and text changed, do this, replace the items.json download link by a new link and update also the link for the database.json file
-- [ ] wait for the display of the audio files during the display of a progress bar when the audio files are loading
+- [x] wait for the display of the audio files thanks to a spinner 
 - [ ] load a text file
 - [ ] handle empty date input
 - [x] drop a database json to sort the items by date
