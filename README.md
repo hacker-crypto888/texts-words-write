@@ -30,6 +30,7 @@ You will also see any lint errors in the console.
 The user must be able to: 
 
 - [x] to modify the text without any bug, on the click of the button which has for function to load the next text, if the download link with such id already exists and text changed, do this, replace the items.json download link by a new link and update also the link for the database.json file
+- [ ] wait for the display of the audio files during the display of a progress bar when the audio files are loading
 - [ ] load a text file
 - [ ] handle empty date input
 - [x] drop a database json to sort the items by date
@@ -38,7 +39,8 @@ The user must be able to:
 - [x] not to load any text when dropzone is empty
 - [ ] manage his or her user session 
 - [ ] work with text in english, french 
-- [ ] use the mp3 words from an online database for which all the links are stored in the json file (using fetch github.com/...../file.json)
+- [ ] load a file in a dropzone to play
+- [x] use the mp3 words from an online database for which all the links are stored in the json file (using fetch github.com/...../file.json)
 - [ ] play the words continuously on the click of a button
 
 

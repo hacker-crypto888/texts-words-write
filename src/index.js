@@ -30,12 +30,13 @@ class BasicForm extends React.Component {
       mp3WordList:null,
       audioId:null,
       myAudio:null,
-      audioPreview:null,
+      audioFilePreview:null,
       sourceTag:null,
       theFirstChild:null,
       sourceFile:null,
       myBlob:null,
-      myBlub:null
+      myBlub:null,
+      myAudioFiles:null
     };
   }
   getInitialState = () => {
@@ -62,6 +63,7 @@ class BasicForm extends React.Component {
     });
   }
   componentDidMount() {
+    document.getElementById('loadingAudioFiles').hidden = true;
     axios.get(`./items.json`)
       .then(res => {
         const items = res.data.items.map(obj => obj);
@@ -100,15 +102,41 @@ class BasicForm extends React.Component {
     });
   };
   displayAudio = event => {
+    const myNode = document.getElementById('myAudioFiles');
+    while(myNode.firstChild) {
+      myNode.removeChild(myNode.firstChild);
+    }
+    const myAudioFiles = document.getElementById('myAudioFiles');
+    const audioFilePreview = document.createElement('audio'); 
+    audioFilePreview.className="jjj";
+    audioFilePreview.key="666";
+    //audiopreview.ref=this.audiosource;
+
+    audioFilePreview.id="gyg";
+    audioFilePreview.controls=true;
+    myAudioFiles.appendChild(audioFilePreview);
+    //audiopreview.onplay={ targetvalue: audiopreview.id, controls: audiopreview.controls }; 
+    const theFirstChild = audioFilePreview.firstChild;
+    const sourceFile = document.createElement('source');
+    //console.log
+    //sourcefile.src = object.entries(mp3wordlist).item.word[1]; 
+    //console.log( 
+    sourceFile.className = "kljhklj"; 
+    sourceFile.type = 'audio/mpeg'; 
+    audioFilePreview.insertBefore(sourceFile, theFirstChild);
+
     //this is the fetching of the online mp3 database you are going to use
     //fetch("https://github.com/nathanielove/English-words-pronunciation-mp3-audio-download/blob/master/data.json")
 
-    fetch("https://raw.githubusercontent.com/nathanielove/English-words-pronunciation-mp3-audio-download/master/data.json")
+    //fetch("https://raw.githubusercontent.com/nathanielove/English-words-pronunciation-mp3-audio-download/master/data.json")
+    document.getElementById('loadingAudioFiles').hidden = false;
+    fetch("https://raw.githubusercontent.com/nathanielove/English-words-pronunciation-mp3-audio-download/master/ultimate.json")
       .then(function(response){
         return response.json();
       })
       .then(function(mp3WordList){
         //console.log([...Object.entries(mp3WordList)]);
+
         fetch(`items.json`)
           .then(function(response) {
             return response.json();
@@ -120,31 +148,46 @@ class BasicForm extends React.Component {
             const items = [...Object.values(myBlub.items)];
             items.forEach(function(item, index, object) {
               console.log(item);
-              const audioPreview = document.createElement('audio'); 
-              audioPreview.className=item.word;
-              audioPreview.key=item.id;
-              //audioPreview.ref=this.audioSource;
+              const myAudioFiles = document.getElementById('myAudioFiles');
+              const audioFilePreview = document.createElement('audio'); 
+              audioFilePreview.className=item.word;
+              audioFilePreview.key=item.id;
+              //audiopreview.ref=this.audiosource;
 
-              audioPreview.id=item.word;
-              audioPreview.controls='';
-              document.getElementById('myAudioFiles').appendChild(audioPreview);
-              //audioPreview.onPlay={ targetValue: audioPreview.id, controls: audioPreview.controls }; 
-              const theFirstChild = audioPreview.firstChild;
-              const sourceFile = document.createElement('source');
+              audioFilePreview.id=item.word;
+              audioFilePreview.controls=true;
+
+              audioFilePreview.onPlay = (event) => { 
+                
+                const targetValue = item.word;
+                const controls = true; 
+                document.getElementById('wordinput').focus();
+              };
+
               //console.log
-              //sourceFile.src = Object.entries(mp3WordList).item.word[1]; 
+              //sourcefile.src = object.entries(mp3wordlist).item.word[1]; 
               console.log(item.word);
               //console.log( 
+
               [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
-                if(mp3[0] === item.word){
-                  sourceFile.src = mp3[1]; 
-                  //console.log(item.word);
-                  
+                if(mp3[0] === item.word && mp3[1].length){
+                  mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
+                    const theFirstChild = audioFilePreview.firstChild;
+                    const sourceFile = document.createElement('source');
+                    sourceFile.src = mp3link; 
+                    console.log(mp3link);
+                    sourceFile.className = item.word; 
+                    sourceFile.type = 'audio/mpeg'; 
+                    audioFilePreview.insertBefore(sourceFile, theFirstChild);
+
+                  })
+                  myAudioFiles.appendChild(audioFilePreview);
                 }
               });
-              sourceFile.className = item.word; 
-              sourceFile.type = 'audio/mpeg'; 
-              audioPreview.insertBefore(sourceFile, theFirstChild);
+              document.getElementById('loadingAudioFiles').hidden = true;
+
+
+
 
               //document.getElementById('myAudioFiles').appendChild(document.createElement('br'));
             
@@ -225,8 +268,12 @@ class BasicForm extends React.Component {
                click me
              </button>
              <button onClick={this.displayAudio}>
-               start over
+               New game 
              </button>
+             <br />
+             <div className="spinner-border" id={`loadingAudioFiles`} role="status">
+               <span className="sr-only">Loading...</span>
+             </div>
            </div>
            <div>{this.state.wordtest}</div>
            <div>{this.state.checkInput}</div>
@@ -239,16 +286,16 @@ class BasicForm extends React.Component {
               {`\u2699`} Settings
              </button>
            </p>
-          // <div className="collapse" id="mysettings">
-          //  <div className="card card-body">
-          //    <div>
-          //      <RegistrationForm />
-          //    </div>
-          //    <div id={`myFillInTheDateForm`}>
-          //      <FillInTheDateForm />
-          //    </div>
-          //  </div>
-          //</div>
+           <div className="collapse" id="mysettings">
+            <div className="card card-body">
+              <div>
+                <RegistrationForm />
+              </div>
+              <div id={`myFillInTheDateForm`}>
+                <FillInTheDateForm />
+              </div>
+            </div>
+           </div>
           </form>
     );
   }
