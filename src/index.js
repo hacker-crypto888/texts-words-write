@@ -33,7 +33,9 @@ class BasicForm extends React.Component {
       audioPreview:null,
       sourceTag:null,
       theFirstChild:null,
-      sourceFile:null
+      sourceFile:null,
+      myBlob:null,
+      myBlub:null
     };
   }
   getInitialState = () => {
@@ -100,46 +102,67 @@ class BasicForm extends React.Component {
   displayAudio = event => {
     //this is the fetching of the online mp3 database you are going to use
     //fetch("https://github.com/nathanielove/English-words-pronunciation-mp3-audio-download/blob/master/data.json")
-    const items = this.state;
-    console.log(this.state.items);
+
     fetch("https://raw.githubusercontent.com/nathanielove/English-words-pronunciation-mp3-audio-download/master/data.json")
       .then(function(response){
         return response.json();
       })
       .then(function(mp3WordList){
-        console.log([...Object.entries(mp3WordList)]);
-       
-        items.map(function(item) {
-          const audioPreview = document.createElement('div'); 
-          audioPreview.className=item.name;
-          audioPreview.key=item.id;
-          audioPreview.ref=this.audioSource;
+        //console.log([...Object.entries(mp3WordList)]);
+        fetch(`items.json`)
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(myBlub) {
+            const myBlob = myBlub; 
+            console.log(myBlub);
+            //const controls = this.state;
+            const items = [...Object.values(myBlub.items)];
+            items.forEach(function(item, index, object) {
+              console.log(item);
+              const audioPreview = document.createElement('audio'); 
+              audioPreview.className=item.word;
+              audioPreview.key=item.id;
+              //audioPreview.ref=this.audioSource;
 
-          audioPreview.id=item.name;
-          audioPreview.controls=this.state.controls;
-          audioPreview.onPlay=this.setState({ targetValue: audioPreview.id, controls: audioPreview.controls }); 
-          const theFirstChild = audioPreview.firstChild;
-          const sourceFile = document.createElement('source');
-          sourceFile.src = [...Object.entries(mp3WordList)][item.name]; 
-          sourceFile.className = item.name; 
-          sourceFile.type = 'audio/mpeg'; 
-          audioPreview.insertBefore(sourceFile, theFirstChild);
-          document.getElementById('myAudioFiles').appendChild(audioPreview);
-          document.getElementById('myAudioFiles').appendChild('br');
-        
-        //const audioElements = document.getElementsByTagName('audio');
-        //for (var i = 0; i < audioElements.length; i++) {
-        //  audioElements[i].removeAttribute('controls');
-        //  audioElements[i].setAttribute('controls','');
-        //  audioElements[i].pause();
-        //  audioElements[i].currentTime = 0;
-        //  const audioId = audioElements[i].id;
-        //  console.log(audioId);
-        //  audioElements[i].firstChild.src = [...Object.entries(mp3WordList)][audioId];
-          //console.log(audioElements[i].className);
-          //console.log(audioElements[i]);
-        //};
-        });
+              audioPreview.id=item.word;
+              audioPreview.controls='';
+              document.getElementById('myAudioFiles').appendChild(audioPreview);
+              //audioPreview.onPlay={ targetValue: audioPreview.id, controls: audioPreview.controls }; 
+              const theFirstChild = audioPreview.firstChild;
+              const sourceFile = document.createElement('source');
+              //console.log
+              //sourceFile.src = Object.entries(mp3WordList).item.word[1]; 
+              console.log(item.word);
+              //console.log( 
+              [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
+                if(mp3[0] === item.word){
+                  sourceFile.src = mp3[1]; 
+                  //console.log(item.word);
+                  
+                }
+              });
+              sourceFile.className = item.word; 
+              sourceFile.type = 'audio/mpeg'; 
+              audioPreview.insertBefore(sourceFile, theFirstChild);
+
+              //document.getElementById('myAudioFiles').appendChild(document.createElement('br'));
+            
+              //const audioElements = document.getElementsByTagName('audio');
+              //for (var i = 0; i < audioElements.length; i++) {
+              //  audioElements[i].removeAttribute('controls');
+              //  audioElements[i].setAttribute('controls','');
+              //  audioElements[i].pause();
+              //  audioElements[i].currentTime = 0;
+              //  const audioId = audioElements[i].id;
+              //  console.log(audioId);
+              //  audioElements[i].firstChild.src = [...Object.entries(mp3WordList)][audioId];
+                //console.log(audioElements[i].className);
+                //console.log(audioElements[i]);
+              //};
+            });
+          })
+
       })
 
     //this is the list of audio elements you are working on 
@@ -205,35 +228,27 @@ class BasicForm extends React.Component {
                start over
              </button>
            </div>
-             <div>{this.state.wordtest}</div>
-             <div>{this.state.checkInput}</div>
-             <div>{this.state.checkTarget}</div>
-             <div>{this.state.variableErrors}</div>
-             <div id={`myAudioFiles`}></div>
-             <br />
-             <div>==============================</div>
-             <div>
-               {this.state.items.map(item =>
-                 <audio className={item.name} key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.name} controls={this.state.controls}> 
-                   <source src={`${item.name}.mp3`} className={item.name}  type='audio/mpeg'></source>
-                 </audio>
-               )}<br />
-             </div>
-          <p>
-            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
+           <div>{this.state.wordtest}</div>
+           <div>{this.state.checkInput}</div>
+           <div>{this.state.checkTarget}</div>
+           <div>{this.state.variableErrors}</div>
+           <div id={`myAudioFiles`}></div>
+
+           <p>
+             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
               {`\u2699`} Settings
-            </button>
-          </p>
-          <div class="collapse" id="mysettings">
-            <div class="card card-body">
-              <div>
-                <RegistrationForm />
-              </div>
-              <div id={`myFillInTheDateForm`}>
-                <FillInTheDateForm />
-              </div>
-            </div>
-          </div>
+             </button>
+           </p>
+          // <div className="collapse" id="mysettings">
+          //  <div className="card card-body">
+          //    <div>
+          //      <RegistrationForm />
+          //    </div>
+          //    <div id={`myFillInTheDateForm`}>
+          //      <FillInTheDateForm />
+          //    </div>
+          //  </div>
+          //</div>
           </form>
     );
   }
@@ -1191,3 +1206,11 @@ my two mistresses: what a beast am I to slack it!`,
 }
 
 ReactDOM.render(<BasicForm />, document.getElementById('root'));
+           //<br />
+             //<div>
+             //  {this.state.items.map(item =>
+             //    <audio className={item.word} key={item.id} ref={e => this.audioSource = e} onPlay={e => this.setState({ targetValue: e.target.id, controls: e.target.controls })} id={item.word} controls={this.state.controls}> 
+             //      <source src={`${item.word}.mp3`} className={item.word}  type='audio/mpeg'></source>
+             //    </audio>
+             //  )}<br />
+             //</div>
