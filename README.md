@@ -42,6 +42,7 @@ The user must be able to:
 - [ ] load a file in a dropzone to play
 - [x] use the mp3 words from an online database for which all the links are stored in the json file (using fetch github.com/...../file.json)
 - [ ] play the words continuously on the click of a button
+- [ ] when dropping an items.json file, two options should be proposed: start over with the same file or drop a new file
 
 
 The user can: 
