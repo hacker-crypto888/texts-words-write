@@ -59,6 +59,15 @@ class BasicForm extends React.Component {
   }
   componentDidMount() {
     document.getElementById('loadingAudioFiles').hidden = true;
+    document.getElementById('loadItemsForNewGame').hidden = false;
+    document.getElementById('dropItemsForNewGame').hidden = true;
+    document.getElementById('dropNewItems').hidden = true;
+    document.getElementById('dropSameItems').hidden = true;
+    //this.setState({ 
+    //  itemsImportMode:
+    //    "loadItems"
+    //});
+    document.getElementById('dropzoneItems').hidden = true;
     this.btn.setAttribute('disabled','disabled'); 
 
   }
@@ -120,24 +129,24 @@ class BasicForm extends React.Component {
             console.log(item);
             //const myAudioFiles = document.getElementById('myAudioFiles');
             const audioFilePreview = document.createElement('audio'); 
-            audioFilePreview.className=item[1].word;
-            audioFilePreview.key=item[1].id;
-            audioFilePreview.id=item[1].word;
+            audioFilePreview.className=item.word;
+            audioFilePreview.key=item.id;
+            audioFilePreview.id=item.word;
             audioFilePreview.controls=true;
 
             audioFilePreview.onplay = (event) => { 
               const wordInputField = document.getElementById('wordinput');
               wordInputField.dataset.targetValue = audioFilePreview.id;
             };
-            console.log(item[1].word);
+            console.log(item.word);
             [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
-              if(mp3[0] === item[1].word && mp3[1].length){
+              if(mp3[0] === item.word && mp3[1].length){
                 mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
                   const theFirstChild = audioFilePreview.firstChild;
                   const sourceFile = document.createElement('source');
                   sourceFile.src = mp3link; 
                   console.log(mp3link);
-                  sourceFile.className = item[1].word; 
+                  sourceFile.className = item.word; 
                   sourceFile.type = 'audio/mpeg'; 
                   audioFilePreview.insertBefore(sourceFile, theFirstChild);
 
@@ -185,11 +194,227 @@ class BasicForm extends React.Component {
         ''
     });
   }
+  dropbox = (files) => {
+		for (let i = 0; i < files.length; i++) {
+			const file = files[i];
+			if (!file.type.startsWith('image/') && !file.type.startsWith('application/') && !file.type.startsWith('text/') && !file.type ===('')){ continue }
+			const img = document.createElement("img");
+			img.classList.add("obj");
+			const myImage = new Image(60,60);
+			myImage.src = `application.png`;
+			const noFileType = new Image(60,60);
+			noFileType.src = `notype.png`;
+			img.file = file;
+                        img.height = 60;
+                        img.width = 60;
+			const preview = document.getElementById("previewMyItems");
+			if(file.type.startsWith('image/')) { preview.appendChild(img); } // Assuming that "preview" is the div output where the content will be displayed.
+			if(file.type.startsWith('application/')) { preview.appendChild(myImage); } // Assuming that "preview" is the div output where the content will be displayed.
+			if(file.type.startsWith('text/')) { preview.appendChild(myImage); } // Assuming that "preview" is the div output where the content will be displayed.
+			if(file.type===('')) { preview.appendChild(noFileType); } // Assuming that "preview" is the div output where the content will be displayed.
+                        //===FILE PREVIEW AFTER DROP==//
+			const fileName = document.createElement('a');
+                        fileName.className += '.obj';
+			fileName.textContent = file.name+ ' (preview)';
+			fileName.href = URL.createObjectURL(file);
+			fileName.target = "_blank";
+			preview.appendChild(fileName);
+                        //===END FILE PREVIEW AFTER DROP==//
+
+			preview.appendChild(document.createElement('br'));
+			const reader = new FileReader();
+			reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.wordIdItems; }; })(img); //if the file is an image, insert the content of the imageas the image in the dropbox
+			reader.readAsDataURL(file);
+		}
+  }
   
+  onDragEnter = (event) => {
+		const dt = event.dataTransfer;
+    if(dt.files.length) {
+			event.stopPropagation();
+			event.preventDefault();
+    }
+  }
+
+  onDragOver = (event) => {
+		const dt = event.dataTransfer;
+    if(dt.files.length) {
+			event.stopPropagation();
+			event.preventDefault();
+    }
+  }
+
+  onDropItems = (event) => {
+		event.stopPropagation();
+		event.preventDefault();
+		const dt = event.dataTransfer;
+
+    if(dt.files.length) {
+      const files = dt.files;
+      console.log(files[0].type);
+      console.log(files[0].name);
+      this.dropbox(files);
+      //===JSON UPLOAD===//
+      for (let i=0; i<files.length; i++) {
+          const file = files[i];
+          if (file.name === "items.json") {
+          	this.sendItems(file);
+          }
+      }
+      //===END JSON UPLOAD===//
+    }
+  }
+
+  sendItems = (file) => {
+    const fd = new FormData();
+    fd.append('myFile', file);
+    fetch(URL.createObjectURL(file))
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myBlub) {
+        console.log(myBlub); //database.json
+        const myBlob = [...Object.values(myBlub.items)];
+        console.log(myBlob); //database.json
+        console.log(file.name);
+        return myBlob;
+      })
+      .then(thirdres => {
+        const myItems = thirdres.map(obj => obj);
+        this.setState({myItems});
+        console.log(myItems);
+        this.setState({
+          itemsWereDropped:
+            true
+        });
+        
+        if(myItems.length) {
+
+          if (window.confirm('you just loaded a new items.json. press ok to start a new game. cancel to drop a new items.json file.')) {
+            document.getElementById('loadingAudioFiles').hidden = false;
+            document.getElementById('dropzoneItems').hidden = true;
+            fetch("https://raw.githubusercontent.com/nathanielove/English-words-pronunciation-mp3-audio-download/master/ultimate.json")
+              .then(function(response){
+                return response.json();
+              })
+              .then(function(mp3WordList){
+                const myAudioFiles = document.getElementById('myAudioFiles');
+                while(myAudioFiles.firstChild) {
+                  myAudioFiles.removeChild(myAudioFiles.firstChild);
+                }
+                myItems.forEach(function(item, index, object) {
+                  console.log(item);
+
+                  const audioFilePreview = document.createElement('audio'); 
+                  audioFilePreview.className=item.word;
+                  audioFilePreview.key=item.id;
+                  audioFilePreview.id=item.word;
+                  audioFilePreview.controls=true;
+
+                  audioFilePreview.onplay = (event) => { 
+                    const wordInputField = document.getElementById('wordinput');
+                    wordInputField.dataset.targetValue = audioFilePreview.id;
+                  };
+                  console.log(item.word);
+                  [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
+                    if(mp3[0] === item.word && mp3[1].length){
+                      mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
+                        const theFirstChild = audioFilePreview.firstChild;
+                        const sourceFile = document.createElement('source');
+                        sourceFile.src = mp3link; 
+                        console.log(mp3link);
+                        sourceFile.className = item.word; 
+                        sourceFile.type = 'audio/mpeg'; 
+                        audioFilePreview.insertBefore(sourceFile, theFirstChild);
+
+                      });
+                      myAudioFiles.appendChild(audioFilePreview);
+                      document.getElementById('loadingAudioFiles').hidden = true;
+                      document.getElementById('dropSameItems').hidden = false;
+                      document.getElementById('dropNewItems').hidden = false;
+                    }
+                  });
+                })
+              })
+          } else {
+            document.getElementById('dropItemsForNewGame').hidden = true;  
+            const myPreviewNode = document.getElementById('previewMyItems');
+            while(myPreviewNode.firstChild) {
+              myPreviewNode.removeChild(myPreviewNode.firstChild);
+            }
+            //clear 
+          }
+        }
+      })
+    console.log(this.state.myBlob);
+  }
+  setItemsImportMode = (event) => {
+    this.setState({
+      itemsImportMode:
+        event.target.value
+    });
+    if(this.state.itemsImportMode === "dropItems") {
+      document.getElementById('dropzoneItems').hidden = true;
+      document.getElementById('loadItemsForNewGame').hidden = false;
+      document.getElementById('dropItemsForNewGame').hidden = true;
+      const myPreviewNode = document.getElementById('previewMyItems');
+      while(myPreviewNode.firstChild) {
+        myPreviewNode.removeChild(myPreviewNode.firstChild);
+      }
+      const myAudioNode = document.getElementById('myAudioFiles');
+      while(myAudioNode.firstChild) {
+        myAudioNode.removeChild(myAudioNode.firstChild);
+      }
+    } else {    
+      document.getElementById('dropzoneItems').hidden = false;
+      document.getElementById('loadItemsForNewGame').hidden = true;
+      document.getElementById('dropItemsForNewGame').hidden = true;
+      const myAudioNode = document.getElementById('myAudioFiles');
+      while(myAudioNode.firstChild) {
+        myAudioNode.removeChild(myAudioNode.firstChild);
+      }
+    }           
+  }             
+  startGameWithDroppedFiles = (event) => {
+
+  }
+  dropNewItems = (event) => {
+    const myNode = document.getElementById('myAudioFiles');
+    document.getElementById('dropzoneItems').hidden = false;
+    while(myNode.firstChild) {
+      myNode.removeChild(myNode.firstChild);
+    }
+    const preview = document.getElementById('previewMyItems');
+    while(preview.firstChild) {
+      preview.removeChild(preview.firstChild);
+    }
+    document.getElementById('dropNewItems').hidden = true;
+    document.getElementById('dropSameItems').hidden = true;
+
+  }
+  dropSameItems = (event) => {
+    document.getElementById('dropNewItems').hidden = false;
+    document.getElementById('dropSameItems').hidden = false;
+    const audioElements = document.getElementsByTagName('audio');
+    console.log(audioElements);
+    for (let file of audioElements) {
+      file.controls= true;
+      file.pause();
+      file.currentTime = 0;
+    }
+  }
   render() { 
     
     return(
       <form onSubmit={this.handleSubmit}>
+           <div id={`setItemsImportMode`} /*onChange={event => this.setItemsImportMode(event)}*/>
+             <input type={`radio`} id={`loadItemsByDate`} value={`loadItems`} name={`itemsImportMode`} />
+             <label for={`loadItemsByDate`}> I have a database.json file that I have to load items by date from</label>
+             <input type={`radio`} id={`dropMyItems`} value={`dropItems`} name={`itemsImportMode`} />
+             <label for={`dropMyItems`}> I prefer to drop my own database.json file</label>
+           </div>
+           <div id={`dropzoneItems`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDropItems} onDragOver={this.onDragOver}></div>
+           <div id={`previewMyItems`}></div>
            <div className={`form-group`}> 
 
 
@@ -217,6 +442,15 @@ class BasicForm extends React.Component {
              <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
 
                Start a new game 
+             </button>
+             <button id={`dropItemsForNewGame`} onClick={this.startGameWithDroppedFiles}>
+               Start a new game
+             </button>
+             <button id={`dropSameItems`} onClick={this.dropSameItems}>
+               Start over 
+             </button>
+             <button id={`dropNewItems`} onClick={this.dropNewItems}>
+               Drop a new file
              </button>
              <br />
 
@@ -323,6 +557,7 @@ class FillInTheDateForm extends React.Component {
     document.getElementById('submit-date-btn').hidden = true;
     document.getElementById('dropzoneSortByDate').hidden = true;
     //document.getElementById('myDatePicker').hidden = true;
+    //document.getElementById('dropzoneSortByDate').addEventListener('onscroll',this.itemsByDate);
     //  importMode:
     //    "drop"
     //});
@@ -338,12 +573,93 @@ class FillInTheDateForm extends React.Component {
       myInputNode.removeChild(myInputNode.firstChild);
     }
   }
+  loadJson = (event) => {
+    //const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+    //
+    ////console.log(this.state.date); 
+    ////console.log(selectedDate); 
+    ////the database json was loaded in this dataset
+    //const myBlob = document.getElementById('download_items').dataset.databaseJson; //take the data attribute of this element, call it my Blob and pick all the items at once
+    ////replace the fetch in local dir
+    //const myBlub = Object.values(myBlob);
+    //console.log(myBlob);
+    //console.log(myBlub);
+    ////document.getElementById("jsonString").value = JSON.stringify(myBlub);
+    ////document.getElementById('jsonString').value;
+    ////console.log(content);
+    ////======re-display download link for database.json (once)=====//
+    //const content = myBlob;
+    ////display a link that goes to the JSON filethat is processed
+    //if (!document.getElementById('database_file')) { 
+    //  const downloadAll = document.getElementById("inputJsonFile");
+    //  const addLink = document.createElement('a');
+    //  addLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": JSON.parse(content)},null,2)], {type: 'application/json'}));
+    //  addLink.innerHTML = 'Processed file';
+    //  addLink.download = 'database.json';
+    //  addLink.id = 'databaseToSortByDate';
+    //  downloadAll.appendChild(addLink);
+    //}
+    ////sort items by date and append to array
+    //const myItemsByDate = new Set();
+    //console.log(selectedDate); 
+    //myBlob.forEach(function(item, index, object) {
+    //  console.log(item);
+    //  if(item.dates && item.dates.length){
+    //    item.dates.forEach(function(date,index,object) { 
+    //      if(date === selectedDate) {
+    //        myItemsByDate.add(item); 
+    //      }
+    //    })
+    //  }
+    //});
+    //if (![...myItemsByDate].length){
+    //  document.getElementById('databaseToSortByDate').remove(); 
+    //}
+    //if ([...myItemsByDate].length){
+    //  alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
+    //  //}
+    //  const outputJson = document.getElementById("outputJsonFile");
+    //  const outputLink = document.createElement('a');
+    //  console.log(myItemsByDate);
+    //  outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
+    //  outputLink.innerHTML = "download JSON file (date of data entry: "+selectedDate+ ")";
+    //  outputLink.download = 'items.json';
+    //  outputLink.id = 'items_by_date';
+    //  outputJson.appendChild(outputLink);
+
+    //} else {
+    //  const outputJson = document.getElementById("outputJsonFile");
+    //  const outputLink = document.createElement('p');
+    //  outputLink.textContent = 'no item corresponds to your request.';
+    //  outputLink.id = 'noitem';
+    //  outputJson.appendChild(outputLink);
+    //}
+  }
+
   handleSubmittedDate = (event) => {
 
     if(document.getElementById("download_items").dataset.databaseJson.length) {
+      //if the database json file was loaded and the date was picked, proceed to the sorting of elements
+      //alert("you loaded items"); 
+      //alert(document.getElementById("download_items").dataset.databaseJson.length); 
+      //alert(document.getElementById("download_items").dataset.databaseJson); 
       const myItems = JSON.parse(document.getElementById("download_items").dataset.databaseJson);
  
        
+      //DOWNLOAD LINKS
+      //if (this.state.myItems === (null||undefined)) {
+      //  alert("The program could not proceed. There must be an error with the file you loaded in the dropzone. Drop a new file and try again.");
+      //} else {
+      //  //INITIALISES OUTPUT ZONES
+      //  const myOutputNode = document.getElementById('outputJsonFile');
+      //  while(myOutputNode.firstChild) {
+      //    myOutputNode.removeChild(myOutputNode.firstChild);
+      //  }
+      //  const myInputNode = document.getElementById('inputJsonFile');
+      //  while(myInputNode.firstChild) {
+      //    myInputNode.removeChild(myInputNode.firstChild);
+      //  }
+
         //MY DATE PICKER 
       const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
       //console.log(myItems);
@@ -360,18 +676,17 @@ class FillInTheDateForm extends React.Component {
 
       if ([...myItemsByDate].length){
         //INITIALIZE DOWNLOAD LINKS AREA//
+        //const myOutputNode = document.getElementById('outputJsonFile');
+        //while(myOutputNode.firstChild) {
+        //  myOutputNode.removeChild(myOutputNode.firstChild);
+        //}
         const myInputNode = document.getElementById('inputJsonFile');
         while(myInputNode.firstChild) {
           myInputNode.removeChild(myInputNode.firstChild);
         }
 
         //CREATES OUTPUT JSON FILE DOWNLOAD LINK 
-
         const outputJson = document.getElementById("outputJsonFile");
-        
-        if(document.getElementById("items_by_date")) {
-          document.getElementById("items_by_date").remove();
-        }
         const outputLink = document.createElement('a');
         console.log(myItemsByDate);
         outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
@@ -384,6 +699,7 @@ class FillInTheDateForm extends React.Component {
         //alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
         outputLink.dataset.databaseJson = JSON.stringify({"items": myItemsByDate});
         outputJson.appendChild(outputLink);
+        //document.getElementById('wordinput').addEventListener('mouseover', this.displayAudio);
 
       } else {
         //INITIALIZE DOWNLOAD LINKS AREA//
@@ -409,6 +725,12 @@ class FillInTheDateForm extends React.Component {
         //=====/=/=/=/=/=/=/=/=/=/=/=/=/
       
     }
+      //you click. how to determine if the database is already loaded and act in function of that. Example: the database is loaded in "my Items" (in the function sendFile (file), so you will just do stuff (like below with what's in "my Items".
+      // other possibility: the database is not loaded, so you will just cancel these operations.
+
+      // drop the json files
+      //generate my Items by date using my Items
+
 
   }
   dropbox = (files) => {
@@ -500,7 +822,6 @@ class FillInTheDateForm extends React.Component {
         this.setState({myItems}); 
         //document.getElementById('submit-date-btn').hidden = false;
         console.log(myItems);
-
         this.setState({
           databaseIsLoaded:
             true
@@ -541,7 +862,7 @@ class FillInTheDateForm extends React.Component {
   }             
   itemsByDateLoadForm = (event) => {
     //alert('test');
-    if (document.getElementById('items_by_date') && document.getElementById('items_by_date').dataset.databaseJson) {
+    if (document.getElementById('download_items').dataset.databaseJson) {
       event.target.removeEventListener('mouseover', this.itemsByDateLoadForm); 
       console.log(event.target.clientHeight);
 
@@ -674,7 +995,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       droppedFiles:null,
       mapJson:null,
       compilationOfWordsFromText:null,
-      previewMyDatabase:null,
       compilationOfWordsFromDatabase:null,
       wordsFromDatabase:null,
       wordsFromText:null,
@@ -684,8 +1004,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       databaseJson:null,
       textAtFileCreation:null,
       textareaIsEmpty:null,
-      itemsWereDropped:null,
-      myDatabaseForUpload:null
+      itemsWereDropped:null
 
     };
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -749,9 +1068,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
 
     //ALERT BOXES (TEXT IN TEXTAREA)
-    //if (/*this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") === ""*/) {
+    if (this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") === "") {
       //alert("you entered no text")
-    if (event.tatget.value ==="") {
     } else {
       //YOU IMPORT THE TEXT YOU ENTERED INTO THE VARIABLE WORDLIST
       const importText = this.state.value;
@@ -916,41 +1234,17 @@ my two mistresses: what a beast am I to slack it!`,*/
       //===FILE PREVIEW AFTER DROP==//
       //if a database.json is loaded, only this will output
       this.setState({allMyItems});
+
+      //console.log(allMyItems.type);
+      //this.a.dataset.itemsJson = allMyItems;
+
+
+      //this.a.dataset.databaseJson = allMyItems;
       const downloadLink = document.createElement('a');
       downloadLink.className += '.obj';
       downloadLink.textContent = 'Items from your database + items from your text';
-      //THREE METHODS ARE MAINLY USED
-
-      //THE FIRST ONE BEING if elementById.dataset.database === JSON.stringify
-
-      if(document.getElementById('items_dy_date')) {
-        document.getElementById('items_dy_date').remove();
-      }
-      downloadLink.id = "items_by_date";
-      downloadLink.dataset.databaseJson = JSON.stringify({"items":allMyItems});
-      //THE SECOND ONE BEING elementById.dataset.database = JSON.stringify
-      // THE THIRD ONE BEING element.id = ''
-      //HERE CHECK WHAT ARE THE OPERATIONS THAT HAVE BEEN DONE BY CHECKING THE DATASET ATTRIBUTE AND THE "NO DATABASE FILE" CHECK
-
-      //DO THINGS SO THAT ELEMENT WITH ID "DOWNLOAD ITEMS" AND ITS DATA ATTRIBUTE DATASET DATABASEJSON CONTAINS THE FILE OUTPUT
-
-      //SO TO MAKE THINGS EASIER YOU CAN JUST PAY ATTENTION TO WHICH ELEMENT HAS THE DOWNLOAD_ITEMS ID TO BETTER DETERMINE WHICH ELEMENT MUST HAVE THE APPROPRIATE DATASET ATTRIBUTE
-
-      //THREE METHODS ARE MAINLY USED
-
-      //THE FIRST ONE BEING if elementById.dataset.database === JSON.stringify
-      //THE SECOND ONE BEING elementById.dataset.database = JSON.stringify
-      // THE THIRD ONE BEING element.id = ''
-
       if(document.getElementById('download_items').dataset.databaseJson === JSON.stringify({"items": databaseJson})) {
-        const outputJson = document.getElementById("outputJsonFile");
-        const outputLink = document.createElement('a');
-        outputLink.id = 'items_by_date';
-
-        outputLink.hidden = true;
-        outputJson.hidden = true;
-        outputLink.dataset.databaseJson = JSON.stringify({"items": databaseJson});
-        outputJson.appendChild(outputLink);
+        document.getElementById('items_by_date').dataset.itemsJson = JSON.stringify({"items" : databaseJson});
       } else {
         document.getElementById('download_items').dataset.itemsJson = JSON.stringify({"items" : allMyItems});
         document.getElementById('download_items').dataset.databaseJson = JSON.stringify({"items": allMyItems});
@@ -966,21 +1260,21 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   handleSubmittedText = event => {
     event.preventDefault();
-    //if(this.state.textAtFileCreation !== null) {
-    //  if(document.getElementById('databaseAfterNewText')) {
-    //    document.getElementById('databaseAfterNewText').remove();
-    //  }
-    //  this.a.removeAttribute('href');
-    //  this.a.textContent = "";
-    //}
-    //if(this.state.value !== null) { 
-    //  this.handleText();
-    //} else {
-    //  this.setState({
-    //    textareaIsEmpty:
-    //      "The text input field is empty. You cannot proceed."
-    //  });
-    //}
+    if(this.state.textAtFileCreation !== null) {
+      if(document.getElementById('databaseAfterNewText')) {
+        document.getElementById('databaseAfterNewText').remove();
+      }
+      this.a.removeAttribute('href');
+      this.a.textContent = "";
+    }
+    if(this.state.value !== null) { 
+      this.handleText();
+    } else {
+      this.setState({
+        textareaIsEmpty:
+          "The text input field is empty. You cannot proceed."
+      });
+    }
   }
 
   handleDateChange = date => {
@@ -1057,12 +1351,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         const myItems = thirdres.map(obj => obj);
         this.setState({myItems});
         console.log(myItems);
-        const myDatabaseForUpload = document.createElement('a');
-        
-        myDatabaseForUpload.id = "items_by_date";
-        myDatabaseForUpload.href = "";
-        myDatabaseForUpload.dataset.databaseJson = JSON.stringify({"items":[...Object.entries(myItems).map(([k, v]) => [k,v])]});
-        document.getElementById('preview').appendChild(myDatabaseForUpload);
         document.getElementById('noDatabaseFile').removeAttribute('checked');
         this.setState({
           databaseIsLoaded:
@@ -1094,17 +1382,6 @@ my two mistresses: what a beast am I to slack it!`,*/
                         fileName.className += '.obj';
 			fileName.textContent = file.name+ ' (preview)';
 			fileName.href = URL.createObjectURL(file);
-                        //if (fileName && this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") === "" && file.type === "application/json" && document.getElementById('myItemsForUpload')) {
-                        //  if (document.getElementById('items_by_date')) {
-                        //    document.getElementById('items_by_date').remove();
-                        //  }
-                        //  fileName.id = 'items_by_date';
-			//  fileName.dataset.databaseJson = JSON.stringify({"items":document.getElementById('myItemsForUpload').dataset.databaseJson});
-                        //}
-                        //  if (document.getElementById('myItemsForUpload')) {
-
-                        //  }
-                        //}
 			fileName.target = "_blank";
 			preview.appendChild(fileName);
                         //===END FILE PREVIEW AFTER DROP==//
@@ -1188,7 +1465,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
   }
   alertNoDatabaseFile = (event) => {
-    if (/*this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") !== "" &&*/ document.getElementById('noDatabaseFile').checked === false && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
+    if (this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") !== "" && document.getElementById('noDatabaseFile').checked === false && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
       document.getElementById('noDatabaseFile').checked = true;
       this.setState({
         jsonSecondConfirm:
