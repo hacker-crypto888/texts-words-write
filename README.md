@@ -36,6 +36,8 @@ The user must be able to:
 - [x] drop a database json to sort the items by date
 - [x] not to load any text when textarea is empty
 - [ ] display each audio in a carousel and remove slide of carousel once word is written correctly
+- [ ] in the part of my program where there is a JSON.stringify a blob and all of this generates a new link, all of this can also generate the audio files on the page at the right place
+- [ ] the program modifies the word according to its termination, therefore it can find the word in the database of sounds (in the mp3 file list in all the keys of key value pairs, all the keys are all the words of the database)
 - [x] not to load any text when dropzone is empty
 - [ ] manage his or her user session 
 - [ ] work with text in english, french 
