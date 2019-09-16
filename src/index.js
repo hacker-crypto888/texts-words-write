@@ -51,7 +51,13 @@ class BasicForm extends React.Component {
       allAudioElements:null
     };
   }
-  getInitialState = () => {
+  componentDidMount() {
+    document.getElementById('loadingAudioFiles').hidden = true;
+    this.btn.setAttribute('disabled','disabled'); 
+    const allAudioElements = document.getElementsByTagName('audio'); 
+    const dataOutput = document.getElementById("outputJsonFile");
+    const someData = document.createElement('a');
+
   }
 
   fieldOnblur = () => {
@@ -62,12 +68,7 @@ class BasicForm extends React.Component {
         null
     });
   }
-  componentDidMount() {
-    document.getElementById('loadingAudioFiles').hidden = true;
-    this.btn.setAttribute('disabled','disabled'); 
-    const allAudioElements = document.getElementsByTagName('audio'); 
 
-  }
   handleSubmit = (event) => {
     event.preventDefault();
   }
@@ -335,7 +336,9 @@ class FillInTheDateForm extends React.Component {
       myInputNode:null,
       myOutputNode:null,
       myPreviewNode:null,
-      myDatabaseJson:null
+      myDatabaseJson:null,
+      someData:null,
+      dataOutput:null
     }
   }
   componentDidMount() {
@@ -352,6 +355,8 @@ class FillInTheDateForm extends React.Component {
     //  importMode:
     //    "drop"
     //});
+    const dataOutput = document.getElementById("outputJsonFile");
+    const someData = document.createElement('a');
   }
   onChange = (date) => {
     this.setState({ date });
@@ -400,15 +405,42 @@ class FillInTheDateForm extends React.Component {
         }
         const outputLink = document.createElement('a');
         console.log(myItemsByDate);
-        outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
+        //BLOB TYPE: JSON, \\\\\\NO MORE NEEDED (THE APP CAN DIRECTLY LOAD THE WORDS THAT WERE DROPPED IN THE DROPZONE//////
+        outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'})); //OBJECT TYPE: ARRAY
+        //ORIGIN: DATASET 
+        //COLUMNS: WORD, ID, DATES OF CONSULTATION
+        //IT WAS NOT PRECISED WHETHER DATA CAME FROM A FILE WITH SOME TYPE OR JUST THE TEXT TYPED IN THE TEXT AREA
+        //DATE OF EACH WORD (SEVERAL DATES FOR SEVERAL DAYS OF OCCURRENCE)
+
+        //\\THE DATASET WAS ASSIGNED TO ITS HTML ELEMENT ELSEWHERE IN THE CODE
         outputLink.innerHTML = "download JSON file (date of data entry: "+selectedDate+ ")";
         outputLink.download = 'items.json';
         outputLink.id = 'items_by_date';
-
         outputLink.hidden = false;
+
         outputJson.hidden = false;
         //alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
-        outputLink.dataset.databaseJson = JSON.stringify({"items": myItemsByDate});
+        //DATASET TYPE: JSON
+
+        //////////////------------------------------------------/
+        //BLOB TYPE
+        //DATASET TYPES
+        //ARRAY TYPES / OBJECTS TYPES
+        //ARRAYS / OBJECTS FIELDS (EX: NAME, WORD, ID, DATE, TITLE
+        //FILE TYPES (FETCH) 
+        //////////////------------------------------------------/
+        //STORE IN: 1) JSON
+        //2)DATASET 
+        //////////////------------------------------------------/
+        //DATA INPUT(FOR THE AUDIO DISPLAYER)/OUTPUT(FOR THE FORM FIELDS) TO DISPLAY AUDIO IS A DATASET
+        //////////////------------------------------------------/
+        //BOOTSTRAP\\\\\\ CAN ONLY BE POSSIBLE IF ALL THE INFO FROM FETCH (FROM THE DROPPED FILES) AND THE BLOBS (DATABASES THAT ARE MADE WITH THE FORMDATA) IS COMPLETE
+        //////////////------------------------------------------/
+        //EVENT LISTENERS CAN ONLY BE WORKED OUT IF THE JSON IS CORRECTLY WORKED OUT AS WELL
+        //////////////------------------------------------------/
+        //WHERE THE DATABASES (IN CONSTANTS) ARE LOADED / ASSIGNED: LOOK FOR ITS LINES AND COLUMNS IN THE CODE ABOVE IT (USING THE PROPS)
+        outputLink.dataset.databaseJson = JSON.stringify({"items": myItemsByDate}); //LINES: UNKNOWN
+        //COLUMNS: WORD, ID, ARRAY OF DATES (PROGRAM JAVASCRIPT)
         outputJson.appendChild(outputLink);
 
       } else {
@@ -424,6 +456,7 @@ class FillInTheDateForm extends React.Component {
 
         //OUTPUTS TEXT FOR NO VALID ITEM
         const outputJson = document.getElementById("outputJsonFile");
+        const someData = document.createElement('a');
         const outputLink = document.createElement('p');
         outputLink.textContent = 'no item corresponds to your request.';
         outputLink.id = 'noitem';
@@ -721,7 +754,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       aNewHtmlElement:null,
       myElements:null,
       allElementsButOne:null,
-      indexCurrentAudio:null
+      indexCurrentAudio:null,
+      dataOutput:null,
+      someData:null
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -737,6 +772,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
     document.getElementById('noDatabaseFile').addEventListener('checked', this.checkBox);
+    const dataOutput = document.getElementById("outputJsonFile");
+    const someData = document.createElement('a');
 
 
 
