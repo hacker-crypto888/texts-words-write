@@ -1,6 +1,8 @@
 import React, {setState} from 'react'; 
 import ReactDOM from 'react-dom'; 
 import './index.css';
+  oetInitialState = () => {
+  }
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
 const s = document.createElement("script");
@@ -48,7 +50,10 @@ class BasicForm extends React.Component {
       myarray:null,
       element:null,
       idx:null,
-      allAudioElements:null
+      allAudioElements:null,
+      dataLists:null,
+      dataOutput:null,
+      someData:null
     };
   }
   componentDidMount() {
@@ -57,7 +62,8 @@ class BasicForm extends React.Component {
     const allAudioElements = document.getElementsByTagName('audio'); 
     const dataOutput = document.getElementById("outputJsonFile");
     const someData = document.createElement('a');
-
+    someData.id = 'some-data';
+    dataOutput.appendChild(someData);
   }
 
   fieldOnblur = () => {
@@ -351,12 +357,10 @@ class FillInTheDateForm extends React.Component {
     document.getElementById('labelJsonInPublicDir').hidden = true;
     document.getElementById('submit-date-btn').hidden = true;
     document.getElementById('dropzoneSortByDate').hidden = true;
-    //document.getElementById('myDatePicker').hidden = true;
-    //  importMode:
-    //    "drop"
-    //});
     const dataOutput = document.getElementById("outputJsonFile");
     const someData = document.createElement('a');
+    someData.id = 'some-data';
+    dataOutput.appendChild(someData);
   }
   onChange = (date) => {
     this.setState({ date });
@@ -764,19 +768,14 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   componentDidMount() {
-    //if(document.getElementById('download_items').dataset.itemsJson.length) {
-      //alert('items json file is ready');
-    //}
     window.addEventListener('dragover',this.windowdragover);
-
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
     document.getElementById('noDatabaseFile').addEventListener('checked', this.checkBox);
     const dataOutput = document.getElementById("outputJsonFile");
     const someData = document.createElement('a');
-
-
-
+    someData.id = 'some-data';
+    dataOutput.appendChild(someData);
   }
 
   handleNameChange = event => {
