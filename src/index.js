@@ -120,24 +120,24 @@ class BasicForm extends React.Component {
             console.log(item);
             //const myAudioFiles = document.getElementById('myAudioFiles');
             const audioFilePreview = document.createElement('audio'); 
-            audioFilePreview.className=item[1].word;
-            audioFilePreview.key=item[1].id;
-            audioFilePreview.id=item[1].word;
+            audioFilePreview.className=item.word;
+            audioFilePreview.key=item.id;
+            audioFilePreview.id=item.word;
             audioFilePreview.controls=true;
 
             audioFilePreview.onplay = (event) => { 
               const wordInputField = document.getElementById('wordinput');
               wordInputField.dataset.targetValue = audioFilePreview.id;
             };
-            console.log(item[1].word);
+            console.log(item.word);
             [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
-              if(mp3[0] === item[1].word && mp3[1].length){
+              if(mp3[0] === item.word && mp3[1].length){
                 mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
                   const theFirstChild = audioFilePreview.firstChild;
                   const sourceFile = document.createElement('source');
                   sourceFile.src = mp3link; 
                   console.log(mp3link);
-                  sourceFile.className = item[1].word; 
+                  sourceFile.className = item.word; 
                   sourceFile.type = 'audio/mpeg'; 
                   audioFilePreview.insertBefore(sourceFile, theFirstChild);
 
@@ -542,6 +542,9 @@ class FillInTheDateForm extends React.Component {
   itemsByDateLoadForm = (event) => {
     //alert('test');
     if (document.getElementById('items_by_date') && document.getElementById('items_by_date').dataset.databaseJson) {
+      if(document.getElementById("items_by_date")) {
+        document.getElementById("items_by_date").remove();
+      }
       event.target.removeEventListener('mouseover', this.itemsByDateLoadForm); 
       console.log(event.target.clientHeight);
 
@@ -685,9 +688,14 @@ my two mistresses: what a beast am I to slack it!`,*/
       textAtFileCreation:null,
       textareaIsEmpty:null,
       itemsWereDropped:null,
-      myDatabaseForUpload:null
-
+      myDatabaseForUpload:null,
+      items:null,
+      myItemsFromText:null,
+      aNewElement:null,
+      aNewHtmlElement:null,
+      myElements:null
     };
+
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
 
   }
@@ -750,237 +758,230 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     //ALERT BOXES (TEXT IN TEXTAREA)
     //if (/*this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") === ""*/) {
-      //alert("you entered no text")
-    if (event.tatget.value ==="") {
-    } else {
-      //YOU IMPORT THE TEXT YOU ENTERED INTO THE VARIABLE WORDLIST
-      const importText = this.state.value;
-      const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-      const wordList = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-        return element !== null;
-      });
+    //YOU IMPORT THE TEXT YOU ENTERED INTO THE VARIABLE WORDLIST
+    const importText = this.state.value;
+    const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
+    const wordList = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+      return element !== null;
+    });
 
-      //INITIALISATION of WORDS FROM THE TEXT
-      //ARRAY(SET WITH UNIQUE KEY VALUE PAIRS) OF EACH WORD FROM THE TEXT AND ITS ID
-      const wordIdKVPairs = new Set();
-      for (var i=0; i < wordList.length; i++) {
-        if (wordList[i] !== "") {
-          wordIdKVPairs.add({word: wordList[i], id: wordIdKVPairs.size});
-          console.log(wordIdKVPairs);
-        }
+    //INITIALISATION of WORDS FROM THE TEXT
+    //ARRAY(SET WITH UNIQUE KEY VALUE PAIRS) OF EACH WORD FROM THE TEXT AND ITS ID
+    const wordIdKVPairs = new Set();
+    for (var i=0; i < wordList.length; i++) {
+      if (wordList[i] !== "") {
+        wordIdKVPairs.add({word: wordList[i], id: wordIdKVPairs.size});
+        console.log(wordIdKVPairs);
       }
-
-      //ARRAY OF WORDS FROM THE TEXT (ONLY THE WORDS)
-      const compilationOfWordsFromText = new Set();
-      for (var i=0; i < wordList.length; i++) {
-        if (wordList[i] !== "") {
-          compilationOfWordsFromText.add(wordList[i]);
-          console.log(compilationOfWordsFromText);
-        }
-      }
-
-      //JSON ITEMS IN A "MAP" ARRAY
-      const jsonItemsMap = new Map();
-      jsonItemsMap.set('items', [...wordIdKVPairs]);
-
-
-      //THE LIST OF WORDS FROM THE TEXT AND THEIR IDS
-      const wordIdItems = {};
-      this.setState({
-        wordIdItems:
-          [...wordIdKVPairs]
-      });
-
-      console.log(this.state.wordIdItems); 
-
-      //SIMPLE LIST OF WORDS FROM THE TEXT
-      const wordsFromText = Array.from(compilationOfWordsFromText);
-
-      //VERY FIRST DATABASE JSON FOR THE START OF THE USE OF MY APP CONTAINING THE WORDS FROM THE TEXT AND THEIR IDS
-      const databaseJson = [];
-      wordsFromText.forEach(function(item,index,object) {
-        const daysDate = new Date();
-        const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-        const newItem = {};
-        newItem.word = item;
-        newItem.id = databaseJson.length;
-        newItem.dates = [today];
-        databaseJson.push(newItem);
-        //console.log(databaseJson.length);
-      }); 
-
-
-
-
-      //CHECKING WHETHER YOU ARE GOING TO DROP A FILE T0 SEND THE FORM OR NOT AND ACTS ACCORDINGLY ("MY ITEMS" SHOULD CONTENT THE ITEMS YOU DROPPED AS A DATABASE) (YOU ARE INSIDE OF THE FETCH FUNCTION)
-      if (this.state.myItems === undefined && document.getElementById('noDatabaseFile').checked === false) {
-        this.alertNoDatabaseFile();
-      }
-
-      //YOU HAVE NO DATABASE.JSON AND YOU ENTERED A TEXT
-      if(document.getElementById('noDatabaseFile').checked && this.state.value !== "") {
-        //ACTIVATION OF ONE DOWNLOAD LINK
-        this.a.setAttribute("href","items.json");
-        this.a.textContent = "Download new items";
-        document.getElementById('download_items').dataset.databaseJson = JSON.stringify({"items": databaseJson});
-        document.getElementById('download_items').href = window.URL.createObjectURL(new Blob([JSON.stringify({"items": databaseJson},null,2)], {type: 'application/json'}));
-
-        //ACTIVATION OF A SECOND DOWNLOAD LINK
-        //const downloadAll = document.getElementById('download_all_items');
-        //const downloadLink = document.createElement('a');
-        //downloadLink.className += '.obj';
-        //downloadLink.id = "databaseAfterNewText"; //database after new text
-        //downloadLink.textContent = 'Download all new items as a new JSON database';
-        //downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": databaseJson},null,2)], {type: 'application/json'}));
-        //downloadLink.download = "database.json";
-        //downloadAll.appendChild(downloadLink);
-
-        // STATE OF TEXT AREA AT FILE CREATION
-        this.setState({
-          textAtFileCreation:
-            this.state.value
-        });
-
-        //UPDATES DAY'S DATE
-        const daysDate = new Date();
-        const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-        //}
-
-        //SIMPLE ARRAY OF WORDS FROM THE TEXT
-        const wordsFromText = Array.from(compilationOfWordsFromText);
-      }
-
-      //THIS PART SHOULD ONLY EXECUTE IF YOU DROPPED A FILE
-      //======DATABASE IS LOADED (FETCH DATABASE JSON IN DROPZONE) ----> ADD NEW WORDS TO DATABASE========//
-
-      //MAKE THE LIST OF VALUES CONTAINED IN "MY ITEMS" IN ""
-
-      //SIMPLE "SET" OF WORDS CONTAINED IN THE DROPPED DATABASE.JSON
-
-      //NO FETCH OCCURS, "MY ITEMS" IS DEFINED IN THE SEND FILE FUNCTION
-
-      //console.log(this.state.wordIdItems);
-      if(this.state.myItems !== undefined && this.state.myItems.length) {
-        //console.log("database and text loadded");
-        const mapJson = new Map(Object.entries(this.state.myItems)); 
-        console.log(compilationOfWordsFromText);
-        let compilationOfWordsFromDatabase = new Set();
-        for (let line of mapJson.values()) {
-          //...
-          compilationOfWordsFromDatabase.add(line.word); 
-        }
-    
-        // EDIT THE "MY ITEMS" ARRAY 
-        for (let line of compilationOfWordsFromDatabase) {
-          console.log(line);
-          console.log(compilationOfWordsFromText);
-          //IF A WORD FROM THE TEXT EXISTS IN THE WORD LIST
-          if (compilationOfWordsFromText.has(line)) {
-            console.log(line);
-            this.state.myItems.forEach(function(element) {
-              const daysDate = new Date();
-              const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-              if (element.word === line && !element.dates.includes(today)) {
-                element.dates.push(today); //THE DATE IS ADDED in "MY ITEMS"
-                wordsFromText.forEach(function(item, index, object) {
-                  if (item === line) {
-                    //object.splice(index, 1); //the item is removed FROM "WORDSFROMTEXT"
-                    object.splice(index); //the item is removed FROM "WORDSFROMTEXT"
-                    console.log(wordsFromText.length);
-                  }
-                });
-              }
-            }); 
-          }
-        }
-      }
-      //COPY ALL ELEMENTS FROM "MY ITEMS" (AFTER EDIT) TO "ALL MY ITEMS" SO THAT MY ITEMS IS NO LONGER USED, add the new elements 
-      console.log(this.state.myItems);
-      const allMyItems = Array.from(this.state.myItems);
-      wordsFromText.forEach(function(item,index,object) {
-        const daysDate = new Date();
-        const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-        
-        const newItem = {};
-        newItem.word = item;
-        newItem.id = allMyItems.length;
-        newItem.dates = [today];
-        allMyItems.push(newItem);
-        console.log(allMyItems.length);
-      }); 
-      const downloadAll = document.getElementById("download_all_items");
-      while(downloadAll.firstChild) {
-        downloadAll.removeChild(downloadAll.firstChild);
-      }
-
-      //===FILE PREVIEW AFTER DROP==//
-      //if a database.json is loaded, only this will output
-      this.setState({allMyItems});
-      const downloadLink = document.createElement('a');
-      downloadLink.className += '.obj';
-      downloadLink.textContent = 'Items from your database + items from your text';
-      //THREE METHODS ARE MAINLY USED
-
-      //THE FIRST ONE BEING if elementById.dataset.database === JSON.stringify
-
-      if(document.getElementById('items_dy_date')) {
-        document.getElementById('items_dy_date').remove();
-      }
-      downloadLink.id = "items_by_date";
-      downloadLink.dataset.databaseJson = JSON.stringify({"items":allMyItems});
-      //THE SECOND ONE BEING elementById.dataset.database = JSON.stringify
-      // THE THIRD ONE BEING element.id = ''
-      //HERE CHECK WHAT ARE THE OPERATIONS THAT HAVE BEEN DONE BY CHECKING THE DATASET ATTRIBUTE AND THE "NO DATABASE FILE" CHECK
-
-      //DO THINGS SO THAT ELEMENT WITH ID "DOWNLOAD ITEMS" AND ITS DATA ATTRIBUTE DATASET DATABASEJSON CONTAINS THE FILE OUTPUT
-
-      //SO TO MAKE THINGS EASIER YOU CAN JUST PAY ATTENTION TO WHICH ELEMENT HAS THE DOWNLOAD_ITEMS ID TO BETTER DETERMINE WHICH ELEMENT MUST HAVE THE APPROPRIATE DATASET ATTRIBUTE
-
-      //THREE METHODS ARE MAINLY USED
-
-      //THE FIRST ONE BEING if elementById.dataset.database === JSON.stringify
-      //THE SECOND ONE BEING elementById.dataset.database = JSON.stringify
-      // THE THIRD ONE BEING element.id = ''
-
-      if(document.getElementById('download_items').dataset.databaseJson === JSON.stringify({"items": databaseJson})) {
-        const outputJson = document.getElementById("outputJsonFile");
-        const outputLink = document.createElement('a');
-        outputLink.id = 'items_by_date';
-
-        outputLink.hidden = true;
-        outputJson.hidden = true;
-        outputLink.dataset.databaseJson = JSON.stringify({"items": databaseJson});
-        outputJson.appendChild(outputLink);
-      } else {
-        document.getElementById('download_items').dataset.itemsJson = JSON.stringify({"items" : allMyItems});
-        document.getElementById('download_items').dataset.databaseJson = JSON.stringify({"items": allMyItems});
-        
-      };
-      //use the data attributes
-      downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": allMyItems},null,2)], {type: 'application/json'}));
-      downloadLink.download = "database.json";
-      downloadAll.appendChild(downloadLink);
-
     }
+
+    //ARRAY OF WORDS FROM THE TEXT (ONLY THE WORDS)
+    const compilationOfWordsFromText = new Set();
+    for (var i=0; i < wordList.length; i++) {
+      if (wordList[i] !== "") {
+        compilationOfWordsFromText.add(wordList[i]);
+        console.log(compilationOfWordsFromText);
+      }
+    }
+
+
+    //JSON ITEMS IN A "MAP" ARRAY
+    const jsonItemsMap = new Map();
+    jsonItemsMap.set('items', [...wordIdKVPairs]);
+
+
+    //THE LIST OF WORDS FROM THE TEXT AND THEIR IDS
+    const wordIdItems = {};
+    this.setState({
+      wordIdItems:
+        [...wordIdKVPairs]
+    });
+
+    console.log(this.state.wordIdItems); 
+
+    //SIMPLE LIST OF WORDS FROM THE TEXT
+    const wordsFromText = Array.from(compilationOfWordsFromText);
+
+
+
+
+
+    //CHECKING WHETHER YOU ARE GOING TO DROP A FILE T0 SEND THE FORM OR NOT AND ACTS ACCORDINGLY ("MY ITEMS" SHOULD CONTENT THE ITEMS YOU DROPPED AS A DATABASE) (YOU ARE INSIDE OF THE FETCH FUNCTION)
+    if (document.getElementById('noDatabaseFile').checked === false) {
+      this.alertNoDatabaseFile();
+    }
+
+    //VERY FIRST DATABASE JSON FOR THE START OF THE USE OF MY APP CONTAINING THE WORDS FROM THE TEXT AND THEIR IDS
+    const databaseJson = [];
+    wordsFromText.forEach(function(item,index,object) {
+      const daysDate = new Date();
+      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const newItem = {};
+      newItem.word = item;
+      newItem.id = databaseJson.length;
+      newItem.dates = [today];
+      databaseJson.push(newItem);
+      //console.log(databaseJson.length);
+    }); 
+
+    //YOU HAVE NO DATABASE.JSON AND YOU ENTERED A TEXT
+    if(document.getElementById('noDatabaseFile').checked && this.state.value !== "") {
+      //ACTIVATION OF ONE DOWNLOAD LINK
+      this.a.setAttribute("href","items.json");
+      this.a.textContent = "Download new items";
+      document.getElementById('download_items').dataset.databaseJson = JSON.stringify({"items": databaseJson});
+      const aNewElement = document.createElement('p');
+      aNewElement.id = 'items_by_date';
+      const aNewHtmlElement = document.getElementById('preview');
+      aNewHtmlElement.appendChild(aNewElement);
+      
+      document.getElementById('items_by_date').dataset.databaseJson = JSON.stringify({"items": databaseJson});
+      document.getElementById('download_items').href = window.URL.createObjectURL(new Blob([JSON.stringify({"items": databaseJson},null,2)], {type: 'application/json'}));
+
+      this.setState({
+        textAtFileCreation:
+          this.state.value
+      });
+
+      //UPDATES DAY'S DATE
+      const daysDate = new Date();
+      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      //}
+
+      //SIMPLE ARRAY OF WORDS FROM THE TEXT
+      const wordsFromText = Array.from(compilationOfWordsFromText);
+    }
+
+
+    
+
+    if(document.getElementById('download_items').dataset.databaseJson === JSON.stringify({"items": databaseJson})) {
+      const outputJson = document.getElementById("outputJsonFile");
+      const outputLink = document.createElement('a');
+      outputLink.id = 'items_by_date';
+
+      outputLink.hidden = true;
+      outputJson.hidden = true;
+      outputLink.dataset.databaseJson = JSON.stringify({"items": databaseJson});
+      outputJson.appendChild(outputLink);
+    } else {
+      document.getElementById('download_items').dataset.itemsJson = JSON.stringify({"items" : allMyItems});
+      document.getElementById('download_items').dataset.databaseJson = JSON.stringify({"items": allMyItems});
+      
+    };
+    //use the data attributes
+
+
+    const myItemsFromText = document.createElement('a');
+    myItemsFromText.href = "";
+    myItemsFromText.id = "myItemsFromText";
+    myItemsFromText.dataset.myItems = JSON.stringify({"items":databaseJson});
+    document.getElementById('preview').appendChild(myItemsFromText);
+    const allMyItems = JSON.parse(document.getElementById('myItemsFromText').dataset.myItems).items;
+
+
+    if(document.getElementById('items_dy_date')) {
+      document.getElementById('items_dy_date').remove();
+    }
+    const downloadAll = document.getElementById('download_all_items');
+    const downloadLink = document.createElement('a');
+    downloadLink.className += '.obj';
+    downloadLink.textContent = 'Items from your database + items from your text';
+    downloadLink.id = "items_by_date";
+    downloadLink.dataset.databaseJson = JSON.stringify({"items":allMyItems});
+    downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": allMyItems},null,2)], {type: 'application/json'}));
+    downloadLink.download = "database.json";
+    downloadAll.appendChild(downloadLink);
+
+
+    wordsFromText.forEach(function(item,index,object) {
+      const daysDate = new Date();
+      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      
+      const newItem = {};
+      newItem.word = item;
+      newItem.id = JSON.parse(document.getElementById('myItemsFromText').dataset.myItems).items.length;
+      newItem.dates = [today];
+      JSON.parse(document.getElementById('myItemsFromText').dataset.myItems).items.push(newItem);
+      console.log(allMyItems.length);
+    }); 
+
+    while(downloadAll.firstChild) {
+      downloadAll.removeChild(downloadAll.firstChild);
+    }
+    //THIS PART SHOULD ONLY EXECUTE IF YOU DROPPED A FILE
+    //======DATABASE IS LOADED (FETCH DATABASE JSON IN DROPZONE) ----> ADD NEW WORDS TO DATABASE========//
+
+    //MAKE THE LIST OF VALUES CONTAINED IN "MY ITEMS" IN ""
+
+    //SIMPLE "SET" OF WORDS CONTAINED IN THE DROPPED DATABASE.JSON
+
+    //NO FETCH OCCURS, "MY ITEMS" IS DEFINED IN THE SEND FILE FUNCTION
+
+    //console.log(this.state.wordIdItems);
+
+    //console.log("database and text loadded");
+    const mapJson = new Map(Object.entries(document.getElementById('myItemsFromText').dataset.myItems)); 
+    console.log(compilationOfWordsFromText);
+    let compilationOfWordsFromDatabase = new Set();
+    for (let line of mapJson.values()) {
+      //...
+      compilationOfWordsFromDatabase.add(line.word); 
+    }
+    
+
+    // EDIT THE "MY ITEMS" ARRAY 
+    for (let line of compilationOfWordsFromDatabase) {
+      console.log(line);
+      console.log(compilationOfWordsFromText);
+      //IF A WORD FROM THE TEXT EXISTS IN THE WORD LIST
+      if (compilationOfWordsFromText.has(line)) {
+        console.log(line);
+
+        this.state.myItems.forEach(function(element) {
+
+          const daysDate = new Date();
+          const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+          if (element.word === line && !element.dates.includes(today)) {
+            element.dates.push(today); //THE DATE IS ADDED in "MY ITEMS"
+            wordsFromText.forEach(function(item, index, object) {
+              if (item === line) {
+                //object.splice(index, 1); //the item is removed FROM "WORDSFROMTEXT"
+                object.splice(index); //the item is removed FROM "WORDSFROMTEXT"
+                console.log(wordsFromText.length);
+              }
+            });
+          }
+        }); 
+      }
+    }
+
+
+    //===FILE PREVIEW AFTER DROP==//
+    //if a database.json is loaded, only this will output
+    this.setState({allMyItems});
+    
   } 
 
   handleSubmittedText = event => {
+
+
     event.preventDefault();
-    //if(this.state.textAtFileCreation !== null) {
-    //  if(document.getElementById('databaseAfterNewText')) {
-    //    document.getElementById('databaseAfterNewText').remove();
-    //  }
-    //  this.a.removeAttribute('href');
-    //  this.a.textContent = "";
-    //}
-    //if(this.state.value !== null) { 
-    //  this.handleText();
-    //} else {
-    //  this.setState({
-    //    textareaIsEmpty:
-    //      "The text input field is empty. You cannot proceed."
-    //  });
-    //}
+    if(this.state.textAtFileCreation !== null) {
+      if(document.getElementById('databaseAfterNewText')) {
+        document.getElementById('databaseAfterNewText').remove();
+      }
+      this.a.removeAttribute('href');
+      this.a.textContent = "";
+    }
+    if(this.state.value !== null) { 
+      this.handleText();
+    } else {
+      this.setState({
+        textareaIsEmpty:
+          "The text input field is empty. You cannot proceed."
+      });
+    }
   }
 
   handleDateChange = date => {
@@ -1031,12 +1032,24 @@ my two mistresses: what a beast am I to slack it!`,*/
       //===JSON UPLOAD===//
       for (let i=0; i<files.length; i++) {
           const file = files[i];
-          if (file.name === "database.json") {
-          	this.sendFile(file);
+          if (file.name === "database.json") { 
+            this.sendFile(file);
+          }
+          if (file.name.slice(-4) === ".txt") { 
+            this.sendTextFile(file);
           }
       }
       //===END JSON UPLOAD===//
     }
+  }
+  sendTextFile = (file) => {
+    const fd = new FormData();
+    fd.append('myFile', file);
+    fetch(URL.createObjectURL(file))
+      .then(function(response) {
+        const value = response;
+        //this.handleText();    
+      })
   }
 
   sendFile = (file) => {
@@ -1201,12 +1214,21 @@ my two mistresses: what a beast am I to slack it!`,*/
       document.getElementById('noDatabaseFile').removeAttribute('checked');   
     }
   }
+  autoplay = (event) => {
+    const myElements = document.getElementsByTagName('audio');
+    console.log(myElements);
+    for(let element of myElements) {
+      window.setTimeout(function() {
+        element.play();
+      }, 1500);
+    };
+  }
 
   render() {
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
 
-        
+        <input type="button" onClick={this.autoplay} value={`play all the words`} /> 
         <div>
           <input type="checkbox" id={`noDatabaseFile`} value={this.state.noDatabaseFile} onChange={this.checkBox} />
           <label for="subscribeNews">I have no database.json</label>
