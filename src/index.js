@@ -43,7 +43,12 @@ class BasicForm extends React.Component {
       previewMyItems:null,
       preview:null,
       audioElements:null,
-      previewAudioFiles:null
+      previewAudioFiles:null,
+      indexes:[],
+      myarray:null,
+      element:null,
+      idx:null,
+      allAudioElements:null
     };
   }
   getInitialState = () => {
@@ -60,6 +65,7 @@ class BasicForm extends React.Component {
   componentDidMount() {
     document.getElementById('loadingAudioFiles').hidden = true;
     this.btn.setAttribute('disabled','disabled'); 
+    const allAudioElements = document.getElementsByTagName('audio'); 
 
   }
   handleSubmit = (event) => {
@@ -124,6 +130,26 @@ class BasicForm extends React.Component {
             audioFilePreview.key=item.id;
             audioFilePreview.id=item.word;
             audioFilePreview.controls=true;
+            audioFilePreview.onended = (event) => {
+              const allAudioElements = document.getElementsByTagName('audio');
+              console.log(event.currentTarget);
+              allAudioElements[0].remove(); 
+              if (allAudioElements[0]) {
+                allAudioElements[0].play();
+              }
+              //const indexes = [];
+              ////const mylist = ['a', 'b', 'a', 'c', 'a', 'd'];
+              //const mylist = allAudioElements;
+              //const element = event.currentTarget;
+              //const idx = mylist.indexOf(element);
+              //while (idx != -1) {
+              //  indexes.push(idx);
+              //  idx = mylist.indexOf(element, idx + 1);
+              //}
+              //console.log(indexes);
+              
+            };
+            
 
             audioFilePreview.onplay = (event) => { 
               const wordInputField = document.getElementById('wordinput');
@@ -693,7 +719,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       myItemsFromText:null,
       aNewElement:null,
       aNewHtmlElement:null,
-      myElements:null
+      myElements:null,
+      allElementsButOne:null,
+      indexCurrentAudio:null
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -1215,20 +1243,32 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
   }
   autoplay = (event) => {
+    //const allAudioElements = this.state;
     const myElements = document.getElementsByTagName('audio');
-    console.log(myElements);
-    for(let element of myElements) {
-      window.setTimeout(function() {
-        element.play();
-      }, 1500);
-    };
+    //if(myElements[0]) {
+    //  myElements[0].play();
+    //}
+    //function defineonended(myElements, element) {
+    //  if (myElements.indexOf(event.target) === -1) {
+    //    myElements[myElements.length - 1].onended = (event) => {
+    //    };
+    //    //console.log('Le nouveau tableau est : ' + tabLégumes);
+    //  } else if (myElements.indexOf() > -1) {
+    //    myElements[myElements.indexOf(event.target)].onended = (event) => {
+    //      myElements[myElements.indexOf(event.target) + 1].play(); 
+    //    }
+
+    if (myElements && myElements.length) {
+      myElements[0].play();
+    }
+
   }
 
   render() {
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
 
-        <input type="button" onClick={this.autoplay} value={`play all the words`} /> 
+        <input type="button" /*onClick={this.autoplay}*/ value={`play all the words`} /> 
         <div>
           <input type="checkbox" id={`noDatabaseFile`} value={this.state.noDatabaseFile} onChange={this.checkBox} />
           <label for="subscribeNews">I have no database.json</label>
