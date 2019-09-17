@@ -1,8 +1,6 @@
 import React, {setState} from 'react'; 
 import ReactDOM from 'react-dom'; 
 import './index.css';
-  oetInitialState = () => {
-  }
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
 const s = document.createElement("script");
@@ -137,6 +135,7 @@ class BasicForm extends React.Component {
             audioFilePreview.key=item.id;
             audioFilePreview.id=item.word;
             audioFilePreview.controls=true;
+            if (document.getElementById('preloadOrAutoplay').value === "autoplay") {
             audioFilePreview.onended = (event) => {
               const allAudioElements = document.getElementsByTagName('audio');
               console.log(event.currentTarget);
@@ -144,6 +143,8 @@ class BasicForm extends React.Component {
               if (allAudioElements[0]) {
                 allAudioElements[0].play();
               }
+            };
+            }
               //const indexes = [];
               ////const mylist = ['a', 'b', 'a', 'c', 'a', 'd'];
               //const mylist = allAudioElements;
@@ -155,7 +156,7 @@ class BasicForm extends React.Component {
               //}
               //console.log(indexes);
               
-            };
+
             
 
             audioFilePreview.onplay = (event) => { 
@@ -760,7 +761,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       allElementsButOne:null,
       indexCurrentAudio:null,
       dataOutput:null,
-      someData:null
+      someData:null,
+      preloadOrAutoplay:null
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -1214,13 +1216,25 @@ my two mistresses: what a beast am I to slack it!`,*/
       noDatabaseFile:
         event.target.value
     });
+    if (!event.target.checked) {
+      this.setState({
+        noDatabaseFile:
+          false,
+        preloadOrAutoplay:
+          "preload"
+      });
+    } 
 
     if (event.target.checked) {
       this.setState({
         noDatabaseFile:
-          true
+          true,
+        preloadOrAutoplay:
+          "autoplay"
       });
-      document.getElementById('dropzone').hidden = true;
+
+    
+
       console.log("checkbox");
       
       if (this.state.databaseIsLoaded === true && window.confirm("the database is to be removed. To remove the database anyway, press ok. Press cancel to keep your database loaded in the dropzone.")) {
@@ -1238,6 +1252,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
       }
     }
+    //if (event.target.checked && 
     if(!event.target.checked) {
       this.setState({
         noDatabaseFile:
@@ -1262,6 +1277,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     if(event.target.checked === false) {
       document.getElementById('dropzone').removeAttribute('checked');
       document.getElementById('dropzone').hidden = false;
+    }
+    if (event.target.checked === true && event.target.id === "noDatabaseFile") {
+      document.getElementById('dropzone').hidden = true;
     }
   }
   alertNoDatabaseFile = (event) => {
@@ -1303,13 +1321,14 @@ my two mistresses: what a beast am I to slack it!`,*/
   render() {
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
-
-        <input type="button" /*onClick={this.autoplay}*/ value={`play all the words`} /> 
+        <div>
+          <input type="checkbox" id="playAllTheWords" value={this.state.preloadOrAutoplay} onChange={this.checkBox} name="playAllTheWords"/>
+          <label for="playAllTheWords">Play all the words</label>
+        </div>
         <div>
           <input type="checkbox" id={`noDatabaseFile`} value={this.state.noDatabaseFile} onChange={this.checkBox} />
           <label for="subscribeNews">I have no database.json</label>
         </div>
-
 
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
