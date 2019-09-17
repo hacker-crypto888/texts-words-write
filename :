@@ -48,10 +48,22 @@ class BasicForm extends React.Component {
       myarray:null,
       element:null,
       idx:null,
-      allAudioElements:null
+      allAudioElements:null,
+      dataLists:null,
+      dataOutput:null,
+      someData:null,
+      myAudioItems:null,
+      firstAudio:null
     };
   }
-  getInitialState = () => {
+  componentDidMount() {
+    document.getElementById('loadingAudioFiles').hidden = true;
+    this.btn.setAttribute('disabled','disabled'); 
+    const allAudioElements = document.getElementsByTagName('audio'); 
+    const dataOutput = document.getElementById("outputJsonFile");
+    const someData = document.createElement('a');
+    someData.id = 'some-data';
+    dataOutput.appendChild(someData);
   }
 
   fieldOnblur = () => {
@@ -62,12 +74,7 @@ class BasicForm extends React.Component {
         null
     });
   }
-  componentDidMount() {
-    document.getElementById('loadingAudioFiles').hidden = true;
-    this.btn.setAttribute('disabled','disabled'); 
-    const allAudioElements = document.getElementsByTagName('audio'); 
 
-  }
   handleSubmit = (event) => {
     event.preventDefault();
   }
@@ -130,13 +137,37 @@ class BasicForm extends React.Component {
             audioFilePreview.key=item.id;
             audioFilePreview.id=item.word;
             audioFilePreview.controls=true;
-            audioFilePreview.onended = (event) => {
-              const allAudioElements = this.state;
-              console.log(event.currentTarget);
-              allAudioElements.shift(); 
-              if (allAudioElements[0]) {
-                allAudioElements[0].play();
-              }
+            audioFilePreview.onpause = (event) => {
+              event.currentTarget.currentTime = 0;
+            }
+            if (document.getElementById('playAllTheWords').checked) {
+              audioFilePreview.onended = (event) => {
+                const allAudioElements = document.getElementsByTagName('audio');
+                console.log(event.currentTarget);
+                //allAudioElements[0].remove(); 
+                if (allAudioElements[1]) {
+                  //const allAudioElements = document.getElementsByTagName('audio');
+                  //const firstAudio = allAudioElements[0];
+
+
+                  //allAudioElements[0].remove(); 
+                  //const myAudioItems = document.getElementById('myAudioFiles');       
+                  //myAudioItems.appendChild(firstAudio);
+                  //oItems.firstChild.play();
+                  //allAudioElements[0].remove(); 
+                  //allAudioElements[0].play();
+                  //const allAudioElements = document.getElementsByTagName('audio');
+                  const myAudioItems = document.getElementById('myAudioFiles');
+                  //const firstAudio = allAudioElements[0];
+
+                  const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
+                  //event.currentTarget.remove();
+                  myAudioItems.childNodes[indexAudioElement].play();
+                  //myAudioItems.insertBefore(event.currentTarget, myAudioItems.children[indexAudioElement]);
+
+                }
+              };
+            }
               //const indexes = [];
               ////const mylist = ['a', 'b', 'a', 'c', 'a', 'd'];
               //const mylist = allAudioElements;
@@ -148,7 +179,7 @@ class BasicForm extends React.Component {
               //}
               //console.log(indexes);
               
-            };
+
             
 
             audioFilePreview.onplay = (event) => { 
@@ -335,7 +366,9 @@ class FillInTheDateForm extends React.Component {
       myInputNode:null,
       myOutputNode:null,
       myPreviewNode:null,
-      myDatabaseJson:null
+      myDatabaseJson:null,
+      someData:null,
+      dataOutput:null
     }
   }
   componentDidMount() {
@@ -348,10 +381,10 @@ class FillInTheDateForm extends React.Component {
     document.getElementById('labelJsonInPublicDir').hidden = true;
     document.getElementById('submit-date-btn').hidden = true;
     document.getElementById('dropzoneSortByDate').hidden = true;
-    //document.getElementById('myDatePicker').hidden = true;
-    //  importMode:
-    //    "drop"
-    //});
+    const dataOutput = document.getElementById("outputJsonFile");
+    const someData = document.createElement('a');
+    someData.id = 'some-data';
+    dataOutput.appendChild(someData);
   }
   onChange = (date) => {
     this.setState({ date });
@@ -400,15 +433,42 @@ class FillInTheDateForm extends React.Component {
         }
         const outputLink = document.createElement('a');
         console.log(myItemsByDate);
-        outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'}));
+        //BLOB TYPE: JSON, \\\\\\NO MORE NEEDED (THE APP CAN DIRECTLY LOAD THE WORDS THAT WERE DROPPED IN THE DROPZONE//////
+        outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'})); //OBJECT TYPE: ARRAY
+        //ORIGIN: DATASET 
+        //COLUMNS: WORD, ID, DATES OF CONSULTATION
+        //IT WAS NOT PRECISED WHETHER DATA CAME FROM A FILE WITH SOME TYPE OR JUST THE TEXT TYPED IN THE TEXT AREA
+        //DATE OF EACH WORD (SEVERAL DATES FOR SEVERAL DAYS OF OCCURRENCE)
+
+        //\\THE DATASET WAS ASSIGNED TO ITS HTML ELEMENT ELSEWHERE IN THE CODE
         outputLink.innerHTML = "download JSON file (date of data entry: "+selectedDate+ ")";
         outputLink.download = 'items.json';
         outputLink.id = 'items_by_date';
-
         outputLink.hidden = false;
+
         outputJson.hidden = false;
         //alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
-        outputLink.dataset.databaseJson = JSON.stringify({"items": myItemsByDate});
+        //DATASET TYPE: JSON
+
+        //////////////------------------------------------------/
+        //BLOB TYPE
+        //DATASET TYPES
+        //ARRAY TYPES / OBJECTS TYPES
+        //ARRAYS / OBJECTS FIELDS (EX: NAME, WORD, ID, DATE, TITLE
+        //FILE TYPES (FETCH) 
+        //////////////------------------------------------------/
+        //STORE IN: 1) JSON
+        //2)DATASET 
+        //////////////------------------------------------------/
+        //DATA INPUT(FOR THE AUDIO DISPLAYER)/OUTPUT(FOR THE FORM FIELDS) TO DISPLAY AUDIO IS A DATASET
+        //////////////------------------------------------------/
+        //BOOTSTRAP\\\\\\ CAN ONLY BE POSSIBLE IF ALL THE INFO FROM FETCH (FROM THE DROPPED FILES) AND THE BLOBS (DATABASES THAT ARE MADE WITH THE FORMDATA) IS COMPLETE
+        //////////////------------------------------------------/
+        //EVENT LISTENERS CAN ONLY BE WORKED OUT IF THE JSON IS CORRECTLY WORKED OUT AS WELL
+        //////////////------------------------------------------/
+        //WHERE THE DATABASES (IN CONSTANTS) ARE LOADED / ASSIGNED: LOOK FOR ITS LINES AND COLUMNS IN THE CODE ABOVE IT (USING THE PROPS)
+        outputLink.dataset.databaseJson = JSON.stringify({"items": myItemsByDate}); //LINES: UNKNOWN
+        //COLUMNS: WORD, ID, ARRAY OF DATES (PROGRAM JAVASCRIPT)
         outputJson.appendChild(outputLink);
 
       } else {
@@ -424,6 +484,7 @@ class FillInTheDateForm extends React.Component {
 
         //OUTPUTS TEXT FOR NO VALID ITEM
         const outputJson = document.getElementById("outputJsonFile");
+        const someData = document.createElement('a');
         const outputLink = document.createElement('p');
         outputLink.textContent = 'no item corresponds to your request.';
         outputLink.id = 'noitem';
@@ -721,7 +782,13 @@ my two mistresses: what a beast am I to slack it!`,*/
       aNewHtmlElement:null,
       myElements:null,
       allElementsButOne:null,
-      indexCurrentAudio:null
+      indexCurrentAudio:null,
+      dataOutput:null,
+      someData:null,
+      preloadOrAutoplay:null,
+      audioTagName:null,
+      firstAudio:null,
+      indexAudioElement:null
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -729,17 +796,14 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   componentDidMount() {
-    //if(document.getElementById('download_items').dataset.itemsJson.length) {
-      //alert('items json file is ready');
-    //}
     window.addEventListener('dragover',this.windowdragover);
-
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
     document.getElementById('noDatabaseFile').addEventListener('checked', this.checkBox);
-
-
-
+    const dataOutput = document.getElementById("outputJsonFile");
+    const someData = document.createElement('a');
+    someData.id = 'some-data';
+    dataOutput.appendChild(someData);
   }
 
   handleNameChange = event => {
@@ -1178,13 +1242,67 @@ my two mistresses: what a beast am I to slack it!`,*/
       noDatabaseFile:
         event.target.value
     });
+    const audioTagName = document.getElementsByTagName('audio');
+    if (document.getElementById('playAllTheWords').checked && audioTagName && audioTagName.length && !Object.keys(audioTagName)[0].onended) {
+      for (let el of audioTagName) {
+        el.onended = (event) => {
+          const allAudioElements = audioTagName;
+          console.log(event.currentTarget);
+          //allAudioElements[0].remove(); 
+          if (allAudioElements[1]) {
+            const myAudioItems = document.getElementById('myAudioFiles');
+            const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
+            myAudioItems.childNodes[this.state.indexAudioElement].play();
+            //const allAudioElements = document.getElementsByTagName('audio');
+            //const myAudioItems = document.getElementById('myAudioFiles');
+            //const firstAudio = allAudioElements[0];
+
+            //const indexAudioElement = Array.prototype.indexOf.call(myAudioItems, event.currentTarget);
+            //event.currentTarget.remove(); 
+            //event.currentTarget.play();
+            //myAudioItems.insertBefore(event.currentTarget, myAudioItems.children[indexAudioElement]);
+            //myAudioItems.appendChild(firstAudio);
+            //oItems.firstChild.play();
+            //allAudioElements[0].remove(); 
+
+            //const firstAudio = allAudioElements[0];
+            //const myAudioItems = document.getElementById('myAudioFiles');       
+            //myAudioItems.appendChild(firstAudio);
+            ////allAudioElements[0].remove(); 
+            //myAudioItems.firstChild.remove(); 
+            //myAudioItems.firstChild.play();
+          }
+        };
+      }
+    
+    }
+    if (!document.getElementById('playAllTheWords').checked && audioTagName && audioTagName.length && Object.keys(audioTagName)[0].onended !== (null||undefined||false)) {
+      for (let el of audioTagName) {
+        el.onended = (event) => {
+          el.pause();
+          el.currentTime = 0;
+        }
+      }
+    }
+    if (!event.target.checked) {
+      this.setState({
+        noDatabaseFile:
+          false,
+        preloadOrAutoplay:
+          "preload"
+      });
+    } 
 
     if (event.target.checked) {
       this.setState({
         noDatabaseFile:
-          true
+          true,
+        preloadOrAutoplay:
+          "autoplay"
       });
-      document.getElementById('dropzone').hidden = true;
+
+    
+
       console.log("checkbox");
       
       if (this.state.databaseIsLoaded === true && window.confirm("the database is to be removed. To remove the database anyway, press ok. Press cancel to keep your database loaded in the dropzone.")) {
@@ -1202,30 +1320,40 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
       }
     }
+    //if (event.target.checked && 
     if(!event.target.checked) {
       this.setState({
         noDatabaseFile:
           false 
       });
-      document.getElementById('dropzone').hidden = false;
+      if (!document.getElementById('noDatabaseFile').checked) {
+        document.getElementById('dropzone').hidden = false;
+      }
       console.log("uncheck box");
       console.log(this.state.jsonSecondConfirm);
-      if (this.state.jsonSecondConfirm === true) {
+
+      if (!document.getElementById('noDatabaseFile').checked && this.state.jsonSecondConfirm === true) {
         this.setState({
-          jsonSecondConfirm:
+          jsonSecondConfirm: 
             false
         });
-
-        if (window.confirm("you confirmed that you had no json to upload. Ok to drop a json from your computer. Cancel to load words from a new text")) {
-        } else {
-          document.getElementById('dropzone').hidden = true;
-          document.getElementById('noDatabaseFile').checked = true;
-        } 
-      }
+      } else {
+        this.setState({
+          jsonSecondConfirm: 
+            true 
+        });
+        document.getElementById('dropzone').hidden = true;
+        document.getElementById('noDatabaseFile').checked = true;
+      } 
     }
     if(event.target.checked === false) {
       document.getElementById('dropzone').removeAttribute('checked');
-      document.getElementById('dropzone').hidden = false;
+      if (document.getElementById('noDatabaseFile').checked === (false||undefined)) {
+        document.getElementById('dropzone').hidden = false;
+      }
+    }
+    if (event.target.checked === true && event.target.id === "noDatabaseFile") {
+      document.getElementById('dropzone').hidden = true;
     }
   }
   alertNoDatabaseFile = (event) => {
@@ -1245,76 +1373,24 @@ my two mistresses: what a beast am I to slack it!`,*/
   autoplay = (event) => {
     //const allAudioElements = this.state;
     const myElements = document.getElementsByTagName('audio');
-    myElements[0].play();
-    //function defineonended(myElements, element) {
-    //  if (myElements.indexOf(event.target) === -1) {
-    //    myElements[myElements.length - 1].onended = (event) => {
-    //    };
-    //    //console.log('Le nouveau tableau est : ' + tabLégumes);
-    //  } else if (myElements.indexOf() > -1) {
-    //    myElements[myElements.indexOf(event.target)].onended = (event) => {
-    //      myElements[myElements.indexOf(event.target) + 1].play(); 
-    //    }
-    //    //console.log(légume + ' existe déjà dans le tableau.');
-    //  }
-    //}
-    //for(let el of myElements) {
-    //  defineonended(myElements, el);
-    //}
-
-    //console.log(myElements);
-    //const idx = myElements.indexOf(élément);
-    //while (idx != -1) {
-    //  myElements[idx].onended = (event) => {
-    //    myElements.values().next().play();
-    //  }
-    //}
-    //myElements[myElements.length -1].onended = (event) => {
-    //};
-    //console.log(indices);
 
     if (myElements && myElements.length) {
       myElements[0].play();
     }
 
-    //el.onplay = (event) => {
-    //function hasTheAudioElement(audioel) {
-    //  return audioel = event.target; 
-    //};
-    //  if(allElementsButOne.findIndex(hasTheAudioElement)) {
-
-    //    const indexCurrentAudio = allElementsButOne.findIndex(hasTheAudioElement);
-    //    allElementsButOne.splice(indexCurrentAudio, 1);
-    //    
-    //  }
-    //  for (let audioElement of allElementsButOne) {
-    //    audioElement.pause();
-    //    audioElement.currentTime = 0;
-    //  }
-    //  const indexCurrentAudio = this.state; 
-    //  if (indexCurrentAudio && indexCurrentAudio !== null) {
-
-    //    allElementsButOne.splice(indexCurrentAudio, 0, event.target);
-    //  }
-    //}
-    //}
-    //for(let element of myElements) {
-    //  setTimeout(function() {
-    //    element.play();
-    //  }, 2000);
-    //};
   }
 
   render() {
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
-
-        <input type="button" /*onClick={this.autoplay}*/ value={`play all the words`} /> 
+        <div>
+          <input type="checkbox" id="playAllTheWords" value={this.state.preloadOrAutoplay} onChange={this.checkBox} name="playAllTheWords"/>
+          <label for="playAllTheWords">Play all the words</label>
+        </div>
         <div>
           <input type="checkbox" id={`noDatabaseFile`} value={this.state.noDatabaseFile} onChange={this.checkBox} />
           <label for="subscribeNews">I have no database.json</label>
         </div>
-
 
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>

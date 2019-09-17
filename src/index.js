@@ -51,7 +51,9 @@ class BasicForm extends React.Component {
       allAudioElements:null,
       dataLists:null,
       dataOutput:null,
-      someData:null
+      someData:null,
+      myAudioItems:null,
+      firstAudio:null
     };
   }
   componentDidMount() {
@@ -135,15 +137,37 @@ class BasicForm extends React.Component {
             audioFilePreview.key=item.id;
             audioFilePreview.id=item.word;
             audioFilePreview.controls=true;
-            if (document.getElementById('preloadOrAutoplay').value === "autoplay") {
-            audioFilePreview.onended = (event) => {
-              const allAudioElements = document.getElementsByTagName('audio');
-              console.log(event.currentTarget);
-              allAudioElements[0].remove(); 
-              if (allAudioElements[0]) {
-                allAudioElements[0].play();
-              }
-            };
+            audioFilePreview.onpause = (event) => {
+              event.currentTarget.currentTime = 0;
+            }
+            if (document.getElementById('playAllTheWords').checked) {
+              audioFilePreview.onended = (event) => {
+                const allAudioElements = document.getElementsByTagName('audio');
+                console.log(event.currentTarget);
+                //allAudioElements[0].remove(); 
+                //if (allAudioElements[1]) {
+                if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
+                  //const allAudioElements = document.getElementsByTagName('audio');
+                  //const firstAudio = allAudioElements[0];
+
+
+                  //allAudioElements[0].remove(); 
+                  //const myAudioItems = document.getElementById('myAudioFiles');       
+                  //myAudioItems.appendChild(firstAudio);
+                  //oItems.firstChild.play();
+                  //allAudioElements[0].remove(); 
+                  //allAudioElements[0].play();
+                  //const allAudioElements = document.getElementsByTagName('audio');
+                  const myAudioItems = document.getElementById('myAudioFiles');
+                  //const firstAudio = allAudioElements[0];
+
+                  const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
+                  //event.currentTarget.remove();
+                  myAudioItems.childNodes[indexAudioElement].play();
+                  //myAudioItems.insertBefore(event.currentTarget, myAudioItems.children[indexAudioElement]);
+
+                }
+              };
             }
               //const indexes = [];
               ////const mylist = ['a', 'b', 'a', 'c', 'a', 'd'];
@@ -762,7 +786,10 @@ my two mistresses: what a beast am I to slack it!`,*/
       indexCurrentAudio:null,
       dataOutput:null,
       someData:null,
-      preloadOrAutoplay:null
+      preloadOrAutoplay:null,
+      audioTagName:null,
+      firstAudio:null,
+      indexAudioElement:null
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -1216,6 +1243,48 @@ my two mistresses: what a beast am I to slack it!`,*/
       noDatabaseFile:
         event.target.value
     });
+    const audioTagName = document.getElementsByTagName('audio');
+    if (document.getElementById('playAllTheWords').checked && audioTagName && audioTagName.length && !Object.keys(audioTagName)[0].onended) {
+      for (let el of audioTagName) {
+        el.onended = (event) => {
+          const allAudioElements = audioTagName;
+          console.log(event.currentTarget);
+          //allAudioElements[0].remove(); 
+          if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
+            const myAudioItems = document.getElementById('myAudioFiles');
+            const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
+            myAudioItems.childNodes[this.state.indexAudioElement].play();
+            //const allAudioElements = document.getElementsByTagName('audio');
+            //const myAudioItems = document.getElementById('myAudioFiles');
+            //const firstAudio = allAudioElements[0];
+
+            //const indexAudioElement = Array.prototype.indexOf.call(myAudioItems, event.currentTarget);
+            //event.currentTarget.remove(); 
+            //event.currentTarget.play();
+            //myAudioItems.insertBefore(event.currentTarget, myAudioItems.children[indexAudioElement]);
+            //myAudioItems.appendChild(firstAudio);
+            //oItems.firstChild.play();
+            //allAudioElements[0].remove(); 
+
+            //const firstAudio = allAudioElements[0];
+            //const myAudioItems = document.getElementById('myAudioFiles');       
+            //myAudioItems.appendChild(firstAudio);
+            ////allAudioElements[0].remove(); 
+            //myAudioItems.firstChild.remove(); 
+            //myAudioItems.firstChild.play();
+          }
+        };
+      }
+    
+    }
+    if (!document.getElementById('playAllTheWords').checked && audioTagName && audioTagName.length && Object.keys(audioTagName)[0].onended !== (null||undefined||false)) {
+      for (let el of audioTagName) {
+        el.onended = (event) => {
+          el.pause();
+          el.currentTime = 0;
+        }
+      }
+    }
     if (!event.target.checked) {
       this.setState({
         noDatabaseFile:
@@ -1258,23 +1327,25 @@ my two mistresses: what a beast am I to slack it!`,*/
         noDatabaseFile:
           false 
       });
-      if (document.getElementById('noDatabaseFile').value === false) {
+      if (!document.getElementById('noDatabaseFile').checked) {
         document.getElementById('dropzone').hidden = false;
       }
       console.log("uncheck box");
       console.log(this.state.jsonSecondConfirm);
-      if (this.state.jsonSecondConfirm === true) {
+
+      if (!document.getElementById('noDatabaseFile').checked && this.state.jsonSecondConfirm === true) {
         this.setState({
-          jsonSecondConfirm:
+          jsonSecondConfirm: 
             false
         });
-
-        if (window.confirm("you confirmed that you had no json to upload. Ok to drop a json from your computer. Cancel to load words from a new text")) {
-        } else {
-          document.getElementById('dropzone').hidden = true;
-          document.getElementById('noDatabaseFile').checked = true;
-        } 
-      }
+      } else {
+        this.setState({
+          jsonSecondConfirm: 
+            true 
+        });
+        document.getElementById('dropzone').hidden = true;
+        document.getElementById('noDatabaseFile').checked = true;
+      } 
     }
     if(event.target.checked === false) {
       document.getElementById('dropzone').removeAttribute('checked');
@@ -1303,18 +1374,6 @@ my two mistresses: what a beast am I to slack it!`,*/
   autoplay = (event) => {
     //const allAudioElements = this.state;
     const myElements = document.getElementsByTagName('audio');
-    //if(myElements[0]) {
-    //  myElements[0].play();
-    //}
-    //function defineonended(myElements, element) {
-    //  if (myElements.indexOf(event.target) === -1) {
-    //    myElements[myElements.length - 1].onended = (event) => {
-    //    };
-    //    //console.log('Le nouveau tableau est : ' + tabLégumes);
-    //  } else if (myElements.indexOf() > -1) {
-    //    myElements[myElements.indexOf(event.target)].onended = (event) => {
-    //      myElements[myElements.indexOf(event.target) + 1].play(); 
-    //    }
 
     if (myElements && myElements.length) {
       myElements[0].play();
