@@ -789,7 +789,11 @@ my two mistresses: what a beast am I to slack it!`,*/
       preloadOrAutoplay:null,
       audioTagName:null,
       firstAudio:null,
-      indexAudioElement:null
+      indexAudioElement:null,
+      daysDate:null,
+      allTheImportedTexts:null,
+      infoAboutThisText:null,
+      contentOfThisText:null
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -832,7 +836,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     this.setState({
       emailError:
         email.length > 3 ? null : 'Email must be longer than 3 characters' 
-      });
+    });
   }
   importAllWords = (event) => {
     axios.get(`./database.json`)
@@ -852,51 +856,82 @@ my two mistresses: what a beast am I to slack it!`,*/
     //ALERT BOXES (TEXT IN TEXTAREA)
     //if (/*this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") === ""*/) {
     //YOU IMPORT THE TEXT YOU ENTERED INTO THE VARIABLE WORDLIST
-    const importText = this.state.value;
-    const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-    const wordList = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-      return element !== null;
-    });
+    const daysDate = new Date();
+    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+    const allTheImportedTexts = document.getElementById('preview').dataset.textImport;
+    document.getElementById('preview').dataset.textImport.push(JSON.stringify({"lastModified": new Date().getTime(), "lastModifiedDate":today, "name": null, "webkitRelativePath": null, "size": null, "type": null, "content":this.state.value}));
+    const importText = '';
+    const databaseJson = [];
+    for (let text in allTheImportedTexts) {
+      //parse info about the text
+      const infoAboutThisText = JSON.parse(text);
+      const contentOfThisText = infoAboutThisText.content;
+      const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
+      const wordList = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+        return element !== (null&&""&&undefined);
+      });
+      const wordsFromText = Array.from(wordList);
+
+      wordsFromText.forEach(function(item,index,object) {
+        const daysDate = new Date();
+        const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+        const newItem = {};
+        newItem.word = item;
+        newItem.id = databaseJson.length;
+        newItem.dates = [today];
+        newItem.lastModified = text.lastModified;
+        //newItem.lastModifiedDate = /
+        databaseJson.push(newItem);
+        //console.log(databaseJson.length);
+      }); 
+
+
+      //importText += contentOfThisText;
+      //importText += " ";
+    }
+    //const importText = this.state.value;
+    const wordList = this.state;
+    const wordsFromText = Array.from(wordList);
+
+    //VERY FIRST DATABASE JSON FOR THE START OF THE USE OF MY APP CONTAINING THE WORDS FROM THE TEXT AND THEIR IDS
+
 
     //INITIALISATION of WORDS FROM THE TEXT
     //ARRAY(SET WITH UNIQUE KEY VALUE PAIRS) OF EACH WORD FROM THE TEXT AND ITS ID
-    const wordIdKVPairs = new Set();
-    for (var i=0; i < wordList.length; i++) {
-      if (wordList[i] !== "") {
-        wordIdKVPairs.add({word: wordList[i], id: wordIdKVPairs.size});
-        console.log(wordIdKVPairs);
-      }
-    }
+    //const wordIdKVPairs = new Set();
+    //for (var i=0; i < wordList.length; i++) {
+    //  if (wordList[i] !== "") {
+    //    wordIdKVPairs.add({word: wordList[i], id: wordIdKVPairs.size});
+    //    console.log(wordIdKVPairs);
+    //  }
+    //}
 
     //ARRAY OF WORDS FROM THE TEXT (ONLY THE WORDS)
-    const compilationOfWordsFromText = new Set();
-    for (var i=0; i < wordList.length; i++) {
-      if (wordList[i] !== "") {
-        compilationOfWordsFromText.add(wordList[i]);
-        console.log(compilationOfWordsFromText);
-      }
-    }
+    //const compilationOfWordsFromText = new Set();
+    //for (var i=0; i < wordList.length; i++) {
+    //  if (wordList[i] !== "") {
+    //    compilationOfWordsFromText.add(wordList[i]);
+    //    console.log(compilationOfWordsFromText);
+    //  }
+    //}
 
 
     //JSON ITEMS IN A "MAP" ARRAY
-    const jsonItemsMap = new Map();
-    jsonItemsMap.set('items', [...wordIdKVPairs]);
+    //const jsonItemsMap = new Map();
+    //jsonItemsMap.set('items', [...wordIdKVPairs]);
 
 
     //THE LIST OF WORDS FROM THE TEXT AND THEIR IDS
-    const wordIdItems = {};
-    this.setState({
-      wordIdItems:
-        [...wordIdKVPairs]
-    });
+    //const wordIdItems = {};
+    //this.setState({
+    //  wordIdItems:
+    //    [...wordIdKVPairs]
+    //});
 
-    console.log(this.state.wordIdItems); 
+    //console.log(this.state.wordIdItems); 
 
     //SIMPLE LIST OF WORDS FROM THE TEXT
-    const wordsFromText = Array.from(compilationOfWordsFromText);
-
-
-
+    //const wordsFromText = Array.from(compilationOfWordsFromText);
 
 
     //CHECKING WHETHER YOU ARE GOING TO DROP A FILE T0 SEND THE FORM OR NOT AND ACTS ACCORDINGLY ("MY ITEMS" SHOULD CONTENT THE ITEMS YOU DROPPED AS A DATABASE) (YOU ARE INSIDE OF THE FETCH FUNCTION)
@@ -904,18 +939,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       this.alertNoDatabaseFile();
     }
 
-    //VERY FIRST DATABASE JSON FOR THE START OF THE USE OF MY APP CONTAINING THE WORDS FROM THE TEXT AND THEIR IDS
-    const databaseJson = [];
-    wordsFromText.forEach(function(item,index,object) {
-      const daysDate = new Date();
-      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-      const newItem = {};
-      newItem.word = item;
-      newItem.id = databaseJson.length;
-      newItem.dates = [today];
-      databaseJson.push(newItem);
-      //console.log(databaseJson.length);
-    }); 
 
     //YOU HAVE NO DATABASE.JSON AND YOU ENTERED A TEXT
     if(document.getElementById('noDatabaseFile').checked && this.state.value !== "") {
@@ -942,7 +965,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       //}
 
       //SIMPLE ARRAY OF WORDS FROM THE TEXT
-      const wordsFromText = Array.from(compilationOfWordsFromText);
+      //const wordsFromText = Array.from(compilationOfWordsFromText);
     }
 
 
@@ -1015,7 +1038,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     //console.log("database and text loadded");
     const mapJson = new Map(Object.entries(document.getElementById('myItemsFromText').dataset.myItems)); 
-    console.log(compilationOfWordsFromText);
+    //console.log(compilationOfWordsFromText);
     let compilationOfWordsFromDatabase = new Set();
     for (let line of mapJson.values()) {
       //...
@@ -1026,9 +1049,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     // EDIT THE "MY ITEMS" ARRAY 
     for (let line of compilationOfWordsFromDatabase) {
       console.log(line);
-      console.log(compilationOfWordsFromText);
+      //console.log(compilationOfWordsFromText);
       //IF A WORD FROM THE TEXT EXISTS IN THE WORD LIST
-      if (compilationOfWordsFromText.has(line)) {
+      if (wordList.has(line)) {
         console.log(line);
 
         this.state.myItems.forEach(function(element) {
@@ -1142,6 +1165,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       .then(function(response) {
         const value = response;
         //this.handleText();    
+        //text FILE
+        //array of arrays containing columns: text imported, file type, file name, text content,
+        document.getElementById('preview').dataset.textImport.push(JSON.stringify({"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "content": value}));
       })
   }
 
@@ -1219,6 +1245,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 			const reader = new FileReader();
 			reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.wordIdItems; }; })(img); //if the file is an image, insert the content of the imageas the image in the dropbox
 			reader.readAsDataURL(file);
+
 		}
   }
 
