@@ -1258,7 +1258,9 @@ my two mistresses: what a beast am I to slack it!`,*/
         noDatabaseFile:
           false 
       });
-      document.getElementById('dropzone').hidden = false;
+      if (document.getElementById('noDatabaseFile').value === false) {
+        document.getElementById('dropzone').hidden = false;
+      }
       console.log("uncheck box");
       console.log(this.state.jsonSecondConfirm);
       if (this.state.jsonSecondConfirm === true) {
@@ -1276,7 +1278,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     if(event.target.checked === false) {
       document.getElementById('dropzone').removeAttribute('checked');
-      document.getElementById('dropzone').hidden = false;
+      if (document.getElementById('noDatabaseFile').checked === (false||undefined)) {
+        document.getElementById('dropzone').hidden = false;
+      }
     }
     if (event.target.checked === true && event.target.id === "noDatabaseFile") {
       document.getElementById('dropzone').hidden = true;
