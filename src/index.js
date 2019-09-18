@@ -793,7 +793,13 @@ my two mistresses: what a beast am I to slack it!`,*/
       daysDate:null,
       allTheImportedTexts:null,
       infoAboutThisText:null,
-      contentOfThisText:null
+      contentOfThisText:null,
+      allTheImportedTexts:null,
+      msTime:null,
+      jsonParse:null,
+      newText:null,
+      indataset:null,
+      mySuperList:null
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -809,6 +815,11 @@ my two mistresses: what a beast am I to slack it!`,*/
     const someData = document.createElement('a');
     someData.id = 'some-data';
     dataOutput.appendChild(someData);
+    const allTheImportedTexts = document.getElementById('preview').dataset.textImport;
+    document.getElementById('preview').dataset.textImport = [];
+    
+    //allTheImportedTexts = {};
+
   }
 
   handleNameChange = event => {
@@ -858,36 +869,68 @@ my two mistresses: what a beast am I to slack it!`,*/
     //YOU IMPORT THE TEXT YOU ENTERED INTO THE VARIABLE WORDLIST
     const daysDate = new Date();
     const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+    const msTime = new Date().getTime();
+
     const allTheImportedTexts = document.getElementById('preview').dataset.textImport;
-    document.getElementById('preview').dataset.textImport.push(JSON.stringify({"lastModified": new Date().getTime(), "lastModifiedDate":today, "name": null, "webkitRelativePath": null, "size": null, "type": null, "content":this.state.value}));
+
+    console.log(allTheImportedTexts.type);
+    const newText = {lastModified: msTime, lastModifiedDate:today, name: null, webkitRelativePath: null, size: null, type: null, content:this.state.value};
+    const mySuperList = this.state;
+    if (mySuperList === null) {
+    
+      mySuperList = [];
+      mySuperList.push(JSON.stringify(newText));
+      allTheImportedTexts = [...mySuperList];
+    } else {
+      allTheImportedTexts = [...document.getElementById('preview').dataset.importText, JSON.stringify(newText)];
+    }
+
+    console.log(newText);
+      //const indataset = Object.entries(allTheImportedTexts).map(([k,v]) => [k,v]);
+      //indataset.push(Object.entries(newText).map(([k,v]) => [k,v]));
+      //const allTheImportedTexts = this.state;
+
+    console.log(this.state.allTheImportedTexts);
+    
+    console.log(allTheImportedTexts);
     const importText = '';
     const databaseJson = [];
-    for (let text in allTheImportedTexts) {
-      //parse info about the text
-      const infoAboutThisText = JSON.parse(text);
-      const contentOfThisText = infoAboutThisText.content;
-      const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-      const wordList = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-        return element !== (null&&""&&undefined);
-      });
-      const wordsFromText = Array.from(wordList);
+    if(allTheImportedTexts && allTheImportedTexts.length) {
+      for (let text in allTheImportedTexts) {
+        //parse info about the text
+        const infoAboutThisText = JSON.parse(text);
+        const contentOfThisText = infoAboutThisText.content;
+        console.log(text);
+        const importText = contentOfThisText;
+        const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
+        const wordList = x(importText.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+          return element !== (null||""||undefined);
+        });
+        const wordsFromText = Array.from(wordList);
 
-      wordsFromText.forEach(function(item,index,object) {
-        const daysDate = new Date();
-        const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-        const newItem = {};
-        newItem.word = item;
-        newItem.id = databaseJson.length;
-        newItem.dates = [today];
-        newItem.lastModified = text.lastModified;
-        //newItem.lastModifiedDate = /
-        databaseJson.push(newItem);
-        //console.log(databaseJson.length);
-      }); 
+        wordsFromText.forEach(function(item,index,object) {
+          const daysDate = new Date();
+          const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+          const newItem = {};
+          newItem.word = item;
+          newItem.id = databaseJson.length;
+          newItem.dates = [today];
+          //document.getElementById('preview').dataset.textImport.push(JSON.stringify({"lastModified": new Date().getTime(), "lastModifiedDate":today, "name": null, "webkitRelativePath": null, "size": null, "type": null, "content":this.state.value}));
+          newItem.lastModified = text.lastModified;
+          newItem.lastModifiedDate = text.lastModifiedDate;
+          newItem.name = text.name;
+          newItem.webkitRelativePath = text.webkitRelativePath;
+          newItem.size = text.size;
+          newItem.type = text.type;
+          //newItem.lastModifiedDate = /
+          databaseJson.push(newItem);
+          //console.log(databaseJson.length);
+        }); 
 
 
-      //importText += contentOfThisText;
-      //importText += " ";
+        //importText += contentOfThisText;
+        //importText += " ";
+      }
     }
     //const importText = this.state.value;
     const wordList = this.state;
@@ -944,8 +987,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     if(document.getElementById('noDatabaseFile').checked && this.state.value !== "") {
       //ACTIVATION OF ONE DOWNLOAD LINK
       this.a.setAttribute("href","items.json");
-      this.a.textContent = "Download new items";
-      document.getElementById('download_items').dataset.databaseJson = JSON.stringify({"items": databaseJson});
+      //this.a.textContent = "Download new items";
+      this.a.textContent = JSON.stringify({"items": databaseJson});
       const aNewElement = document.createElement('p');
       aNewElement.id = 'items_by_date';
       const aNewHtmlElement = document.getElementById('preview');
@@ -981,8 +1024,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       outputLink.dataset.databaseJson = JSON.stringify({"items": databaseJson});
       outputJson.appendChild(outputLink);
     } else {
-      document.getElementById('download_items').dataset.itemsJson = JSON.stringify({"items" : allMyItems});
-      document.getElementById('download_items').dataset.databaseJson = JSON.stringify({"items": allMyItems});
+      //document.getElementById('download_items').dataset.itemsJson = JSON.stringify({"items" : allMyItems});
+      //document.getElementById('download_items').dataset.databaseJson = JSON.stringify({"items": allMyItems});
       
     };
     //use the data attributes
@@ -1025,57 +1068,45 @@ my two mistresses: what a beast am I to slack it!`,*/
     while(downloadAll.firstChild) {
       downloadAll.removeChild(downloadAll.firstChild);
     }
-    //THIS PART SHOULD ONLY EXECUTE IF YOU DROPPED A FILE
-    //======DATABASE IS LOADED (FETCH DATABASE JSON IN DROPZONE) ----> ADD NEW WORDS TO DATABASE========//
 
-    //MAKE THE LIST OF VALUES CONTAINED IN "MY ITEMS" IN ""
-
-    //SIMPLE "SET" OF WORDS CONTAINED IN THE DROPPED DATABASE.JSON
-
-    //NO FETCH OCCURS, "MY ITEMS" IS DEFINED IN THE SEND FILE FUNCTION
-
-    //console.log(this.state.wordIdItems);
-
-    //console.log("database and text loadded");
-    const mapJson = new Map(Object.entries(document.getElementById('myItemsFromText').dataset.myItems)); 
-    //console.log(compilationOfWordsFromText);
-    let compilationOfWordsFromDatabase = new Set();
-    for (let line of mapJson.values()) {
-      //...
-      compilationOfWordsFromDatabase.add(line.word); 
-    }
+    //const mapJson = new Map(Object.entries(document.getElementById('myItemsFromText').dataset.myItems)); 
+    ////console.log(compilationOfWordsFromText);
+    //let compilationOfWordsFromDatabase = new Set();
+    //for (let line of mapJson.values()) {
+    //  //...
+    //  compilationOfWordsFromDatabase.add(line.word); 
+    //}
     
 
     // EDIT THE "MY ITEMS" ARRAY 
-    for (let line of compilationOfWordsFromDatabase) {
-      console.log(line);
-      //console.log(compilationOfWordsFromText);
-      //IF A WORD FROM THE TEXT EXISTS IN THE WORD LIST
-      if (wordList.has(line)) {
-        console.log(line);
+    //for (let line of compilationOfWordsFromDatabase) {
+    //  //console.log(compilationOfWordsFromText);
+    //  //IF A WORD FROM THE TEXT EXISTS IN THE WORD LIST
+    //  if (wordList.has(line)) {
+    //    console.log(line);
 
-        this.state.myItems.forEach(function(element) {
+    //    this.state.myItems.forEach(function(element) {
 
-          const daysDate = new Date();
-          const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-          if (element.word === line && !element.dates.includes(today)) {
-            element.dates.push(today); //THE DATE IS ADDED in "MY ITEMS"
-            wordsFromText.forEach(function(item, index, object) {
-              if (item === line) {
-                //object.splice(index, 1); //the item is removed FROM "WORDSFROMTEXT"
-                object.splice(index); //the item is removed FROM "WORDSFROMTEXT"
-                console.log(wordsFromText.length);
-              }
-            });
-          }
-        }); 
-      }
-    }
+    //      const daysDate = new Date();
+    //      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+    //      if (element.word === line && !element.dates.includes(today)) {
+    //        element.dates.push(today); //THE DATE IS ADDED in "MY ITEMS"
+    //        wordsFromText.forEach(function(item, index, object) {
+    //          if (item === line) {
+    //            //object.splice(index, 1); //the item is removed FROM "WORDSFROMTEXT"
+    //            object.splice(index); //the item is removed FROM "WORDSFROMTEXT"
+    //            console.log(wordsFromText.length);
+    //          }
+    //        });
+    //      }
+    //    }); 
+    //  }
+    //}
 
 
     //===FILE PREVIEW AFTER DROP==//
     //if a database.json is loaded, only this will output
-    this.setState({allMyItems});
+    //this.setState({allMyItems});
     
   } 
 
@@ -1167,7 +1198,11 @@ my two mistresses: what a beast am I to slack it!`,*/
         //this.handleText();    
         //text FILE
         //array of arrays containing columns: text imported, file type, file name, text content,
-        document.getElementById('preview').dataset.textImport.push(JSON.stringify({"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "content": value}));
+        const allTheImportedTexts = document.getElementById('preview').dataset.textImport;
+        if (allTheImportedTexts === (null||undefined)) {
+          document.getElementById('preview').dataset.textImport= JSON.stringify({"items":[]});
+        }
+        JSON.parse(document.getElementById('preview').dataset.textImport).items.push(JSON.stringify({"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "content": value}));
       })
   }
 
