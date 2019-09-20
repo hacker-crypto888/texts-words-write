@@ -900,7 +900,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     const newText = {"lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
     const mySuperList = this.state;
-    if (importedTexts.dataset.texts !== (null||undefined) && importedTexts.dataset.textValue !== "") {
+    if (importedTexts.dataset.texts && importedTexts.dataset.texts.length && importedTexts.dataset.textValue !== "") {
     
       const myTextInfo = [];
       myTextInfo.push(newText);
@@ -1052,7 +1052,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       //} else if(this[a.word].texts && this[a.word].length > 0){
 
       //this[b.word].texts = JSON.stringify([...JSON.parse(this[b.word].texts), myTextInfo.map(Object.entries)[0]]);
-      this[b.word].texts.push(myTextInfo.map(Object.entries)[0]);
+      if(!this[b.word].texts.includes(myTextInfo.map(Object.entries)[0])) {
+        this[b.word].texts.push(myTextInfo.map(Object.entries)[0]);
+      }
       console.log(this[b.word].texts);
       //} 
     }, Object.create(null));
