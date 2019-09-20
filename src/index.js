@@ -809,7 +809,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       myTextContent:null,
       allWordsFromTexts:null,
       myWordInfo:null,
-      newText:null
+      newText:null,
+      mySuperWordList:null
       
     };
 
@@ -885,8 +886,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       importedTexts.dataset.textValue = "";
     }
     importedTexts.dataset.textValue += this.state.value;
-    if (document.getElementById('noDatabaseFile').checked === true && this.state.myItems === ([]||undefined)) {
-    }
+    //if (document.getElementById('noDatabaseFile').checked === true && this.state.myItems === ([]||undefined)) {
+    //}
 
     //ALERT BOXES (TEXT IN TEXTAREA)
     //if (/*this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") === ""*/) {
@@ -897,34 +898,21 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     const newText = {"lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
     const mySuperList = this.state;
-    if (importedTexts.dataset.texts !== (null||undefined)) {
+    if (importedTexts.dataset.texts !== (null||undefined) && importedTexts.dataset.textValue !== "") {
     
       const myTextInfo = [];
       myTextInfo.push(newText);
-      //console.log(myTextInfo);
-      //importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      //importedTexts.dataset.texts = [JSON.stringify("")];
-      //const finalArray = myTextInfo.map(function(obj) {
-      //  return {["lastModified", obj.lastModified], ["lastModifiedDate", obj.lastModifiedDate], ["name", obj.name], ["webkitRelativePath", obj.webkitRelativePath], ["size", obj.size], ["type", obj.type], ["mycontent", obj.mycontent]};
-      //});
-      //console.log(finalArray);
-      //importedTexts.dataset.texts = myTextInfo.map(o => Object.keys(o).map(k => k)); 
-      //console.log(importedTexts.dataset.texts);
-
-      //console.log(JSON.parse(importedTexts.dataset.texts));
-      //importedTexts.dataset.texts=JSON.stringify([myTextInfo.map(Object.entries)[0]]);
-      //console.log(JSON.parse(importedTexts.dataset.texts));
-
-      //importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
       importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+      importedTexts.dataset.textValue = "";
       //console.log(JSON.parse(importedTexts.dataset.texts));
-    } else if (importedTexts.dataset.texts === (null||undefined)) {
+    } else if (importedTexts.dataset.texts === (null||undefined) && importedTexts.dataset.textValue !== "") {
       
       const myTextInfo = [];
       myTextInfo.push(newText);
       //console.log(myTextInfo);
       //importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
       importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+      importedTexts.dataset.textValue = "";
       //console.log(importedTexts.dataset.texts);
       //console.log(JSON.parse(importedTexts.dataset.texts));
     }
@@ -943,8 +931,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     //const importText = '';
     //const databaseJson = [];
     if(JSON.parse(importedTexts.dataset.texts) && JSON.parse(importedTexts.dataset.texts).length) {
-      JSON.parse(importedTexts.dataset.texts).map(Object.values).forEach(function(mytext) {
-        //console.log(mytext);
+      JSON.parse(importedTexts.dataset.texts).forEach(function(mytext) {
+
 
         //if(importedTexts.dataset.words === (undefined||null)) {
         //  importedTexts.dataset.words = []; 
@@ -953,6 +941,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         if (mytext && mytext.length === 7){
           //console.log(mytext[6][1]);
           importedTexts.dataset.splitContent = mytext[6][1]; //String in Array
+          //console.log(mytext);
           mytext.pop();
         }
 
@@ -984,39 +973,17 @@ my two mistresses: what a beast am I to slack it!`,*/
             myWordInfo.push(output);
             //console.log(myWordInfo);
             //console.log(importedTexts.dataset.wordList);
-            if (importedTexts.dataset.wordList !== undefined) {
+            if (importedTexts.dataset.wordList !== (null||undefined) && myWordInfo !== (null||undefined)) {
               importedTexts.dataset.wordList = JSON.stringify([...JSON.parse(importedTexts.dataset.wordList), myWordInfo.map(Object.entries)[0]]);
+              console.log(JSON.parse(importedTexts.dataset.wordList));
               //console.log(importedTexts.dataset.wordList);
               //console.log(JSON.parse(importedTexts.dataset.wordList));
-            } else if (importedTexts.dataset.wordList === undefined) {
+            } else if (myWordInfo !== (null||undefined) && importedTexts.dataset.wordList === (null||undefined)) {
               importedTexts.dataset.wordList = [JSON.stringify(myWordInfo.map(Object.entries))];
               //console.log(importedTexts.dataset.wordList);
+              console.log(JSON.parse(importedTexts.dataset.wordList));
             }
             
-
-            //Array of key value pairs to object
-
-            //
-            //all the words
-
-
-
-
-
-              //importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-
-              //importedTexts.dataset.wordList = [...JSON.parse(importedTexts.dataset.wordList.map(Object.values)), output];
-
-
-              //const myWordInfo = [];
-              //const myTextInfo = [];
-	      //myWordInfo.push(output);
-              //myTextInfo.push(newText);
-
-
-              //importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-              //importedTexts.dataset.wordList = [JSON.stringify(output)];
-
 
           });  
         }
@@ -1024,245 +991,83 @@ my two mistresses: what a beast am I to slack it!`,*/
       });
       //Text content is the last element
     };
-    //console.log(importedTexts.dataset.wordList);
-    //parse info about the text
-    //const infoAboutThisText = new Map(mytext);
-    //const contentOfThisText = Object.fromEntries(infoAboutThisText).mycontent;
-    //console.log(mytext);
-
-    //const wordsFromText = Array.from(wordList);
-    //wordsFromText.forEach(function(item,index,object) {
-    //const daysDate = new Date();
-    //const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-    //const newItem = {};
-    //newItem.word = item;
-    //newItem.id = databaseJson.length;
-    //newItem.dates = [today];
-    //document.getElementById('preview').dataset.textImport.push(JSON.stringify({"lastModified": new Date().getTime(), "lastModifiedDate":today, "name": null, "webkitRelativePath": null, "size": null, "type": null, "content":this.state.value}));
-    //newItem.lastModified = mytext.lastModified;
-    //newItem.lastModifiedDate = mytext.lastModifiedDate;
-    //newItem.name = mytext.name;
-    //newItem.webkitRelativePath = mytext.webkitRelativePath;
-    //newItem.size = mytext.size;
-    //newItem.type = mytext.type;
-    //newItem.lastModifiedDate = /
-    //databaseJson.push(newItem);
-    //console.log(databaseJson.length);
-    //});
-
-
-    //importText += contentOfThisText;
-    //importText += " ";
-    //});
-    //};
-    //const importText = this.state.value;
-    //const wordList = this.state;
-    //const wordsFromText = Array.from(wordList);
-
-    //VERY FIRST DATABASE JSON FOR THE START OF THE USE OF MY APP CONTAINING THE WORDS FROM THE TEXT AND THEIR IDS
-
-
-    //INITIALISATION of WORDS FROM THE TEXT
-    //ARRAY(SET WITH UNIQUE KEY VALUE PAIRS) OF EACH WORD FROM THE TEXT AND ITS ID
-    //const wordIdKVPairs = new Set();
-    //for (var i=0; i < wordList.length; i++) {
-    //  if (wordList[i] !== "") {
-    //    wordIdKVPairs.add({word: wordList[i], id: wordIdKVPairs.size});
-    //    console.log(wordIdKVPairs);
-    //  }
-    //}
-
-    //ARRAY OF WORDS FROM THE TEXT (ONLY THE WORDS)
-    //const compilationOfWordsFromText = new Set();
-    //for (var i=0; i < wordList.length; i++) {
-    //  if (wordList[i] !== "") {
-    //    compilationOfWordsFromText.add(wordList[i]);
-    //    console.log(compilationOfWordsFromText);
-    //  }
-    //}
-
-
-    //JSON ITEMS IN A "MAP" ARRAY
-    //const jsonItemsMap = new Map();
-    //jsonItemsMap.set('items', [...wordIdKVPairs]);
-
-
-    //THE LIST OF WORDS FROM THE TEXT AND THEIR IDS
-    //const wordIdItems = {};
-    //this.setState({
-    //  wordIdItems:
-    //    [...wordIdKVPairs]
-    //});
-
-    //console.log(this.state.wordIdItems); 
-
-    //SIMPLE LIST OF WORDS FROM THE TEXT
-    //const wordsFromText = Array.from(compilationOfWordsFromText);
-
-
-    //CHECKING WHETHER YOU ARE GOING TO DROP A FILE T0 SEND THE FORM OR NOT AND ACTS ACCORDINGLY ("MY ITEMS" SHOULD CONTENT THE ITEMS YOU DROPPED AS A DATABASE) (YOU ARE INSIDE OF THE FETCH FUNCTION)
     if (document.getElementById('noDatabaseFile').checked === false) {
       this.alertNoDatabaseFile();
     }
 
     //YOU HAVE NO DATABASE.JSON AND YOU ENTERED A TEXT
-    if(document.getElementById('noDatabaseFile').checked && this.state.value !== "") {
+    //if(document.getElementById('noDatabaseFile').checked && this.state.value !== "") {
       //ACTIVATION OF ONE DOWNLOAD LINK
-      this.a.setAttribute("href","items.json");
-      //this.a.textContent = "Download new items";
-      //this.a.textContent = JSON.stringify({"items": databaseJson});
-      //const aNewElement = document.createElement('p');
-      //aNewElement.id = 'items_by_date';
-      //const aNewHtmlElement = document.getElementById('preview');
-      //aNewHtmlElement.appendChild(aNewElement);
-      //
-      //document.getElementById('items_by_date').dataset.databaseJson = JSON.stringify({"items": databaseJson});
-      //document.getElementById('download_items').href = window.URL.createObjectURL(new Blob([JSON.stringify({"items": databaseJson},null,2)], {type: 'application/json'}));
+    this.a.setAttribute("href","items.json");
 
-      this.setState({
-        textAtFileCreation:
-          this.state.value
-      });
+    this.setState({
+      textAtFileCreation:
+        this.state.value
+    });
 
-      //UPDATES DAY'S DATE
-      const daysDate = new Date();
-      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-      //}
-
-      //SIMPLE ARRAY OF WORDS FROM THE TEXT
-      //const wordsFromText = Array.from(compilationOfWordsFromText);
-    }
-
-    //if(document.getElementById('download_items').dataset.databaseJson === JSON.stringify({"items": databaseJson})) {
-    //  const outputJson = document.getElementById("outputJsonFile");
-    //  const outputLink = document.createElement('a');
-    //  outputLink.id = 'items_by_date';
-
-    //  outputLink.hidden = true;
-    //  outputJson.hidden = true;
-    //  outputLink.dataset.databaseJson = JSON.stringify({"items": databaseJson});
-    //  outputJson.appendChild(outputLink);
-    //} else {
-    //  //document.getElementById('download_items').dataset.itemsJson = JSON.stringify({"items" : allMyItems});
-    //  //document.getElementById('download_items').dataset.databaseJson = JSON.stringify({"items": allMyItems});
-    //  
-    //};
-    //use the data attributes
-
-
-    //const myItemsFromText = document.createElement('a');
-    //myItemsFromText.href = "";
-    //myItemsFromText.id = "myItemsFromText";
-    //myItemsFromText.dataset.myItems = JSON.stringify({"items":databaseJson});
-    //document.getElementById('preview').appendChild(myItemsFromText);
-    //const allMyItems = JSON.parse(document.getElementById('myItemsFromText').dataset.myItems).items;
-
-
-    //if(document.getElementById('items_dy_date')) {
-    //  document.getElementById('items_dy_date').remove();
-    //}
-    //const downloadAll = document.getElementById('download_all_items');
-    //const downloadLink = document.createElement('a');
-    //downloadLink.className += '.obj';
-    //downloadLink.textContent = 'Items from your database + items from your text';
-    //downloadLink.id = "items_by_date";
-    //downloadLink.dataset.databaseJson = JSON.stringify({"items":allMyItems});
-    //downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": allMyItems},null,2)], {type: 'application/json'}));
-    //downloadLink.download = "database.json";
-    //downloadAll.appendChild(downloadLink);
-
-
-    //wordsFromText.forEach(function(item,index,object) {
-    //  const daysDate = new Date();
-    //  const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-    //  
-    //  const newItem = {};
-    //  newItem.word = item;
-    //  newItem.id = JSON.parse(document.getElementById('myItemsFromText').dataset.myItems).items.length;
-    //  newItem.dates = [today];
-    //  JSON.parse(document.getElementById('myItemsFromText').dataset.myItems).items.push(newItem);
-    //  console.log(allMyItems.length);
-    //}); 
-
-    //while(downloadAll.firstChild) {
-    //  downloadAll.removeChild(downloadAll.firstChild);
-    //}
-
-    //const mapJson = new Map(Object.entries(document.getElementById('myItemsFromText').dataset.myItems)); 
-    ////console.log(compilationOfWordsFromText);
-    //let compilationOfWordsFromDatabase = new Set();
-    //for (let line of mapJson.values()) {
-    //  //...
-    //  compilationOfWordsFromDatabase.add(line.word); 
+    //UPDATES DAY'S DATE
+    //const daysDate = new Date();
+    //const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
     //}
     
-
-    // EDIT THE "MY ITEMS" ARRAY 
-    //for (let line of compilationOfWordsFromDatabase) {
-    //  //console.log(compilationOfWordsFromText);
-    //  //IF A WORD FROM THE TEXT EXISTS IN THE WORD LIST
-    //  if (wordList.has(line)) {
-    //    console.log(line);
-
-    //    this.state.myItems.forEach(function(element) {
-
-    //      const daysDate = new Date();
-    //      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-    //      if (element.word === line && !element.dates.includes(today)) {
-    //        element.dates.push(today); //THE DATE IS ADDED in "MY ITEMS"
-    //        wordsFromText.forEach(function(item, index, object) {
-    //          if (item === line) {
-    //            //object.splice(index, 1); //the item is removed FROM "WORDSFROMTEXT"
-    //            object.splice(index); //the item is removed FROM "WORDSFROMTEXT"
-    //            console.log(wordsFromText.length);
-    //          }
-    //        });
-    //      }
-    //    }); 
-    //  }
-    //}
-
-
-    //===FILE PREVIEW AFTER DROP==//
-    //if a database.json is loaded, only this will output
-    //this.setState({allMyItems});
-    //const newText = {"lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
-    JSON.parse(importedTexts.dataset.wordList).forEach(function(output) {
-      //console.log(output)
+    const mySuperWordList = JSON.parse(importedTexts.dataset.wordList).forEach(function(output) {
       const a = {}; 
       output.forEach(function(data){
         a[data[0]]=data[1]
       });
-      //console.log(a);
-      if (!this[a.word]) {
-        this[a.word] = { word: a.word, texts:[] };
-        if (importedTexts.dataset.result === (null||undefined)) {
-          importedTexts.dataset.result = [];
-        }
-        //importedTexts.dataset.result = JSON.stringify([...JSON.parse(importedTexts.dataset.result), this[a.word]]);
-        importedTexts.dataset.result = JSON.stringify([this[a.word]]);
-      }
-      const newText = {lastModified: a.lastModified, lastModifiedDate: a.lastModifiedDate, name: a.name, webkitRelativePath: a.webkitRelativePath, size:a.size, type:a.type};
+      return Object.entries(a);
+     
+    });
+    console.log(importedTexts.dataset.wordList);
+    this.state.mySuperWordList.forEach(function(a) {
+      //console.log(output)
+      //const a = {}; 
+      //output.forEach(function(data){
+      //  a[data[0]]=data[1]
+      //});
+      console.log(a);
+      const newText = {"lastModified": a.lastModified, "lastModifiedDate": a.lastModifiedDate, "name": a.name, "webkitRelativePath": a.webkitRelativePath, "size":a.size, "type":a.type};
       const myTextInfo = [];
       myTextInfo.push(newText);
-      if (this[a.word].texts && this[a.word].texts.length) {
-        this[a.word].texts = JSON.stringify([...JSON.parse(this[a.word].texts), myTextInfo.map(Object.entries)]);
-        //console.log(this[a.word]);
-        //importedTexts.dataset.result.push(this[a.word]);
+      if (!this[a.word]) {
+        this[a.word] = { "word": a.word, "texts": [] };
+        if (importedTexts.dataset.result === (null||undefined)) {
+        //  importedTexts.dataset.result = [];
+          importedTexts.dataset.result = [JSON.stringify(this[a.word])];
+        } else if (importedTexts.dataset.result !== (null||undefined) && importedTexts.dataset.result && importedTexts.dataset.result.length && importedTexts.dataset.result.length > 0) { 
+          importedTexts.dataset.result = JSON.stringify([...JSON.parse(importedTexts.dataset.result), this[a.word]]);
+        }
 
-      } else {
-        this[a.word].texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+
+      }
+      //if(this[a.word].texts && this[a.word].length === 0) {
+      //
+      //  this[a.word].texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+      //} else if(this[a.word].texts && this[a.word].length > 0){
+
+      this[a.word].texts = JSON.stringify([...JSON.parse(this[a.word].texts), myTextInfo.map(Object.entries)[0]]);
+      console.log(this[a.word].texts);
+      //} 
+    }, Object.create(null));
+
+
+    console.log(importedTexts.dataset.result);
+      //importedTexts.dataset.result.push(this[a.word]);
+
+      
+
         //importedTexts.dataset.result.push(this[a.word]);
         //console.log(this[a.word]);
-      }
+      
       //remove duplicate array: no duplicate text
       //button to add several texts
       
 
-    }, Object.create(null));
-    console.log(importedTexts.dataset.result);
-    console.log(importedTexts.dataset.result.length);
+
+    //console.log(importedTexts.dataset.result);
+    //console.log(importedTexts.dataset.result.length);
     
+
   } 
 
   handleSubmittedText = event => {
@@ -1355,6 +1160,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         console.log(valueText);
         const importedTexts = document.getElementById('preview');
         const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":valueText};
+        console.log(newText);
         const myTextInfo = [];
         myTextInfo.push(newText);
         if (importedTexts.dataset.texts !== (null||undefined)) {
