@@ -1,5 +1,6 @@
 import React, {setState} from 'react'; 
 import ReactDOM from 'react-dom'; 
+import docx4js from "docx4js";
 import './index.css';
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
@@ -499,134 +500,6 @@ class FillInTheDateForm extends React.Component {
     }
 
   }
-  dropbox = (files) => {
-		for (let i = 0; i < files.length; i++) {
-			const file = files[i];
-			if (!file.type.startsWith('image/') && !file.type.startsWith('application/') && !file.type.startsWith('text/') && !file.type ===('')){ continue }
-			const img = document.createElement("img");
-			img.classList.add("obj");
-			const myImage = new Image(60,60);
-			myImage.src = `application.png`;
-			const noFileType = new Image(60,60);
-			noFileType.src = `notype.png`;
-			img.file = file;
-                        img.height = 60;
-                        img.width = 60;
-			const preview = document.getElementById("previewSortByDate");
-			if(file.type.startsWith('image/')) { preview.appendChild(img); } // Assuming that "preview" is the div output where the content will be displayed.
-			if(file.type.startsWith('application/')) { preview.appendChild(myImage); } // Assuming that "preview" is the div output where the content will be displayed.
-			if(file.type.startsWith('text/')) { preview.appendChild(myImage); } // Assuming that "preview" is the div output where the content will be displayed.
-			if(file.type===('')) { preview.appendChild(noFileType); } // Assuming that "preview" is the div output where the content will be displayed.
-                        //===FILE PREVIEW AFTER DROP==//
-			const fileName = document.createElement('a');
-                        fileName.className += '.obj';
-			fileName.textContent = file.name+ ' (preview)';
-			fileName.href = URL.createObjectURL(file);
-			fileName.target = "_blank";
-			preview.appendChild(fileName);
-                        //===END FILE PREVIEW AFTER DROP==//
-
-			preview.appendChild(document.createElement('br'));
-			const reader = new FileReader();
-			reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.wordIdItems; }; })(img); //if the file is an image, insert the content of the imageas the image in the dropbox
-			reader.readAsDataURL(file);
-		}
-  }
-  
-  onDragEnter = (event) => {
-		const dt = event.dataTransfer;
-    if(dt.files.length) {
-			event.stopPropagation();
-			event.preventDefault();
-    }
-  }
-
-  onDragOver = (event) => {
-		const dt = event.dataTransfer;
-    if(dt.files.length) {
-			event.stopPropagation();
-			event.preventDefault();
-    }
-  }
-
-  onDrop = (event) => {
-	event.stopPropagation();
-	event.preventDefault();
-	const dt = event.dataTransfer;
-
-    if(dt.files.length) {
-      const files = dt.files;
-      //console.log(files[0].type);
-      //console.log(files[0].name);
-      this.dropbox(files);
-      //===JSON UPLOAD===//
-      for (let i=0; i<files.length; i++) {
-          const file = files[i];
-          if (file.name === "database.json") {
-          	this.sendFile(file);
-          }
-      }
-      //===END JSON UPLOAD===//
-    }
-  }
-  sendFile = (file) => {
-    const fd = new FormData();
-    fd.append('myFile', file);
-    fetch(URL.createObjectURL(file))
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(myBlub) {
-        //console.log(myBlub); //database.json
-        const myBlob = [...Object.values(myBlub.items)];
-        //console.log(myBlob); //database.json
-        //console.log(file.name);
-        return myBlob;
-      })
-      .then(thirdres => {
-        const myItems = thirdres.map(obj => obj);
-        this.setState({myItems}); 
-        //document.getElementById('submit-date-btn').hidden = false;
-        //console.log(myItems);
-
-        this.setState({
-          databaseIsLoaded:
-            true
-        });
-      })
-    //console.log(this.state.myBlob);
-  }
-  setImportMode = (event) => {
-    this.setState({
-      importMode:
-        event.target.value
-    });
-    if(this.state.importMode === "drop") {
-      document.getElementById('dropzoneSortByDate').hidden = true;
-      //const myNode = document.getElementById('outputJsonFile');
-      //while(myNode.firstChild) {
-      //  myNode.removeChild(myNode.firstChild);
-      //}
-      const myInputNode = document.getElementById('inputJsonFile');
-      while(myInputNode.firstChild) {
-        myInputNode.removeChild(myInputNode.firstChild);
-      }
-      const myPreviewNode = document.getElementById('previewSortByDate');
-      while(myPreviewNode.firstChild) {
-        myPreviewNode.removeChild(myPreviewNode.firstChild);
-      }
-    } else {    
-      document.getElementById('dropzoneSortByDate').hidden = false;
-      //const myNode = document.getElementById('outputJsonFile');
-      //while(myNode.firstChild) {
-      //  myNode.removeChild(myNode.firstChild);
-      //}
-      const myInputNode = document.getElementById('inputJsonFile');
-      while(myInputNode.firstChild) {
-        myInputNode.removeChild(myInputNode.firstChild);
-      }
-    }           
-  }             
   itemsByDateLoadForm = (event) => {
     //alert('test');
     if (document.getElementById('items_by_date') && document.getElementById('items_by_date').dataset.databaseJson) {
@@ -817,7 +690,11 @@ my two mistresses: what a beast am I to slack it!`,*/
       c:null,
       myResult:null,
       myTextList:null,
-      myTextId:null
+      myTextId:null,
+      allMyWords:null,
+      allMyTexts:null,
+      thisIsMyTextList:null,
+      thisIsMyWordList:null
       
     };
 
@@ -838,7 +715,10 @@ my two mistresses: what a beast am I to slack it!`,*/
     const importedTexts = document.getElementById('preview');
     importedTexts.dataset.textValue = '';
     const wordList = [];
-    
+    const allMyWords = [];
+    const thisIsMyWordList = [];
+    const thisIsMyTextList = [];
+    const allMyTexts = []; 
     //allTheImportedTexts = {};
 
   }
@@ -871,11 +751,11 @@ my two mistresses: what a beast am I to slack it!`,*/
     });
   }
   importAllWords = (event) => {
-    axios.get(`./database.json`)
-      .then(res => {
-        const database = res.data.items.map(obj => obj);
-        this.setState({ database });
-      });
+    //axios.get(`./database.json`)
+    //  .then(res => {
+    //    const database = res.data.items.map(obj => obj);
+    //    this.setState({ database });
+    //  });
   }
   splitContent = () => {
     const importedTexts = document.getElementById('preview');
@@ -909,8 +789,8 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     const newText = {"lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
     const mySuperList = this.state;
+    //TO HAVE IMPORTED TEXTS
     if (importedTexts.dataset.texts && importedTexts.dataset.texts.length && importedTexts.dataset.textValue !== "") {
-    
       const myTextInfo = [];
       myTextInfo.push(newText);
       importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
@@ -950,11 +830,14 @@ my two mistresses: what a beast am I to slack it!`,*/
     // - export JSON
     //////////////////////////////////////////////////
     //const wordList = [];
+    //TO HAVE DROPPED FILES
     if(importedTexts.dataset.texts && JSON.parse(importedTexts.dataset.texts).length) {
       const myTextList = [];
-      const allMyTexts = JSON.parse(importedTexts.dataset.texts);
-      allMyTexts.forEach(function(mytext) {
-        const myTextId = Math.random().toString(16).substring(7);
+      const thisIsMyWordList = [];
+      const thisIsMyTextList = [];
+      const allMyTexts = JSON.parse(importedTexts.dataset.texts); //allMyTexts is a JSON ARRAY THAT CONTAINS ALL THE TEXTS HAVING BEEN INSERTED, DROPPED OR ADDED TO BE HANDLED BY THE PROGRAM
+      allMyTexts.forEach(function(mytext) { //mytext IS A JSON ARRAY THAT CONTAINS INFO ABOUT A TEXT
+        const myTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
 
 
 
@@ -964,9 +847,9 @@ my two mistresses: what a beast am I to slack it!`,*/
         //  importedTexts.dataset.words = []; 
         //}
         //json word by word 
-        if (mytext && mytext.length === 7){
+        if (mytext && mytext.length === 7){ //mytext IS AN OBJECT THAT CONTAINS INFO ABOUT THE TEXT OF THE FILE
           //console.log(mytext[6][1]);
-          importedTexts.dataset.splitContent = mytext[6][1]; //String in Array
+          importedTexts.dataset.splitContent = mytext[6][1]; //importedTexts.dataset.splitContent IS A STRING THAT CONTAINS THE TEXTUAL CONTENT OF THE FILE
           //console.log(importedTexts.dataset.splitContent); //String in Array
           //console.log(mytext);
           mytext.pop();
@@ -987,25 +870,26 @@ my two mistresses: what a beast am I to slack it!`,*/
           //console.log(importedTexts.dataset.mywords);
           //console.log(importedTexts.dataset.mywords.type);
 
-          importedTexts.dataset.words.split(',').forEach(function(word) {
+          importedTexts.dataset.words.split(',').forEach(function(word) { //importedTexts.dataset.words IS AN ARRAY OF STRINGS THAT ARE THE WORDS OF THE TEXT THAT HAS BEEN SPLITTED INTO STRINGS OF WORDS
             //console.log(word); 
             //console.log(mytext); 
-            
+            if (word === "") { return; } 
 
             const output = {}; 
-            mytext.forEach(function(data){
+            mytext.forEach(function(data){ //mytext IS A JSON ARRAY THAT CONTAINS ALL THE INFORMATION ABOUT THE TEXT THAT WAS DROPPED OR CREATED
               output[data[0]]=data[1]
             });
-            output["word"]=word;
+            output["word"]=word; // output is AN OBJECT THAT CONTAINS THE PRINCIPAL INFO ABOUT THE WORD AND ITS TEXT
             output['myTextId']=myTextId;
             //console.log(output);
-            const myWordInfo = [];
+            const myWordInfo = []; //myWordInfo IS AN ARRAY OF OBJECTS
             myWordInfo.push(output);
             //console.log(myWordInfo);
             //console.log(importedTexts.dataset.wordList);
 
             if (myWordInfo !== (null||undefined) && importedTexts.dataset.wordList !== (null||undefined)) {
-              importedTexts.dataset.wordList = JSON.stringify([...JSON.parse(importedTexts.dataset.wordList), myWordInfo.map(Object.entries)[0]]);
+              importedTexts.dataset.wordList = JSON.stringify([...JSON.parse(importedTexts.dataset.wordList), myWordInfo.map(Object.entries)[0]]); //importedTexts.dataset.wordList IS A JSON STRING THAT CONTAINS THE WORD LIST OF THE FORM THAT WAS JUST SUBMITTED
+
               //console.log(JSON.parse(importedTexts.dataset.wordList));
               //console.log(importedTexts.dataset.wordList);
               //console.log(JSON.parse(importedTexts.dataset.wordList));
@@ -1038,7 +922,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       //console.log(myBiggestWordList);
       const myResult = [];
       console.log(result);
-      result.forEach(function(b) {
+      result.forEach(function(b) { //result is a JSON OBJECT THAT CONTAINS WORD AND INFO
         //console.log()
         const a = {}; 
         b.forEach(function(data){
@@ -1055,7 +939,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       //  const newText = {"lastModified": b.lastModified, "lastModifiedDate": b.lastModifiedDate, "name": b.name, "webkitRelativePath": b.webkitRelativePath, "size":b.size, "type":b.type};
       //  const myTextInfo = [];
       //  myTextInfo.push(newText);
-      console.log(myResult);
+      console.log(myResult); //OBJECT CONTAINS LIST OF WORDS AND THEIR INFO
       myResult.forEach(function(f) {
         //const myTextList = this.state;
         importedTexts.dataset.wordInfo = f;
@@ -1066,7 +950,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
         //textId
         const myTextId = this.state;
-        this[f.word].textsId.push(JSON.stringify(f.myTextId));
+        this[f.word].textsId.push(f.myTextId);
         const myTextInfo = f;
         delete myTextInfo["word"];
         //delete myTextInfo[f.myTextId];
@@ -1083,10 +967,29 @@ my two mistresses: what a beast am I to slack it!`,*/
       }, Object.create(null));
       //const myTextList = this.state;
       console.log(output);
-      importedTexts.dataset.addedWords = JSON.stringify(output.map(Object.entries));
-      console.log(JSON.parse(importedTexts.dataset.addedWords));
-      importedTexts.dataset.addedTexts = JSON.stringify(myTextList.map(Object.entries));
-      console.log(JSON.parse(importedTexts.dataset.addedTexts));
+      //importedTexts.dataset.addedWords = JSON.stringify(output.map(Object.entries));
+      output.forEach(function(f) {
+        if (!this[f.myTextId]) {
+          this[f.myTextId] = JSON.stringify(output.map(Object.entries));
+
+          thisIsMyWordList.push(this[f.myTextId]);
+        }
+      }, Object.create(null));
+      //importedTexts.dataset.bigWordList = JSON.stringify(output.map(Object.entries));
+      //console.log(JSON.parse(importedTexts.dataset.addedWords));
+      //importedTexts.dataset.bigWordList = '';
+      //--------------------------------------------------------
+      //importedTexts.dataset.addedTexts = JSON.stringify(myTextList.map(Object.entries));
+      myTextList.forEach(function(f) {
+        if (!this[f.myTextId]) {
+          this[f.myTextId] = JSON.stringify(myTextList.map(Object.entries));
+
+          thisIsMyTextList.push(this[f.myTextId]);
+        }
+      }, Object.create(null));
+      //importedTexts.dataset.bigTextList = JSON.stringify(myTextList.map(Object.entries));
+      //console.log(JSON.parse(importedTexts.dataset.addedTexts));
+      //--------------------------------------------------------
 
     
           //if (importedTexts.dataset.result !== (null||undefined) && importedTexts.dataset.result && importedTexts.dataset.result.length && importedTexts.dataset.result.length > 0) { 
@@ -1247,6 +1150,9 @@ my two mistresses: what a beast am I to slack it!`,*/
           if (file.name.slice(-4) === ".txt") { 
             this.sendTextFile(file);
           }
+          if (file.name.slice(-5) === ".docx") { 
+            this.sendDocxFile(file);
+          }
       }
       //===END JSON UPLOAD===//
     }
@@ -1311,6 +1217,44 @@ my two mistresses: what a beast am I to slack it!`,*/
         });
       })
     console.log(this.state.myBlob);
+  }
+  sendDocxFile = (file) => {
+    docx4js.load("~/test.docx").then(docx=>{
+      //you can render docx to anything (react elements, tree, dom, and etc) by giving a function
+      docx.render(function createElement(type,props,children){
+      	return {type,props,children}
+      })
+      
+      //or use a event handler for more flexible control
+      const ModelHandler=require("docx4js/openxml/docx/model-handler").default;
+      //class MyModelhandler extends ModelHandler{
+      //	onp({type,children,node,...}, node, officeDocument){
+
+      //	}
+      //}
+      let handler=new MyModelhandler()
+      handler.on("*",function({type,children,node,...}, node, officeDocument){
+      	console.log("found model:"+type)
+      })
+      handler.on("r",function({type,children,node,...}, node, officeDocument){
+      	console.log("found a run")
+      })
+      
+      docx.parse(handler);
+      console.log(docx); 
+      console.log(docx.type); 
+      console.log(file);
+      console.log(handler);
+      
+      
+      //you can change content on docx.officeDocument.content, and then save
+      docx.officeDocument.content("w\\:t").text("hello");
+      docx.save("~/changed.docx");
+    
+    })
+
+
+
   }
   dropbox = (files) => {
 		for (let i = 0; i < files.length; i++) {

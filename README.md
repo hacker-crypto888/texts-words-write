@@ -29,14 +29,12 @@ You will also see any lint errors in the console.
 
 The user must be able to: 
 
-- [x] to modify the text without any bug, on the click of the button which has for function to load the next text, if the download link with such id already exists and text changed, do this, replace the items.json download link by a new link and update also the link for the database.json file
-- [x] wait for the display of the audio files thanks to a spinner 
-- [ ] load a text file
-- [ ] handle empty date input
+- [ ] wait for the display of the audio files thanks to a spinner 
+- [x] load a text file
+- [x] handle empty date input
 - [x] drop a database json to sort the items by date
 - [x] not to load any text when textarea is empty
 - [ ] display each audio in a carousel and remove slide of carousel once word is written correctly
-- [ ] in the part of my program where there is a JSON.stringify a blob and all of this generates a new link, all of this can also generate the audio files on the page at the right place
 - [ ] the program modifies the word according to its termination, therefore it can find the word in the database of sounds (in the mp3 file list in all the keys of key value pairs, all the keys are all the words of the database)
 - [x] not to load any text when dropzone is empty
 - [ ] manage his or her user session 
@@ -46,13 +44,26 @@ The user must be able to:
 - [ ] play the words continuously on the click of a button
 - [ ] when dropping an items.json file, two options should be proposed: start over with the same file or drop a new file
 
+The program can handle following file formats in the input:
+
+- [x] plain text
+- [x] TXT
+- [ ] PDFs 
+- [ ] DOCX
+- [ ] HTML
 
 The user can: 
 
 - [x] enter a text
-- [x] load the words by date
+- [ ] load the words by date
 - [x] load a text in a text area
-- [ ] load a text file
+- [x] load a text file
+
+
+
+Recently, the program was modified to be able to handle texts and the words they contain by an ID that refers to the text(s) the word belongs to.
+
+The program can handle the big arrays and retrieve the relevant data from them by simple commands, and it could be practical to be able to the same directly from the graphical interface.
 
 On the page of databases, there must be written: "Here is the text you entered"/"Here is the date you selected", then, below: "Here is the associated word list". ( in the program, one must be able to find the dates in the chart containing the words).
 
@@ -60,6 +71,7 @@ The database contains 3 columns: id (string type), word (string type), date (arr
 
 The program compiles the word list under the form of a JSON file.
 
+To be able to load a JSON should be as practical as to be able to import any file containing text. The parts of the program that handle text should really have a sort of output that enable easy transfer to JSON format. The use of data transfers, and datasets to retrieve the results in other parts of the program is the key.
 
 The user can: 
 
@@ -83,10 +95,16 @@ Form Submission Fields / Les champs de formulaires
 - [ ] parse text in French
 - [ ] parse text in English
 
-Output Files
-
 - [x] Mega database containing words from text of previous days and the texts entered today
 - [x] File containing the words selected with the submission form 
+
+Those were optional features, and were put in the "removed" section
+
+- [ ] in the part of my program where there is a JSON.stringify a blob and all of this generates a new link, all of this can also generate the audio files on the page at the right place
+- [ ] to modify the text without any bug, on the click of the button which has for function to load the next text, if the download link with such id already exists and text changed, do this, replace the items.json download link by a new link and update also the link for the database.json file
+Output Files
+
+
 
 ## Database files
 

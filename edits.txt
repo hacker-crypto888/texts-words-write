@@ -1,0 +1,10 @@
+-can handle PDF, DOC/DOCX, HTML, txt
+
+-use BOOTSTRAP popus to manage the databases lists-> in a new Component
+
+- can handle JSON editing
+- can handle JSON editing and user sessions
+
+- has no initialisation problems
+
+
