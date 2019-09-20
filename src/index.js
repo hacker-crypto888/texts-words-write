@@ -812,7 +812,12 @@ my two mistresses: what a beast am I to slack it!`,*/
       newText:null,
       mySuperWordList:null,
       myBiggestWordList:null,
-      result:null
+      result:null,
+      allMyTexts:null,
+      c:null,
+      myResult:null,
+      myTextList:null,
+      myTextId:null
       
     };
 
@@ -831,6 +836,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     dataOutput.appendChild(someData);
     //const allTheImportedTexts = document.getElementById('preview').dataset.textImport;
     const importedTexts = document.getElementById('preview');
+    importedTexts.dataset.textValue = '';
+    const wordList = [];
     
     //allTheImportedTexts = {};
 
@@ -879,15 +886,17 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   handleText = (event) => {
+    //const wordList = [];
     //YOU HAVE NO DATABASE.JSON AND YOU HAVE NO ITEMS
     //if (this.state.value === (null||undefined)) {
     //  this.state.value = document.getElementById('preview').dataset.textValue;
     //}
     const importedTexts = document.getElementById('preview');
-    if (importedTexts.dataset.textValue === undefined) {
-      importedTexts.dataset.textValue = "";
-    }
-    importedTexts.dataset.textValue += this.state.value;
+    //if (importedTexts.dataset.textValue === undefined) {
+    //  importedTexts.dataset.textValue = "";
+    //}
+    //importedTexts.dataset.textValue += this.state.value;
+    console.log(importedTexts.dataset.textValue);
     //if (document.getElementById('noDatabaseFile').checked === true && this.state.myItems === ([]||undefined)) {
     //}
 
@@ -905,7 +914,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       const myTextInfo = [];
       myTextInfo.push(newText);
       importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-      importedTexts.dataset.textValue = "";
+      //importedTexts.dataset.textValue = "";
       //console.log(JSON.parse(importedTexts.dataset.texts));
     } else if (importedTexts.dataset.texts === (null||undefined) && importedTexts.dataset.textValue !== "") {
       
@@ -914,7 +923,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       //console.log(myTextInfo);
       //importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
       importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      importedTexts.dataset.textValue = "";
+      //importedTexts.dataset.textValue = "";
       //console.log(importedTexts.dataset.texts);
       //console.log(JSON.parse(importedTexts.dataset.texts));
     }
@@ -932,8 +941,23 @@ my two mistresses: what a beast am I to slack it!`,*/
     //console.log(allTheImportedTexts);
     //const importText = '';
     //const databaseJson = [];
-    if(JSON.parse(importedTexts.dataset.texts) && JSON.parse(importedTexts.dataset.texts).length) {
-      JSON.parse(importedTexts.dataset.texts).forEach(function(mytext) {
+    ///////////////////////////////////////////////////
+    //if you only imported JSON
+    //else if you imported JSON and texts OR if you imported texts and did not import JSON(add JSON import at the end of else loop)
+    ///////////////////////////////////////////////////
+    //- import PDF, DOC, 
+    // - 
+    // - export JSON
+    //////////////////////////////////////////////////
+    //const wordList = [];
+    if(importedTexts.dataset.texts && JSON.parse(importedTexts.dataset.texts).length) {
+      const myTextList = [];
+      const allMyTexts = JSON.parse(importedTexts.dataset.texts);
+      allMyTexts.forEach(function(mytext) {
+        const myTextId = Math.random().toString(16).substring(7);
+
+
+
 
 
         //if(importedTexts.dataset.words === (undefined||null)) {
@@ -943,6 +967,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         if (mytext && mytext.length === 7){
           //console.log(mytext[6][1]);
           importedTexts.dataset.splitContent = mytext[6][1]; //String in Array
+          //console.log(importedTexts.dataset.splitContent); //String in Array
           //console.log(mytext);
           mytext.pop();
         }
@@ -950,6 +975,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         //if (importedTexts.dataset.words === (undefined||null)) {
         //  importedTexts.dataset.words = [];
         //}
+        //const wordList = this.state;
         const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
         if(importedTexts.dataset.splitContent !== (null||undefined)) {
           importedTexts.dataset.words = x(importedTexts.dataset.splitContent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
@@ -960,6 +986,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           //importedTexts.dataset.mywords = importedTexts.dataset.words.split(',');
           //console.log(importedTexts.dataset.mywords);
           //console.log(importedTexts.dataset.mywords.type);
+
           importedTexts.dataset.words.split(',').forEach(function(word) {
             //console.log(word); 
             //console.log(mytext); 
@@ -970,20 +997,22 @@ my two mistresses: what a beast am I to slack it!`,*/
               output[data[0]]=data[1]
             });
             output["word"]=word;
+            output['myTextId']=myTextId;
             //console.log(output);
             const myWordInfo = [];
             myWordInfo.push(output);
             //console.log(myWordInfo);
             //console.log(importedTexts.dataset.wordList);
-            if (importedTexts.dataset.wordList !== (null||undefined) && myWordInfo !== (null||undefined)) {
+
+            if (myWordInfo !== (null||undefined) && importedTexts.dataset.wordList !== (null||undefined)) {
               importedTexts.dataset.wordList = JSON.stringify([...JSON.parse(importedTexts.dataset.wordList), myWordInfo.map(Object.entries)[0]]);
-              console.log(JSON.parse(importedTexts.dataset.wordList));
+              //console.log(JSON.parse(importedTexts.dataset.wordList));
               //console.log(importedTexts.dataset.wordList);
               //console.log(JSON.parse(importedTexts.dataset.wordList));
             } else if (myWordInfo !== (null||undefined) && importedTexts.dataset.wordList === (null||undefined)) {
               importedTexts.dataset.wordList = [JSON.stringify(myWordInfo.map(Object.entries))];
-              //console.log(importedTexts.dataset.wordList);
-              console.log(JSON.parse(importedTexts.dataset.wordList));
+
+            //  console.log(JSON.parse(importedTexts.dataset.wordList));
             }
             
 
@@ -991,16 +1020,129 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
 
       });
-      //Text content is the last element
+      console.log(JSON.parse(importedTexts.dataset.wordList));
+      //Text import
+      //const myBiggestWordList = [];
+      const output = [];
+      const result = JSON.parse(importedTexts.dataset.wordList);
+      //const result = []; 
+      //const wordList = this.state;
+      //const mySuperWordList = JSON.parse(importedTexts.dataset.wordList).forEach(function(output) {
+      //  const a = {}; 
+      //  output.forEach(function(data){
+      //    a[data[0]]=data[1]
+      //  });
+      //  myBiggestWordList.push(a);
+      // 
+      //});
+      //console.log(myBiggestWordList);
+      const myResult = [];
+      console.log(result);
+      result.forEach(function(b) {
+        //console.log()
+        const a = {}; 
+        b.forEach(function(data){
+          a[data[0]]=data[1]
+        });
+        myResult.push(a);
+        console.log(b);
+        console.log(a);
+      });
+      //  console.log(b);
+      //  console.log(b.lastModified);
+      //  if (b.word === "") { return; } 
+
+      //  const newText = {"lastModified": b.lastModified, "lastModifiedDate": b.lastModifiedDate, "name": b.name, "webkitRelativePath": b.webkitRelativePath, "size":b.size, "type":b.type};
+      //  const myTextInfo = [];
+      //  myTextInfo.push(newText);
+      console.log(myResult);
+      myResult.forEach(function(f) {
+        //const myTextList = this.state;
+        importedTexts.dataset.wordInfo = f;
+        if (!this[f.word]) {
+          this[f.word] = { "word": f.word, "textsId": [] };
+
+          output.push(this[f.word]);
+        }
+        //textId
+        const myTextId = this.state;
+        this[f.word].textsId.push(JSON.stringify(f.myTextId));
+        const myTextInfo = f;
+        delete myTextInfo["word"];
+        //delete myTextInfo[f.myTextId];
+        //myTextInfo["myTextId"] = f.myTextId;
+        const myTest = myTextList.some(v => v.myTextId === myTextInfo.myTextId);
+        console.log(myTextList.myTextId);
+        console.log(myTextInfo.myTextId);
+        console.log(myTest);
+        console.log(myTextList.length);
+        if (myTest === false) {
+       
+          myTextList.push(myTextInfo); 
+        }
+      }, Object.create(null));
+      //const myTextList = this.state;
+      console.log(output);
+      importedTexts.dataset.addedWords = JSON.stringify(output.map(Object.entries));
+      console.log(JSON.parse(importedTexts.dataset.addedWords));
+      importedTexts.dataset.addedTexts = JSON.stringify(myTextList.map(Object.entries));
+      console.log(JSON.parse(importedTexts.dataset.addedTexts));
+
+    
+          //if (importedTexts.dataset.result !== (null||undefined) && importedTexts.dataset.result && importedTexts.dataset.result.length && importedTexts.dataset.result.length > 0) { 
+            //importedTexts.dataset.result = [...importedTexts.dataset.result, this[b.word]];
+          //} else if (importedTexts.dataset.result === (null||undefined)) {
+          //  importedTexts.dataset.result = [];
+          //importedTexts.dataset.result = [Object.entries(this[b.word])];
+          //}
+
+
+        //}
+        //if(this[a.word].texts && this[a.word].length === 0) {
+        //
+        //  this[a.word].texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+        //} else if(this[a.word].texts && this[a.word].length > 0){
+
+        //this[b.word].texts = JSON.stringify([...JSON.parse(this[b.word].texts), myTextInfo.map(Object.entries)[0]]);
+        //console.log(this[b.word].texts);
+        //console.log(this[b.word].texts);
+        //console.log(myTextInfo.map(Object.entries)[0]);
+        //if(!this[b.word].texts.includes(myTextInfo.map(Object.entries)[0])) {
+        //  this[b.word].texts.push(myTextInfo.map(Object.entries)[0]);
+        //}
+        //for (var i=0; i<this[b.word].texts.length ; i++) {
+        //} 
+        //const myTest = this[b.word].texts.some(v => v === myTextInfo.map(Object.entries)[0]);  
+        //console.log(myTest);
+        //{
+          //if(text === myTextInfo.map(Object.entries)[0]) {
+          //  return;
+          //} 
+        //});
+
+        //this[b.word].texts.push(myTextInfo.map(Object.entries)[0]);
+
+          
+        //console.log(this[b.word].texts);
+        //} 
+      //}, Object.create(null));
+
+
+      //console.log(result);
+      //importedTexts.dataset.result = JSON.stringify(result);
+
     };
+    const result = this.state;
+    result.length = 0;
     if (document.getElementById('noDatabaseFile').checked === false) {
       this.alertNoDatabaseFile();
     }
 
+
     //YOU HAVE NO DATABASE.JSON AND YOU ENTERED A TEXT
     //if(document.getElementById('noDatabaseFile').checked && this.state.value !== "") {
       //ACTIVATION OF ONE DOWNLOAD LINK
-    this.a.setAttribute("href","items.json");
+    //this.a.setAttribute("href","items.json");
 
     this.setState({
       textAtFileCreation:
@@ -1011,56 +1153,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     //const daysDate = new Date();
     //const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
     //}
-    const myBiggestWordList = [];
-    const result = []; 
-    const mySuperWordList = JSON.parse(importedTexts.dataset.wordList).forEach(function(output) {
-      const a = {}; 
-      output.forEach(function(data){
-        a[data[0]]=data[1]
-      });
-      myBiggestWordList.push(a);
-     
-    });
-    console.log(myBiggestWordList);
-    myBiggestWordList.forEach(function(b) {
-      //console.log(output)
-      //const a = {}; 
-      //output.forEach(function(data){
-      //  a[data[0]]=data[1]
-      //});
-      console.log(b);
-      console.log(b.lastModified);
-      if (b.word === "") { return; } 
-      const newText = {"lastModified": b.lastModified, "lastModifiedDate": b.lastModifiedDate, "name": b.name, "webkitRelativePath": b.webkitRelativePath, "size":b.size, "type":b.type};
-      const myTextInfo = [];
-      myTextInfo.push(newText);
-      if (!this[b.word]) {
-        this[b.word] = { "word": b.word, "texts": [] };
-        result.push(this[b.word]);
-        //if (importedTexts.dataset.result !== (null||undefined) && importedTexts.dataset.result && importedTexts.dataset.result.length && importedTexts.dataset.result.length > 0) { 
-          //importedTexts.dataset.result = [...importedTexts.dataset.result, this[b.word]];
-        //} else if (importedTexts.dataset.result === (null||undefined)) {
-        //  importedTexts.dataset.result = [];
-        //importedTexts.dataset.result = [Object.entries(this[b.word])];
-        //}
 
-
-      }
-      //if(this[a.word].texts && this[a.word].length === 0) {
-      //
-      //  this[a.word].texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      //} else if(this[a.word].texts && this[a.word].length > 0){
-
-      //this[b.word].texts = JSON.stringify([...JSON.parse(this[b.word].texts), myTextInfo.map(Object.entries)[0]]);
-      if(!this[b.word].texts.includes(myTextInfo.map(Object.entries)[0])) {
-        this[b.word].texts.push(myTextInfo.map(Object.entries)[0]);
-      }
-      console.log(this[b.word].texts);
-      //} 
-    }, Object.create(null));
-
-
-    console.log(result);
       //importedTexts.dataset.result.push(this[a.word]);
 
       
@@ -1270,6 +1363,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   handleTextChange = (event) => {
+    console.log(this.state.value);
     this.setState({
       value:
         event.target.value
@@ -1425,11 +1519,19 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   }
   addNewText = (event) => {
+    this.setState({
+      value:
+        event.target.value
+    });
     const importedTexts = document.getElementById('preview');
     if(importedTexts.dataset.textValue ===(null||undefined||false)) {
       importedTexts.dataset.textValue = "";
     }
     importedTexts.dataset.textValue += this.state.value;
+    console.log(document.getElementById('wordinput').value);
+    console.log(importedTexts.dataset.textValue); 
+    console.log(this.state.value); 
+    console.log(event.currentTarget.value); 
   }
   render() {
     return (
