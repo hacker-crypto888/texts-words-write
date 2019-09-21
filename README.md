@@ -49,7 +49,7 @@ The program can handle following file formats in the input:
 - [x] plain text
 - [x] TXT
 - [ ] PDFs 
-- [ ] DOCX
+- [x] DOCX
 - [ ] HTML
 
 Note: PDF extraction requires pdftotext be installed, link(http://www.xpdfreader.com/download.html).

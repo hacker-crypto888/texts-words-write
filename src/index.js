@@ -4,12 +4,13 @@ import './index.css';
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
 const path = require('path');
-const word2html = require('word2html');
+//const docx = require('./docx')
+//const word2html = require('word2html');
 //const getDocumentProperties = require('office-document-properties');
 //const unoconv = require('unoconv');
 //const converter = require('office-converter')();
 //const WordExtractor = require("word-extractor");
-const docxParser = require('docx-parser');
+//const docxParser = require('docx-parser');
 //const office2html = require('office2html'),
 //  generateHtml = office2html.generateHtml;
 //const docxParser = require('docx-parser');
@@ -17,7 +18,7 @@ const docxParser = require('docx-parser');
 //const dxe = require('docx-extractor');
 //const officeParser = require('officeparser');
 //const textract = require('textract');
-//const mammoth = require("mammoth");
+const mammoth = require("mammoth");
 const s = document.createElement("script");
 s.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js";
 s.onload = function(e){ /* now that its loaded, do something */ }; 
@@ -713,7 +714,11 @@ my two mistresses: what a beast am I to slack it!`,*/
       messages:null,
       fs:null,
       path:null,
-      absPath:null
+      absPath:null,
+      loadFile:null,
+      xhr:null,
+      reader:null,
+      arrayBuffer:null 
       
     };
 
@@ -1241,9 +1246,83 @@ my two mistresses: what a beast am I to slack it!`,*/
     console.log(this.state.myBlob);
   }
   sendDocxFile = (file) => {
-    const absPath = path.join(__dirname,file.name);
-    word2html(absPath);
-    console.log(word2html(absPath));
+    console.time();
+    const reader = new FileReader();
+    reader.onloadend = function(event) {
+      const arrayBuffer = reader.result;
+      // debugger
+      const result1 = document.getElementById('result1');
+      const result2 = document.getElementById('result2');
+      const result3 = document.getElementById('result3');
+      mammoth.convertToHtml({arrayBuffer: arrayBuffer}).then(function (resultObject) {
+        result1.innerHTML = resultObject.value
+        console.log(resultObject.value)
+      })
+      console.timeEnd();
+
+      mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function (resultObject) {
+        result2.innerHTML = resultObject.value
+        //console.log(resultObject.value)
+        const importedTexts = document.getElementById('preview');
+        const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":resultObject.value};
+        console.log(newText);
+        const myTextInfo = [];
+        myTextInfo.push(newText);
+        if (importedTexts.dataset.texts !== (null||undefined)) {
+          importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+        } else if (importedTexts.dataset.texts === (null||undefined)) {
+          importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+        }
+      })
+
+      //mammoth.convertToMarkdown({arrayBuffer: arrayBuffer}).then(function (resultObject) {
+      //  result3.innerHTML = resultObject.value
+      //  console.log(resultObject.value)
+      //})
+    };
+    reader.readAsArrayBuffer(file);
+    //console.log(file);
+    //console.log(URL.createObjectURL(file));
+    //const fd = new FormData();
+    //fd.append('myFile', file);
+    //fetch(URL.createObjectURL(file))
+    //  .then(function(response) {
+    //    return response.arrayBuffer();
+    //  })
+    //  .then(function(Res) {
+    //    docx.extract(Res)
+    //      .then(function(res, err) {
+    //        if (err) {
+    //            console.log(err)
+    //        }
+    //        console.log(res)
+    //      })
+    //  })
+    //const xhr = new XMLHttpRequest();
+    //xhr.open('GET', URL.createObjectURL(file), true);
+    //xhr.responseType = 'blob';
+    //xhr.onload = function(e) {
+    //  if (this.status == 200) {
+    //    const myBlob = this.response;
+    //    // myBlob is now the blob that the object URL pointed to.
+
+    //  }
+    //};
+    //xhr.send();
+    //console.log(URL.createObjectURL(file));
+
+ 
+    //const loadFile=function(url,callback){
+    //  JSZipUtils.getBinaryContent(url,callback);
+    //}
+    //loadFile("examples/tagExample.docx",function(err,content){
+    //  var doc=new Docxgen(content);
+    //  text=doc.getFullText();
+    //  console.log(text);
+    //});
+    //const absPath = path.join(__dirname,file.name);
+    //word2html(absPath);
+    //console.log(word2html(absPath));
     //docxParser.parseDocx(URL.createObjectURL(file), function(data){
     //  console.log(data)
     //}) 
@@ -1292,7 +1371,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     //fetch(URL.createObjectURL(file))
     //  .then(function(myfile) {
 
-    //mammoth.extractRawText({path: file.name})
+    //mammoth.extractRawText({path: URL.createObjectURL(file)})
     //    .then(function(result){
     //        const html = result.value; // The generated HTML
     //        console.log(html); 
@@ -1554,6 +1633,9 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
+        <p id={`result1`}></p>
+        <p id={`result2`}></p>
+        <p id={`result3`}></p>
 
         <label id={`labelText`}>
           Your Text:
