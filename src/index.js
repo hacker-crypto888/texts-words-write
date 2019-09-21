@@ -3,9 +3,21 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
+const path = require('path');
+const word2html = require('word2html');
+//const getDocumentProperties = require('office-document-properties');
+//const unoconv = require('unoconv');
+//const converter = require('office-converter')();
+//const WordExtractor = require("word-extractor");
 const docxParser = require('docx-parser');
-const anyFileParser = require('anyfileparser');
-const dxe = require('docx-extractor');
+//const office2html = require('office2html'),
+//  generateHtml = office2html.generateHtml;
+//const docxParser = require('docx-parser');
+//const anyFileParser = require('anyfileparser');
+//const dxe = require('docx-extractor');
+//const officeParser = require('officeparser');
+//const textract = require('textract');
+//const mammoth = require("mammoth");
 const s = document.createElement("script");
 s.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js";
 s.onload = function(e){ /* now that its loaded, do something */ }; 
@@ -696,7 +708,12 @@ my two mistresses: what a beast am I to slack it!`,*/
       allMyWords:null,
       allMyTexts:null,
       thisIsMyTextList:null,
-      thisIsMyWordList:null
+      thisIsMyWordList:null,
+      html:null,
+      messages:null,
+      fs:null,
+      path:null,
+      absPath:null
       
     };
 
@@ -1224,16 +1241,78 @@ my two mistresses: what a beast am I to slack it!`,*/
     console.log(this.state.myBlob);
   }
   sendDocxFile = (file) => {
-    docxParser.parseDocx("example.docx", function(data){
-      console.log(data)
-    });
-    anyFileParser.parseFile("/path/to/file", function(data){
-            // "data" string in the callback here is the text parsed from the file passed in the first argument above
-            console.log(data)
-    });
-    dxe.someMethod('myfile.docx', function(data){
-      console.log(data)
-    });
+    const absPath = path.join(__dirname,file.name);
+    word2html(absPath);
+    console.log(word2html(absPath));
+    //docxParser.parseDocx(URL.createObjectURL(file), function(data){
+    //  console.log(data)
+    //}) 
+    //converter.generatePdf(file, function(err, result) {
+      // Process result if no error
+      //console.log(result.value);
+      //if (result.status === 0) {
+      //  console.log('Output File located at ' + result.outputFile);
+      //}
+    //});
+    //converter.generateHtml('input/test.docx', function(err, result) {
+    //  // Process result if no error
+    //  if (result.status === 0) {
+    //    console.log('Output File located at ' + result.outputFile);
+    //  }
+    //}); 
+    //getDocumentProperties.fromFilePath(URL.createObjectURL(file), function(err, data) {
+    //  if (err) throw err;
+    //  console.log(data);
+    //});
+    //unoconv.convert(URL.createObjectURL, 'txt', function (err, result) {
+    //});
+    //generateHtml(URL.createObjectURL(file), function(err, result) {
+    //  console.log(result);
+    //});
+
+    //docxParser.parseDocx("example.docx", function(data){
+    //  console.log(data)
+    //const fs = require('fs');
+    //const path = file.name;
+    //try {
+    //  if (fs.existsSync(URL.createObjectURL)) {
+    //    console.log('file exists');
+    //  }
+    //} catch(err) {
+    //  console.error(err)
+    //}
+    //const fd = new FormData();
+    //fd.append('myFile', file);
+    //textract.fromFileWithPath(URL.createObjectURL(file), function( error, text ) {
+    //  console.log(text);
+    //  console.log(text.value);
+    //})
+
+    //});
+    //fetch(URL.createObjectURL(file))
+    //  .then(function(myfile) {
+
+    //mammoth.extractRawText({path: file.name})
+    //    .then(function(result){
+    //        const html = result.value; // The generated HTML
+    //        console.log(html); 
+    //        const messages = result.messages; // Any messages, such as warnings during conversion
+    //        console.log(messages);
+    //    })
+    //    .done();
+      //})
+
+    //anyFileParser.parseFile(URL.createObjectURL(file), function(data){
+    //        // "data" string in the callback here is the text parsed from the file passed in the first argument above
+    //        console.log(data)
+    //});
+    //dxe.someMethod('myfile.docx', function(data){
+    //  console.log(data)
+    //});
+    //officeParser.parseOffice(URL.createObjectURL(file), function(data){
+    //        // "data" string in the callback here is the text parsed from the office file passed in the first argument above
+    //        console.log(data)
+    //})
 
   }
   sendOdsFile = (file) => {

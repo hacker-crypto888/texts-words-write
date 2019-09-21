@@ -8,3 +8,4 @@
 - has no initialisation problems
 
 
+https://www.quora.com/How-can-you-parse-an-docx-file-using-JavaScript-and-convert-it-to-JSON
