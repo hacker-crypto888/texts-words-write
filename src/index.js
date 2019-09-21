@@ -1,9 +1,11 @@
 import React, {setState} from 'react'; 
 import ReactDOM from 'react-dom'; 
-import docx4js from "docx4js";
 import './index.css';
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
+const docxParser = require('docx-parser');
+const anyFileParser = require('anyfileparser');
+const dxe = require('docx-extractor');
 const s = document.createElement("script");
 s.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js";
 s.onload = function(e){ /* now that its loaded, do something */ }; 
@@ -1153,6 +1155,9 @@ my two mistresses: what a beast am I to slack it!`,*/
           if (file.name.slice(-5) === ".docx") { 
             this.sendDocxFile(file);
           }
+          if (file.name.slice(-4) === ".ods") { 
+            this.sendOdsFile(file);
+          }
       }
       //===END JSON UPLOAD===//
     }
@@ -1219,43 +1224,22 @@ my two mistresses: what a beast am I to slack it!`,*/
     console.log(this.state.myBlob);
   }
   sendDocxFile = (file) => {
-    docx4js.load("~/test.docx").then(docx=>{
-      //you can render docx to anything (react elements, tree, dom, and etc) by giving a function
-      docx.render(function createElement(type,props,children){
-      	return {type,props,children}
-      })
-      
-      //or use a event handler for more flexible control
-      const ModelHandler=require("docx4js/openxml/docx/model-handler").default;
-      //class MyModelhandler extends ModelHandler{
-      //	onp({type,children,node,...}, node, officeDocument){
-
-      //	}
-      //}
-      let handler=new MyModelhandler()
-      handler.on("*",function({type,children,node,...}, node, officeDocument){
-      	console.log("found model:"+type)
-      })
-      handler.on("r",function({type,children,node,...}, node, officeDocument){
-      	console.log("found a run")
-      })
-      
-      docx.parse(handler);
-      console.log(docx); 
-      console.log(docx.type); 
-      console.log(file);
-      console.log(handler);
-      
-      
-      //you can change content on docx.officeDocument.content, and then save
-      docx.officeDocument.content("w\\:t").text("hello");
-      docx.save("~/changed.docx");
-    
-    })
-
-
+    docxParser.parseDocx("example.docx", function(data){
+      console.log(data)
+    });
+    anyFileParser.parseFile("/path/to/file", function(data){
+            // "data" string in the callback here is the text parsed from the file passed in the first argument above
+            console.log(data)
+    });
+    dxe.someMethod('myfile.docx', function(data){
+      console.log(data)
+    });
 
   }
+  sendOdsFile = (file) => {
+
+  }
+
   dropbox = (files) => {
 		for (let i = 0; i < files.length; i++) {
 			const file = files[i];
