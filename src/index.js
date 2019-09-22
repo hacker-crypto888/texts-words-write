@@ -3,8 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
+const pdfjsLib = require('pdfjs-dist');
+pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 const path = require('path');
 const fs = require('fs');
+//const pdfjsWorker = require('pdfjs-dist/build/pdf.worker.min');
+//const PDFExtract = require('pdf.js-extract').PDFExtract;
+//const pdfjsWorkerBlob = new Blob([pdfjsWorker]);
+//const pdfjsWorkerBlobURL = URL.createObjectURL(pdfjsWorkerBlob);
+//pdfjsLib.workerSrc = pdfjsWorkerBlobURL;
 //const pdfText = require('pdf-text');
 //const PdfReader = require("pdfreader").PdfReader;
 //const pdf = require('pdf-parse');
@@ -734,7 +741,12 @@ my two mistresses: what a beast am I to slack it!`,*/
       buf:null,
       bufView:null,
       enc:null,
-      arr:null
+      arr:null,
+      pdfExtract:null,
+      options:null,
+      input:null,
+      processor:null,
+      output:null
       
     };
 
@@ -760,6 +772,32 @@ my two mistresses: what a beast am I to slack it!`,*/
     const thisIsMyTextList = [];
     const allMyTexts = []; 
     //allTheImportedTexts = {};
+    const input = document.getElementById("input");
+    const processor = document.getElementById("processor");
+    const output = document.getElementById("output");
+    window.addEventListener("message", function(event){
+      //window.onload = (event) => {
+        if (event.source !== processor.contentWindow) return;
+    
+        switch (event.data){
+          // "ready" = the processor is ready, so fetch the PDF file
+          case "ready":
+            const xhr = new XMLHttpRequest;
+            xhr.open('GET', input.getAttribute("src"), true);
+            xhr.responseType = "arraybuffer";
+            xhr.onload = function(event) {
+              processor.contentWindow.postMessage(this.response, "*");
+            };
+            xhr.send();
+          break;
+    
+          // anything else = the processor has returned the text of the PDF
+          default:
+            output.textContent = event.data.replace(/\s+/g, " ");
+          break;
+        }
+      //};
+    }, true);
 
   }
 
@@ -1307,6 +1345,25 @@ my two mistresses: what a beast am I to slack it!`,*/
     reader.addEventListener("loadend", function() {
       console.log(reader.result);
       const buf = reader.result;
+      console.log(JSON.stringify(buf.split('base64,')[1]));
+      console.log(JSON.stringify(btoa(atob(buf.split('base64,')[1]))));
+      console.log(JSON.stringify(btoa(buf.split('base64,')[1])));
+      //buf.onload = () => {
+      //const arr = new Uint8Array(buf);
+      //pdfjsLib.getDocument(arr).then(function(pdf) {
+      //  console.log(pdf);
+      //});
+      //pdf().then(function(data) {
+      //  console.log(data.text);
+      //})
+      //const pdfExtract = new PDFExtract();
+      //const options = {};
+      //pdfExtract.extract(arr, options, (err,data) => {
+      //  if (err) return console.log(err);
+      //  console.log(data);
+      //});
+      //}
+      //console.log(buf.toString('utf-8'));
       function ab2str(buf) {
         return String.fromCharCode.apply(null, new Uint8Array(buf));
       }
@@ -1319,11 +1376,38 @@ my two mistresses: what a beast am I to slack it!`,*/
         return buf;
       }
       
-      console.log(ab2str(buf));
+      //console.log(ab2str(buf));
       //const enc = new TextDecoder();
-      const enc = new FileReader();
+      //const enc = new FileReader();
       //console.log(new Buffer(ab2str(buf), 'binary'));
-      console.log(ab2str(buf));
+      //console.log(ab2str(buf));
+      //console.log(file.path);
+      //this.pdfToText = function(buf) {
+
+      //    pdfjsLib.workerSrc = 'js/vendor/pdf.worker.js';
+      //    pdfjsLib.cMapUrl = 'js/vendor/pdfjs/cmaps/';
+      //    pdfjsLib.cMapPacked = true;
+
+      //    return PDFJS.getDocument(buf).then(function(pdf) {
+      //        var pages = [];
+      //        for (var i = 0; i < pdf.numPages; i++) {
+      //            pages.push(i);
+      //        }
+      //        return Promise.all(pages.map(function(pageNumber) {
+      //            return pdf.getPage(pageNumber + 1).then(function(page) {
+      //                return page.getTextContent().then(function(textContent) {
+      //                    return textContent.items.map(function(item) {
+      //                        return item.str;
+      //                    }).join(' ');
+      //                });
+      //            });
+      //        })).then(function(pages) {
+      //            return pages.join("\r\n");
+      //            console.log(pages);
+      //        });
+      //    });
+      //}
+
       //console.log(enc.readAsBinaryString(new Blob([new Uint8Array(buf)])));
       // reader.result contient le contenu du
       // blob sous la forme d'un tableau typé
@@ -1331,7 +1415,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       //  console.log(chunks.join(' ')); 
       //});
     });
-    reader.readAsArrayBuffer(file);
+    //reader.readAsArrayBuffer(file);
+    reader.readAsDataURL(file);
     //reader.readAsArrayBuffer(file);
     //reader.readAsBinaryString(file);
     //URL.createObjectURL 
@@ -1541,6 +1626,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     console.log(event.currentTarget.value); 
   }
   render() {
+
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
         <div>
@@ -1557,6 +1643,10 @@ my two mistresses: what a beast am I to slack it!`,*/
         <p id={`result1`}></p>
         <p id={`result2`}></p>
         <p id={`result3`}></p>
+        <iframe id={`input`} src={`HO_DO_T9_11_00_Mioc.pdf`}></iframe>
+        <iframe id={`processor`} src="http://hubgit.github.com/2011/11/pdftotext/"></iframe>
+        
+        <div id={`output`}></div>
 
         <label id={`labelText`}>
           Your Text:
