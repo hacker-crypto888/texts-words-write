@@ -4,6 +4,10 @@ import './index.css';
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
 const path = require('path');
+const fs = require('fs');
+//const pdfText = require('pdf-text');
+//const PdfReader = require("pdfreader").PdfReader;
+//const pdf = require('pdf-parse');
 //const docx = require('./docx')
 //const word2html = require('word2html');
 //const getDocumentProperties = require('office-document-properties');
@@ -718,7 +722,19 @@ my two mistresses: what a beast am I to slack it!`,*/
       loadFile:null,
       xhr:null,
       reader:null,
-      arrayBuffer:null 
+      arrayBuffer:null,
+      pdfUtil:null,
+      pdf_path:null,
+      myFile:null,
+      pdfBuffer:null,
+      rows:null,
+      pdffile1:null,
+      pdffile2:null,
+      pdffile3:null,
+      buf:null,
+      bufView:null,
+      enc:null,
+      arr:null
       
     };
 
@@ -1180,6 +1196,10 @@ my two mistresses: what a beast am I to slack it!`,*/
           if (file.name.slice(-4) === ".ods") { 
             this.sendOdsFile(file);
           }
+          if (file.name.slice(-4) === ".pdf") { 
+            this.sendPdfFile(file);
+            
+          }
       }
       //===END JSON UPLOAD===//
     }
@@ -1274,127 +1294,95 @@ my two mistresses: what a beast am I to slack it!`,*/
           importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
         }
       })
-
-      //mammoth.convertToMarkdown({arrayBuffer: arrayBuffer}).then(function (resultObject) {
-      //  result3.innerHTML = resultObject.value
-      //  console.log(resultObject.value)
-      //})
     };
     reader.readAsArrayBuffer(file);
-    //console.log(file);
-    //console.log(URL.createObjectURL(file));
-    //const fd = new FormData();
-    //fd.append('myFile', file);
-    //fetch(URL.createObjectURL(file))
-    //  .then(function(response) {
-    //    return response.arrayBuffer();
-    //  })
-    //  .then(function(Res) {
-    //    docx.extract(Res)
-    //      .then(function(res, err) {
-    //        if (err) {
-    //            console.log(err)
-    //        }
-    //        console.log(res)
-    //      })
-    //  })
-    //const xhr = new XMLHttpRequest();
-    //xhr.open('GET', URL.createObjectURL(file), true);
-    //xhr.responseType = 'blob';
-    //xhr.onload = function(e) {
-    //  if (this.status == 200) {
-    //    const myBlob = this.response;
-    //    // myBlob is now the blob that the object URL pointed to.
-
-    //  }
-    //};
-    //xhr.send();
-    //console.log(URL.createObjectURL(file));
-
- 
-    //const loadFile=function(url,callback){
-    //  JSZipUtils.getBinaryContent(url,callback);
-    //}
-    //loadFile("examples/tagExample.docx",function(err,content){
-    //  var doc=new Docxgen(content);
-    //  text=doc.getFullText();
-    //  console.log(text);
-    //});
-    //const absPath = path.join(__dirname,file.name);
-    //word2html(absPath);
-    //console.log(word2html(absPath));
-    //docxParser.parseDocx(URL.createObjectURL(file), function(data){
-    //  console.log(data)
-    //}) 
-    //converter.generatePdf(file, function(err, result) {
-      // Process result if no error
-      //console.log(result.value);
-      //if (result.status === 0) {
-      //  console.log('Output File located at ' + result.outputFile);
-      //}
-    //});
-    //converter.generateHtml('input/test.docx', function(err, result) {
-    //  // Process result if no error
-    //  if (result.status === 0) {
-    //    console.log('Output File located at ' + result.outputFile);
-    //  }
-    //}); 
-    //getDocumentProperties.fromFilePath(URL.createObjectURL(file), function(err, data) {
-    //  if (err) throw err;
-    //  console.log(data);
-    //});
-    //unoconv.convert(URL.createObjectURL, 'txt', function (err, result) {
-    //});
-    //generateHtml(URL.createObjectURL(file), function(err, result) {
-    //  console.log(result);
-    //});
-
-    //docxParser.parseDocx("example.docx", function(data){
-    //  console.log(data)
-    //const fs = require('fs');
-    //const path = file.name;
-    //try {
-    //  if (fs.existsSync(URL.createObjectURL)) {
-    //    console.log('file exists');
-    //  }
-    //} catch(err) {
-    //  console.error(err)
-    //}
-    //const fd = new FormData();
-    //fd.append('myFile', file);
-    //textract.fromFileWithPath(URL.createObjectURL(file), function( error, text ) {
-    //  console.log(text);
-    //  console.log(text.value);
-    //})
-
-    //});
-    //fetch(URL.createObjectURL(file))
-    //  .then(function(myfile) {
-
-    //mammoth.extractRawText({path: URL.createObjectURL(file)})
-    //    .then(function(result){
-    //        const html = result.value; // The generated HTML
-    //        console.log(html); 
-    //        const messages = result.messages; // Any messages, such as warnings during conversion
-    //        console.log(messages);
-    //    })
-    //    .done();
-      //})
-
-    //anyFileParser.parseFile(URL.createObjectURL(file), function(data){
-    //        // "data" string in the callback here is the text parsed from the file passed in the first argument above
-    //        console.log(data)
-    //});
-    //dxe.someMethod('myfile.docx', function(data){
-    //  console.log(data)
-    //});
-    //officeParser.parseOffice(URL.createObjectURL(file), function(data){
-    //        // "data" string in the callback here is the text parsed from the office file passed in the first argument above
-    //        console.log(data)
-    //})
 
   }
+
   sendOdsFile = (file) => {
+
+  }
+  sendPdfFile = (file) => { //https://github.com/brianc/node-pdf-text
+    var reader = new FileReader();
+    reader.addEventListener("loadend", function() {
+      console.log(reader.result);
+      const buf = reader.result;
+      function ab2str(buf) {
+        return String.fromCharCode.apply(null, new Uint8Array(buf));
+      }
+      function str2ab(str) {
+        var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+        var bufView = new Uint16Array(buf);
+        for (var i=0, strLen=str.length; i < strLen; i++) {
+          bufView[i] = str.charCodeAt(i);
+        }
+        return buf;
+      }
+      
+      console.log(ab2str(buf));
+      //const enc = new TextDecoder();
+      const enc = new FileReader();
+      //console.log(new Buffer(ab2str(buf), 'binary'));
+      console.log(ab2str(buf));
+      //console.log(enc.readAsBinaryString(new Blob([new Uint8Array(buf)])));
+      // reader.result contient le contenu du
+      // blob sous la forme d'un tableau typé
+      //pdfText(reader.result, function(err, chunks) {
+      //  console.log(chunks.join(' ')); 
+      //});
+    });
+    reader.readAsArrayBuffer(file);
+    //reader.readAsArrayBuffer(file);
+    //reader.readAsBinaryString(file);
+    //URL.createObjectURL 
+    //const reader = new FileReader();
+    //new PdfReader().parseFileItems(
+    //console.log(file);
+    //const pdffile1 = new FileReader();
+    //console.log(pdffile1.readAsBinaryString(file).result);
+    //const pdffile2 = new FileReader();
+    //console.log(pdffile2.readAsArrayBuffer(file).result);
+    //const pdffile3 = new FileReader();
+    //console.log(pdffile3.readAsText(file).result);
+    //, function(err, item){
+    //  if(item && item.text)
+    //    console.log(item.text);
+    //});
+    //const reader = new FileReader();
+    //const result1 = document.getElementById('result1');
+    //const result2 = document.getElementById('result2');
+    //const result3 = document.getElementById('result3');
+    //const pdfBuffer = URL.createObjectURL(file); 
+    //pdfBuffer.readAsArrayBuffer(file);
+    //fs.readFile(pdfBuffer.name, (err, pdfBuffer) => {
+      // pdfBuffer contains the file content
+      //new PdfReader().parseBuffer(pdfBuffer, function(err, item) {
+        //if (err) callback(err);
+        //else if (!item) callback();
+        //if (item.text) console.log(item.text);
+      //});
+    //});
+    //const rows = {};
+    //function printRows() {
+    //  Object.keys(rows) // => array of y-positions (type: float)
+    //    .sort((y1, y2) => parseFloat(y1) - parseFloat(y2)) // sort float positions
+    //    .forEach(y => console.log((rows[y] || []).join("")));
+    //}
+    //
+    //new pdfreader.PdfReader().parseFileItems(file, function(
+    //  err,
+    //  item
+    //) {
+    //  if (!item || item.page) {
+    //    // end of file, or page
+    //    printRows();
+    //    console.log("PAGE:", item.page);
+    //    rows = {}; // clear rows for next page
+    //  } else if (item.text) {
+    //    // accumulate text items into rows object, per line
+    //    (rows[item.y] = rows[item.y] || []).push(item.text);
+    //  }
+    //});
 
   }
 
@@ -1421,17 +1409,6 @@ my two mistresses: what a beast am I to slack it!`,*/
                         fileName.className += '.obj';
 			fileName.textContent = file.name+ ' (preview)';
 			fileName.href = URL.createObjectURL(file);
-                        //if (fileName && this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") === "" && file.type === "application/json" && document.getElementById('myItemsForUpload')) {
-                        //  if (document.getElementById('items_by_date')) {
-                        //    document.getElementById('items_by_date').remove();
-                        //  }
-                        //  fileName.id = 'items_by_date';
-			//  fileName.dataset.databaseJson = JSON.stringify({"items":document.getElementById('myItemsForUpload').dataset.databaseJson});
-                        //}
-                        //  if (document.getElementById('myItemsForUpload')) {
-
-                        //  }
-                        //}
 			fileName.target = "_blank";
 			preview.appendChild(fileName);
                         //===END FILE PREVIEW AFTER DROP==//
@@ -1477,24 +1454,6 @@ my two mistresses: what a beast am I to slack it!`,*/
             const myAudioItems = document.getElementById('myAudioFiles');
             const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
             myAudioItems.childNodes[this.state.indexAudioElement].play();
-            //const allAudioElements = document.getElementsByTagName('audio');
-            //const myAudioItems = document.getElementById('myAudioFiles');
-            //const firstAudio = allAudioElements[0];
-
-            //const indexAudioElement = Array.prototype.indexOf.call(myAudioItems, event.currentTarget);
-            //event.currentTarget.remove(); 
-            //event.currentTarget.play();
-            //myAudioItems.insertBefore(event.currentTarget, myAudioItems.children[indexAudioElement]);
-            //myAudioItems.appendChild(firstAudio);
-            //oItems.firstChild.play();
-            //allAudioElements[0].remove(); 
-
-            //const firstAudio = allAudioElements[0];
-            //const myAudioItems = document.getElementById('myAudioFiles');       
-            //myAudioItems.appendChild(firstAudio);
-            ////allAudioElements[0].remove(); 
-            //myAudioItems.firstChild.remove(); 
-            //myAudioItems.firstChild.play();
           }
         };
       }
@@ -1508,25 +1467,8 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
       }
     }
-    //if (!event.target.checked) {
-    //this.setState({
-    //    noDatabaseFile:
-    //      false,
-    //    preloadOrAutoplay:
-    //      "preload"
-    //  });
-    //} 
 
     if (document.getElementById('noDatabaseFile').checked) {
-      //this.setState({
-      //  noDatabaseFile:
-      //    true,
-      //  preloadOrAutoplay:
-      //    "autoplay"
-      //});
-
-    
-
       console.log("checkbox");
       
       if (this.state.databaseIsLoaded === true && window.confirm("the database is to be removed. To remove the database anyway, press ok. Press cancel to keep your database loaded in the dropzone.")) {
@@ -1544,17 +1486,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
       }
     }
-    //if (event.target.checked && 
-    //if(!event.target.checked) {
-    //  this.setState({
-    //    noDatabaseFile:
-    //      false 
-    //  });
-    //if (!document.getElementById('noDatabaseFile').checked) {
-    //  document.getElementById('dropzone').hidden = true;
-    //}
-    //console.log("uncheck box");
-    //console.log(this.state.jsonSecondConfirm);
 
     if (!document.getElementById('noDatabaseFile').checked && this.state.jsonSecondConfirm === true) {
       this.setState({
@@ -1570,16 +1501,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       document.getElementById('dropzone').hidden = true;
       //document.getElementById('noDatabaseFile').checked = true;
     } 
-    //}
-    //if(event.target.checked === false) {
-      //document.getElementById('dropzone').removeAttribute('checked');
-    //if (document.getElementById('noDatabaseFile').checked === (false||undefined)) {
-    //  document.getElementById('dropzone').hidden = false;
-    //}
-    ////}
-    //if (event.target.checked === true && event.target.id === "noDatabaseFile") {
-    //  document.getElementById('dropzone').hidden = true;
-    //}
   }
   alertNoDatabaseFile = (event) => {
     if (/*this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") !== "" &&*/ document.getElementById('noDatabaseFile').checked === false && document.getElementById('preview').innerHTML === "" && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
@@ -1659,5 +1580,3 @@ my two mistresses: what a beast am I to slack it!`,*/
 }
 
 ReactDOM.render(<BasicForm />, document.getElementById('root'));
-        //<div id={`dropzoneJson`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
-        //<div id={`previewMyDatabase`}></div>
