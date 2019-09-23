@@ -759,7 +759,14 @@ my two mistresses: what a beast am I to slack it!`,*/
       binary:null,
       img:null,
       returnedBlob:null,
-      returnedBase64:null
+      returnedBase64:null,
+      BASE64_MARKER:null,
+      base64Index:null,
+      base64:null,
+      raw:null,
+      rawLength:null,
+      pdfAsDataUri:null,
+      pdfAsArray:null
       
     };
 
@@ -1353,29 +1360,40 @@ my two mistresses: what a beast am I to slack it!`,*/
     reader.onloadend = (event) => {
       //console.log(reader.result);
       //const buf = new Uint8Array(reader.result);
-      function ab2str(buffer) {
-        return String.fromCharCode.apply(null, new Uint8Array(buffer));
-      }
+      //function ab2str(buffer) {
+      //  return String.fromCharCode.apply(null, new Uint8Array(buffer));
+      //}
       
       //const base64 = JSON.stringify(ab2str(reader.result));
-      const base64 = JSON.stringify(reader.result.split('base64,')[1]);
-
-      console.log(base64);
-
-
-
-
-
+      //const base64 = JSON.stringify(reader.result.split('base64,')[1]);
+      const pdfAsDataUri = reader.result;
+      console.log(pdfAsDataUri);
     }
     reader.readAsDataURL(file);
-    const base64 = this.state;
-    console.log(base64);
-    console.log(atob(base64));
-    const binary = fixBinary(atob(base64)); 
+    //const base64 = this.state;
+    //console.log(base64);
+    //console.log(atob(base64));
+    const BASE64_MARKER = ';base64,';
+    
+    function convertDataURIToBinary(dataURI) {
+      const base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+      const base64 = dataURI.substring(base64Index);
+      const raw = window.atob(base64);
+      const rawLength = raw.length;
+      const array = new Uint8Array(new ArrayBuffer(rawLength));
+    
+      for(var i = 0; i < rawLength; i++) {
+        array[i] = raw.charCodeAt(i);
+      }
+      return array;
+    }
+    const pdfAsDataUri = this.state; // shortened
+    const pdfAsArray = convertDataURIToBinary(pdfAsDataUri); 
+    //const binary = fixBinary(atob(base64)); 
 
     const processor = document.getElementById("processor");
     const outputpdf = document.getElementById("outputpdf");
-    const blob = new Blob([binary], {type: 'application/pdf'});
+    const blob = new Blob([pdfAsDataUri], {type: 'application/pdf'});
     const url = URL.createObjectURL(blob);
     log('Created a png blob of size: ' + blob.size);
     log('Inserting an img...');
