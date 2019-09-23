@@ -3,8 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
+const pdfjsLib = require('pdfjs-dist');
+pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 const path = require('path');
 const fs = require('fs');
+//const pdfjsWorker = require('pdfjs-dist/build/pdf.worker.min');
+//const PDFExtract = require('pdf.js-extract').PDFExtract;
+//const pdfjsWorkerBlob = new Blob([pdfjsWorker]);
+//const pdfjsWorkerBlobURL = URL.createObjectURL(pdfjsWorkerBlob);
+//pdfjsLib.workerSrc = pdfjsWorkerBlobURL;
 //const pdfText = require('pdf-text');
 //const PdfReader = require("pdfreader").PdfReader;
 //const pdf = require('pdf-parse');
@@ -734,7 +741,25 @@ my two mistresses: what a beast am I to slack it!`,*/
       buf:null,
       bufView:null,
       enc:null,
-      arr:null
+      arr:null,
+      pdfExtract:null,
+      options:null,
+      input:null,
+      processor:null,
+      outputpdf:null,
+      dataurl:null,
+      m:null,
+      blob:null,
+      bloburl:null,
+      length:null,
+      arr:null,
+      display:null,
+      text:null,
+      base64:null,
+      binary:null,
+      img:null,
+      returnedBlob:null,
+      returnedBase64:null
       
     };
 
@@ -760,6 +785,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     const thisIsMyTextList = [];
     const allMyTexts = []; 
     //allTheImportedTexts = {};
+
+
+
 
   }
 
@@ -1303,35 +1331,161 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   }
   sendPdfFile = (file) => { //https://github.com/brianc/node-pdf-text
-    var reader = new FileReader();
-    reader.addEventListener("loadend", function() {
+    'use strict';
+    if ('srcObject' in input) {
+      input.srcObject = file;
+    } else {
+      input.src = JSON.stringify(reader.result);
+      //URL.createObjectURL(file);
+      //input.addEventListener('load', () => URL.revokeObjectURL(URL.createObjectURL(file)), {once: true});
+    }
+
+    function fixBinary (bin) {
+      const length = bin.length;
+      const buf = new ArrayBuffer(length);
+      const arr = new Uint8Array(buf);
+      for (var i = 0; i < length; i++) {
+        arr[i] = bin.charCodeAt(i);
+      }
+      return buf;
+      console.log(buf); 
+    }
+    const display = document.getElementById('display');
+    display.innerHTML = (display.innerHTML || '');
+    function log(text) {
+      display.innerHTML += "\n" + text;
+    }  
+    const input = document.getElementById('input');
+    const reader = new FileReader();
+    reader.onloadend = (event) => {
       console.log(reader.result);
-      const buf = reader.result;
-      function ab2str(buf) {
-        return String.fromCharCode.apply(null, new Uint8Array(buf));
-      }
-      function str2ab(str) {
-        var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
-        var bufView = new Uint16Array(buf);
-        for (var i=0, strLen=str.length; i < strLen; i++) {
-          bufView[i] = str.charCodeAt(i);
-        }
-        return buf;
-      }
+      //const buf = new Uint8Array(reader.result);
       
-      console.log(ab2str(buf));
+      const base64 = reader.result.split('base64,')[1];
+
+
+
+      //function ab2str(buffer) {
+      //  return String.fromCharCode.apply(null, new Uint8Array(buffer));
+      //}
+
+    }
+    reader.readAsDataURL(file);
+    const base64 = this.state;
+    const binary = fixBinary(atob(base64)); 
+    const processor = document.getElementById("processor");
+    const outputpdf = document.getElementById("outputpdf");
+    const blob = new Blob([binary], {type: 'image/png'});
+    const url = URL.createObjectURL(blob);
+    console.log('Created a png blob of size: ' + blob.size);
+    console.log('Inserting an img...');
+    console.log('Blob URL is: ' + url);
+    console.log('Fetching with ajax...');
+    window.addEventListener("message", function(event){
+      //window.onload = (event) => {
+        if (event.source !== processor.contentWindow) return;
+    
+        switch (event.data){
+          // "ready" = the processor is ready, so fetch the PDF file
+          case "ready":
+            const xhr = new XMLHttpRequest;
+
+            xhr.open('GET', url, true);
+            xhr.responseType = "arraybuffer";
+            xhr.onload = (event) => {
+              processor.contentWindow.postMessage(this.response, "*");
+              //console.log(processor.contentWindow.postMessage(this.response, "*"));
+              //console.log(JSON.stringify(this.response));
+            };
+            xhr.send();
+
+          break;
+    
+          // anything else = the processor has returned the text of the PDF
+          default:
+            outputpdf.textContent = event.data.replace(/\s+/g, " ");
+
+            console.log(event.data);
+            //String.prototype.cleanup = function() {
+            //   return this.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-").split('-');
+            //}
+            //console.log(event.data.cleanup());
+          break;
+        }
+      //};
+    }, true);
+
+
+
+      //console.log(JSON.stringify(btoa(atob(buf.split('base64,')[1]))));
+      //console.log(JSON.stringify(btoa(buf.split('base64,')[1])));
+      //buf.onload = () => {
+
+      //pdfjsLib.getDocument(arr).then(function(pdf) {
+      //  console.log(pdf);
+      //});
+      //pdf().then(function(data) {
+      //  console.log(data.text);
+      //})
+      //const pdfExtract = new PDFExtract();
+      //const options = {};
+      //pdfExtract.extract(arr, options, (err,data) => {
+      //  if (err) return console.log(err);
+      //  console.log(data);
+      //});
+      //}
+      //console.log(buf.toString('utf-8'));
+
+    function str2ab(str) {
+      var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+      var bufView = new Uint16Array(buf);
+      for (var i=0, strLen=str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+      }
+      return buf;
+    }
+
+      //console.log(ab2str(buf));
       //const enc = new TextDecoder();
-      const enc = new FileReader();
+      //const enc = new FileReader();
       //console.log(new Buffer(ab2str(buf), 'binary'));
-      const arr = new Buffer(ab2str(buf), 'binary');
-      console.log(enc.readAsBinaryString(ab2str(buf)));
+      //console.log(ab2str(buf));
+      //console.log(file.path);
+      //this.pdfToText = function(buf) {
+
+      //    pdfjsLib.workerSrc = 'js/vendor/pdf.worker.js';
+      //    pdfjsLib.cMapUrl = 'js/vendor/pdfjs/cmaps/';
+      //    pdfjsLib.cMapPacked = true;
+
+      //    return PDFJS.getDocument(buf).then(function(pdf) {
+      //        var pages = [];
+      //        for (var i = 0; i < pdf.numPages; i++) {
+      //            pages.push(i);
+      //        }
+      //        return Promise.all(pages.map(function(pageNumber) {
+      //            return pdf.getPage(pageNumber + 1).then(function(page) {
+      //                return page.getTextContent().then(function(textContent) {
+      //                    return textContent.items.map(function(item) {
+      //                        return item.str;
+      //                    }).join(' ');
+      //                });
+      //            });
+      //        })).then(function(pages) {
+      //            return pages.join("\r\n");
+      //            console.log(pages);
+      //        });
+      //    });
+      //}
+
+      //console.log(enc.readAsBinaryString(new Blob([new Uint8Array(buf)])));
       // reader.result contient le contenu du
       // blob sous la forme d'un tableau typé
       //pdfText(reader.result, function(err, chunks) {
       //  console.log(chunks.join(' ')); 
       //});
-    });
-    reader.readAsArrayBuffer(file);
+    //});
+    //reader.readAsArrayBuffer(file);
+
     //reader.readAsArrayBuffer(file);
     //reader.readAsBinaryString(file);
     //URL.createObjectURL 
@@ -1541,6 +1695,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     console.log(event.currentTarget.value); 
   }
   render() {
+
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
         <div>
@@ -1557,6 +1712,11 @@ my two mistresses: what a beast am I to slack it!`,*/
         <p id={`result1`}></p>
         <p id={`result2`}></p>
         <p id={`result3`}></p>
+        <embed id={`input`} type={`application/pdf`} />
+        <iframe id={`processor`} src="http://hubgit.github.com/2011/11/pdftotext/"></iframe>
+        
+        <div id={`outputpdf`}></div>
+        <pre id={`display`}></pre>
 
         <label id={`labelText`}>
           Your Text:

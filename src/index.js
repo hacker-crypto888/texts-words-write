@@ -746,7 +746,20 @@ my two mistresses: what a beast am I to slack it!`,*/
       options:null,
       input:null,
       processor:null,
-      output:null
+      outputpdf:null,
+      dataurl:null,
+      m:null,
+      blob:null,
+      bloburl:null,
+      length:null,
+      arr:null,
+      display:null,
+      text:null,
+      base64:null,
+      binary:null,
+      img:null,
+      returnedBlob:null,
+      returnedBase64:null
       
     };
 
@@ -772,32 +785,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     const thisIsMyTextList = [];
     const allMyTexts = []; 
     //allTheImportedTexts = {};
-    const input = document.getElementById("input");
-    const processor = document.getElementById("processor");
-    const output = document.getElementById("output");
-    window.addEventListener("message", function(event){
-      //window.onload = (event) => {
-        if (event.source !== processor.contentWindow) return;
-    
-        switch (event.data){
-          // "ready" = the processor is ready, so fetch the PDF file
-          case "ready":
-            const xhr = new XMLHttpRequest;
-            xhr.open('GET', input.getAttribute("src"), true);
-            xhr.responseType = "arraybuffer";
-            xhr.onload = function(event) {
-              processor.contentWindow.postMessage(this.response, "*");
-            };
-            xhr.send();
-          break;
-    
-          // anything else = the processor has returned the text of the PDF
-          default:
-            output.textContent = event.data.replace(/\s+/g, " ");
-          break;
-        }
-      //};
-    }, true);
+
+
+
 
   }
 
@@ -1341,15 +1331,103 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   }
   sendPdfFile = (file) => { //https://github.com/brianc/node-pdf-text
-    var reader = new FileReader();
-    reader.addEventListener("loadend", function() {
-      console.log(reader.result);
-      const buf = reader.result;
-      console.log(JSON.stringify(buf.split('base64,')[1]));
-      console.log(JSON.stringify(btoa(atob(buf.split('base64,')[1]))));
-      console.log(JSON.stringify(btoa(buf.split('base64,')[1])));
+    'use strict';
+    const input = document.getElementById('input');
+
+    function fixBinary (bin) {
+      const length = bin.length;
+      const buf = new ArrayBuffer(length);
+      const arr = new Uint8Array(buf);
+      for (var i = 0; i < length; i++) {
+        arr[i] = bin.charCodeAt(i);
+      }
+      return buf;
+    }
+    const display = document.getElementById('display');
+    display.innerHTML = (display.innerHTML || '');
+    function log(text) {
+      display.innerHTML += "\n" + text;
+    }  
+
+    const reader = new FileReader();
+    reader.onloadend = (event) => {
+      //console.log(reader.result);
+      //const buf = new Uint8Array(reader.result);
+      function ab2str(buffer) {
+        return String.fromCharCode.apply(null, new Uint8Array(buffer));
+      }
+      
+      //const base64 = JSON.stringify(ab2str(reader.result));
+      const base64 = JSON.stringify(reader.result.split('base64,')[1]);
+
+      console.log(base64);
+
+
+
+
+
+    }
+    reader.readAsDataURL(file);
+    const base64 = this.state;
+    console.log(base64);
+    console.log(atob(base64));
+    const binary = fixBinary(atob(base64)); 
+
+    const processor = document.getElementById("processor");
+    const outputpdf = document.getElementById("outputpdf");
+    const blob = new Blob([binary], {type: 'application/pdf'});
+    const url = URL.createObjectURL(blob);
+    log('Created a png blob of size: ' + blob.size);
+    log('Inserting an img...');
+    log('Blob URL is: ' + url);
+    log('Fetching with ajax...');
+    if ('srcObject' in input) {
+      input.srcObject = url;
+    } else {
+      input.src = url;
+      //URL.createObjectURL(file);
+      //input.addEventListener('load', () => URL.revokeObjectURL(URL.createObjectURL(file)), {once: true});
+    }
+    window.addEventListener("message", function(event){
+      //window.onload = (event) => {
+        if (event.source !== processor.contentWindow) return;
+    
+        switch (event.data){
+          // "ready" = the processor is ready, so fetch the PDF file
+          case "ready":
+            const xhr = new XMLHttpRequest;
+
+            xhr.open('GET', url, true);
+            xhr.responseType = "arraybuffer";
+            xhr.onload = (event) => {
+              processor.contentWindow.postMessage(this.response, "*");
+              //console.log(processor.contentWindow.postMessage(this.response, "*"));
+              //console.log(JSON.stringify(this.response));
+            };
+            xhr.send();
+
+          break;
+    
+          // anything else = the processor has returned the text of the PDF
+          default:
+            outputpdf.textContent = event.data.replace(/\s+/g, " ");
+
+            console.log(event.data);
+            //String.prototype.cleanup = function() {
+            //   return this.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-").split('-');
+            //}
+            //console.log(event.data.cleanup());
+          break;
+        }
+      //};
+    }, true);
+
+
+
+      //console.log(JSON.stringify(btoa(atob(buf.split('base64,')[1]))));
+      //console.log(JSON.stringify(btoa(buf.split('base64,')[1])));
       //buf.onload = () => {
-      //const arr = new Uint8Array(buf);
+
       //pdfjsLib.getDocument(arr).then(function(pdf) {
       //  console.log(pdf);
       //});
@@ -1364,18 +1442,16 @@ my two mistresses: what a beast am I to slack it!`,*/
       //});
       //}
       //console.log(buf.toString('utf-8'));
-      function ab2str(buf) {
-        return String.fromCharCode.apply(null, new Uint8Array(buf));
-      }
-      function str2ab(str) {
-        var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
-        var bufView = new Uint16Array(buf);
-        for (var i=0, strLen=str.length; i < strLen; i++) {
-          bufView[i] = str.charCodeAt(i);
-        }
-        return buf;
-      }
-      
+
+    //function str2ab(str) {
+      //var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+    //  var bufView = new Uint16Array(buf);
+    //  for (var i=0, strLen=str.length; i < strLen; i++) {
+    //    bufView[i] = str.charCodeAt(i);
+    //  }
+    //  return buf;
+    //}
+
       //console.log(ab2str(buf));
       //const enc = new TextDecoder();
       //const enc = new FileReader();
@@ -1414,9 +1490,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       //pdfText(reader.result, function(err, chunks) {
       //  console.log(chunks.join(' ')); 
       //});
-    });
+    //});
     //reader.readAsArrayBuffer(file);
-    reader.readAsDataURL(file);
+
     //reader.readAsArrayBuffer(file);
     //reader.readAsBinaryString(file);
     //URL.createObjectURL 
@@ -1643,10 +1719,11 @@ my two mistresses: what a beast am I to slack it!`,*/
         <p id={`result1`}></p>
         <p id={`result2`}></p>
         <p id={`result3`}></p>
-        <iframe id={`input`} src={`HO_DO_T9_11_00_Mioc.pdf`}></iframe>
+        <embed id={`input`} type={`application/pdf`} />
         <iframe id={`processor`} src="http://hubgit.github.com/2011/11/pdftotext/"></iframe>
         
-        <div id={`output`}></div>
+        <div id={`outputpdf`}></div>
+        <pre id={`display`}></pre>
 
         <label id={`labelText`}>
           Your Text:
