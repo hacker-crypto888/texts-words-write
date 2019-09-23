@@ -1340,6 +1340,8 @@ my two mistresses: what a beast am I to slack it!`,*/
   sendPdfFile = (file) => { //https://github.com/brianc/node-pdf-text
     'use strict';
     const input = document.getElementById('input');
+    const processor = document.getElementById("processor");
+    const outputpdf = document.getElementById("outputpdf");
 
     function fixBinary (bin) {
       const length = bin.length;
@@ -1367,45 +1369,47 @@ my two mistresses: what a beast am I to slack it!`,*/
       //const base64 = JSON.stringify(ab2str(reader.result));
       //const base64 = JSON.stringify(reader.result.split('base64,')[1]);
       const pdfAsDataUri = reader.result;
+      const BASE64_MARKER = ';base64,';
+      
+      function convertDataURIToBinary(dataURI) {
+        const base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+        const base64 = dataURI.substring(base64Index);
+        const raw = window.atob(base64);
+        const rawLength = raw.length;
+        const array = new Uint8Array(new ArrayBuffer(rawLength));
+      
+        for(var i = 0; i < rawLength; i++) {
+          array[i] = raw.charCodeAt(i);
+        }
+        return array;
+      }
       console.log(pdfAsDataUri);
+      
+      const pdfAsArray = convertDataURIToBinary(pdfAsDataUri); 
+      //const binary = fixBinary(atob(base64)); 
+
+
+      const blob = new Blob([pdfAsDataUri], {type: 'application/pdf'});
+      const url = URL.createObjectURL(blob);
+      log('Created a png blob of size: ' + blob.size);
+      log('Inserting an img...');
+      log('Blob URL is: ' + url);
+      log('Fetching with ajax...');
+      if ('srcObject' in input) {
+        input.srcObject = url;
+      } else {
+        input.src = url;
+        //URL.createObjectURL(file);
+        //input.addEventListener('load', () => URL.revokeObjectURL(URL.createObjectURL(file)), {once: true});
+      }
+
     }
     reader.readAsDataURL(file);
     //const base64 = this.state;
     //console.log(base64);
     //console.log(atob(base64));
-    const BASE64_MARKER = ';base64,';
-    
-    function convertDataURIToBinary(dataURI) {
-      const base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
-      const base64 = dataURI.substring(base64Index);
-      const raw = window.atob(base64);
-      const rawLength = raw.length;
-      const array = new Uint8Array(new ArrayBuffer(rawLength));
-    
-      for(var i = 0; i < rawLength; i++) {
-        array[i] = raw.charCodeAt(i);
-      }
-      return array;
-    }
-    const pdfAsDataUri = this.state; // shortened
-    const pdfAsArray = convertDataURIToBinary(pdfAsDataUri); 
-    //const binary = fixBinary(atob(base64)); 
 
-    const processor = document.getElementById("processor");
-    const outputpdf = document.getElementById("outputpdf");
-    const blob = new Blob([pdfAsDataUri], {type: 'application/pdf'});
-    const url = URL.createObjectURL(blob);
-    log('Created a png blob of size: ' + blob.size);
-    log('Inserting an img...');
-    log('Blob URL is: ' + url);
-    log('Fetching with ajax...');
-    if ('srcObject' in input) {
-      input.srcObject = url;
-    } else {
-      input.src = url;
-      //URL.createObjectURL(file);
-      //input.addEventListener('load', () => URL.revokeObjectURL(URL.createObjectURL(file)), {once: true});
-    }
+
     window.addEventListener("message", function(event){
       //window.onload = (event) => {
         if (event.source !== processor.contentWindow) return;
@@ -1415,7 +1419,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           case "ready":
             const xhr = new XMLHttpRequest;
 
-            xhr.open('GET', url, true);
+            xhr.open('GET', input.getAttribute('src'), true);
             xhr.responseType = "arraybuffer";
             xhr.onload = (event) => {
               processor.contentWindow.postMessage(this.response, "*");
