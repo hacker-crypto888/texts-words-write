@@ -318,20 +318,31 @@ class BasicForm extends React.Component {
            <div>{this.state.checkTarget}</div>
            <div>{this.state.variableErrors}</div>
            <div id={`myAudioFiles`}></div>
-
            <p>
-             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
-              {`\u2699`} Settings
-             </button>
+            //<span class="flag-icon flag-icon-gr" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="bottom"></span>  
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#myaccount" aria-expanded="false" aria-controls="collapseExample">
+             My account 
+            </button>
            </p>
-           <div className="collapse" id="mysettings">
+           <div className="collapse" id="myaccount">
             <div className="card card-body">
-              <div>
-                <RegistrationForm />
+             <p>
+               <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
+                {`\u2699`} Settings
+               </button>
+             </p>
+
+             <div className="collapse" id="mysettings">
+              <div className="card card-body">
+                <div>
+                  <RegistrationForm />
+                </div>
+                <div id={`myFillInTheDateForm`}>
+                  <FillInTheDateForm />
+                </div>
               </div>
-              <div id={`myFillInTheDateForm`}>
-                <FillInTheDateForm />
-              </div>
+             </div>
+             <Sheet2Json />
             </div>
            </div>
           </form>
@@ -930,52 +941,21 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     const result = this.state;
     result.length = 0;
-    if (document.getElementById('noDatabaseFile').checked === false) {
-      this.alertNoDatabaseFile();
-    }
   } 
 
-  handleSubmittedText = event => {
+  //addNew Text function => when you click on add new text(create new text) button
+  //handle Text change => value of text when you modify the input
+  
+  handleSubmittedText = event => { //handle submitted texts including that in the text input field
     event.preventDefault();
-    const importedTexts = document.getElementById('preview');
-    if(this.state.value && this.state.value.length && this.state.value.length > 0) { 
-      const daysDate = new Date();
-      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-      const msTime = Date.now();
-      //if (this.state.value && this.state.value.length && this.state.value.length > 0) {
-      const newText = {"lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
-      const mySuperList = this.state;
-      //TO HAVE IMPORTED TEXTS
-      if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
-        const myTextInfo = [];
-        myTextInfo.push(newText);
-        importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-        newText.length = 0;
-        //importedTexts.dataset.textValue = "";
-        //console.log(JSON.parse(importedTexts.dataset.texts));
-      } else if (importedTexts.dataset.texts === (null||undefined) || importedTexts.dataset.texts.length === 0) {
-        
-        const myTextInfo = [];
-        myTextInfo.push(newText);
-        //console.log(myTextInfo);
-        //importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-        importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-        newText.length = 0;
-        //importedTexts.dataset.textValue = "";
-        //console.log(importedTexts.dataset.texts);
-        //console.log(JSON.parse(importedTexts.dataset.texts));
-      }
-      //}
+    this.handleText();
 
-      this.handleText();
-    } else {
-      this.handleText();
-    }
   }
 
   handleDateChange = date => {
     this.setState({date});
   }
+
   downloadItems = (event) => {
     console.log(this.state.wordIdItems);
     const blobData = new Blob([JSON.stringify({"items": this.state.wordIdItems},null,2)], {type: 'application/json'});
@@ -1431,10 +1411,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       value:
         event.target.value
     });
-    this.setState({
-      textareaIsEmpty:
-        ''
-    });
   }
 
 
@@ -1502,20 +1478,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       //document.getElementById('noDatabaseFile').checked = true;
     } 
   }
-  alertNoDatabaseFile = (event) => {
-    if (/*this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") !== "" &&*/ document.getElementById('noDatabaseFile').checked === false && document.getElementById('preview').innerHTML === "" && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
-      document.getElementById('noDatabaseFile').checked = true;
-      this.setState({
-        jsonSecondConfirm:
-          true
-      });
-      console.log("alert");
-      document.getElementById('dropzone').hidden = true;
-      //this.handleText();
-    } else {
-      document.getElementById('noDatabaseFile').removeAttribute('checked');   
-    }
-  }
   autoplay = (event) => {
     //const allAudioElements = this.state;
     const myElements = document.getElementsByTagName('audio');
@@ -1531,9 +1493,23 @@ my two mistresses: what a beast am I to slack it!`,*/
         event.target.value
     });
     const importedTexts = document.getElementById('preview');
-    if(importedTexts.dataset.textValue ===(null||undefined||false) && this.state.value && this.state.value.length && this.state.value.length > 0) {
-      importedTexts.dataset.textValue = "";
-      importedTexts.dataset.textValue += this.state.value;
+    importedTexts.dataset.textValue = "";
+    importedTexts.dataset.textValue += this.state.value;
+    const daysDate = new Date();
+    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+    const msTime = Date.now();
+    const newText = {"lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
+    importedTexts.dataset.textValue = "";
+    if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
+      const myTextInfo = [];
+      myTextInfo.push(newText);
+      importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+      newText.length = 0;
+    } else if (importedTexts.dataset.texts === (null||undefined) || importedTexts.dataset.texts.length === 0) {
+      const myTextInfo = [];
+      myTextInfo.push(newText);
+      importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+      newText.length = 0;
     }
 
     console.log(document.getElementById('wordinput').value);
@@ -1588,3 +1564,17 @@ my two mistresses: what a beast am I to slack it!`,*/
 }
 
 ReactDOM.render(<BasicForm />, document.getElementById('root'));
+class Sheet2Json extends React.Component {
+  constructor(props) {
+  }
+  componentDidMount = () => {
+  }
+
+  render() {
+
+
+
+    return (
+    )
+  }
+}
