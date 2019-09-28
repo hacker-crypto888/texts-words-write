@@ -9,3 +9,8 @@
 
 
 https://www.quora.com/How-can-you-parse-an-docx-file-using-JavaScript-and-convert-it-to-JSON
+
+
+https://github.com/mozilla/pdf.js/blob/master/package.json ---> take the dependencies from the package;json file of the main repo and copy to package.json from my project
+
+consult the section for "web applications" in the docs
