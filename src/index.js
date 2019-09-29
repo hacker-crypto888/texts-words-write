@@ -1,101 +1,8 @@
 import React, {setState} from 'react'; 
 import ReactDOM from 'react-dom'; 
-//THE DATA SET ATTRIBUTE CONTAINING THE JSON DATA TO BE EXPORTED ==> this is my Word List is a variable containing the words and their text ids
-//THE DATA SET ATTRIBUTE CONTAINING THE JSON DATA TO BE EXPORTED ==> this is my Text List is a variable containing the texts and their text ids
-//importedTexts.dataset.texts CONTAINS TEXTS AS THEY WERE LOADED
-
-//Program to write from the two arrays to CSV  and from CSV back to the two arrays + the program to allow sheet editing without editing the title of columns: only allow read and remove 
-
-//add the "user" property in the WORD list
-
 import './index.css';
-import axios from 'axios';
 import DatePicker from 'react-date-picker';
-const pdfjsLib = require('pdfjs-dist');
-pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
-var pdfPath = process.argv[2] || '../../web/compressed.tracemonkey-pldi-09.pdf';
-
-// Will be using promises to load document, pages and misc data instead of
-// callback.
-var loadingTask = pdfjsLib.getDocument(pdfPath);
-loadingTask.promise.then(function(doc) {
-  var numPages = doc.numPages;
-  console.log('# Document Loaded');
-  console.log('Number of Pages: ' + numPages);
-  console.log();
-
-  var lastPromise; // will be used to chain promises
-  lastPromise = doc.getMetadata().then(function (data) {
-    console.log('# Metadata Is Loaded');
-    console.log('## Info');
-    console.log(JSON.stringify(data.info, null, 2));
-    console.log();
-    if (data.metadata) {
-      console.log('## Metadata');
-      console.log(JSON.stringify(data.metadata.getAll(), null, 2));
-      console.log();
-    }
-  });
-
-  var loadPage = function (pageNum) {
-    return doc.getPage(pageNum).then(function (page) {
-      console.log('# Page ' + pageNum);
-      var viewport = page.getViewport({ scale: 1.0, });
-      console.log('Size: ' + viewport.width + 'x' + viewport.height);
-      console.log();
-      return page.getTextContent().then(function (content) {
-        // Content contains lots of information about the text layout and
-        // styles, but we need only strings at the moment
-        var strings = content.items.map(function (item) {
-          return item.str;
-        });
-        console.log('## Text Content');
-        console.log(strings.join(' '));
-      }).then(function () {
-        console.log();
-      });
-    });
-  };
-  // Loading of the first page will wait on metadata and subsequent loadings
-  // will wait on the previous pages.
-  for (var i = 1; i <= numPages; i++) {
-    lastPromise = lastPromise.then(loadPage.bind(null, i));
-  }
-  return lastPromise;
-}).then(function () {
-  console.log('# End of Document');
-}, function (err) {
-  console.error('Error: ' + err);
-});
-const path = require('path');
-const fs = require('fs');
-//const pdfjsWorker = require('pdfjs-dist/build/pdf.worker.min');
-//const PDFExtract = require('pdf.js-extract').PDFExtract;
-//const pdfjsWorkerBlob = new Blob([pdfjsWorker]);
-//const pdfjsWorkerBlobURL = URL.createObjectURL(pdfjsWorkerBlob);
-//pdfjsLib.workerSrc = pdfjsWorkerBlobURL;
-//const pdfText = require('pdf-text');
-//const PdfReader = require("pdfreader").PdfReader;
-//const pdf = require('pdf-parse');
-//const docx = require('./docx')
-//const word2html = require('word2html');
-//const getDocumentProperties = require('office-document-properties');
-//const unoconv = require('unoconv');
-//const converter = require('office-converter')();
-//const WordExtractor = require("word-extractor");
-//const docxParser = require('docx-parser');
-//const office2html = require('office2html'),
-//  generateHtml = office2html.generateHtml;
-//const docxParser = require('docx-parser');
-//const anyFileParser = require('anyfileparser');
-//const dxe = require('docx-extractor');
-//const officeParser = require('officeparser');
-//const textract = require('textract');
 const mammoth = require("mammoth");
-const s = document.createElement("script");
-s.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js";
-s.onload = function(e){ /* now that its loaded, do something */ }; 
-document.head.appendChild(s); 
 class BasicForm extends React.Component {
   constructor(props) {
     super(props);
@@ -337,69 +244,62 @@ class BasicForm extends React.Component {
     
     return(
       <form onSubmit={this.handleSubmit}>
-           <div className={`form-group`}> 
+       <div>
+       <div className={`form-group`}> 
 
 
-             <div className="spinner-border" id={`loadingAudioFiles`} role="status">
-               <span className="sr-only">Loading...</span>
-             </div>
-             <label htmlFor={`wordinput`}></label>
-             <input
-               className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
-               id={`wordinput`}
-               placeholder='Enter word'
-               value={this.state.inputValue}
-               //onMouseOver={this.displayAudio}
-               onClick={this.handleWordInput}
-               onFocus={this.handleWordInput}
-               onChange={e => this.setState({ inputValue: e.target.value }) }
+        <div className="spinner-border" id={`loadingAudioFiles`} role="status">
+         <span className="sr-only">Loading...</span>
+        </div>
+        <label htmlFor={`wordinput`}></label>
+        <input
+         className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
+         id={`wordinput`}
+         placeholder='Enter word'
+         value={this.state.inputValue}
+         //onMouseOver={this.displayAudio}
+         onClick={this.handleWordInput}
+         onFocus={this.handleWordInput}
+         onChange={e => this.setState({ inputValue: e.target.value }) }
                
-             />
-             <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
-               click me
-             </button>
+        />
+        <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
+         click me
+        </button>
 
+       </div>
+
+       <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
+
+        Start a new game 
+       </button>
+       <br />
+
+       <div>{this.state.wordtest}</div>
+       <div>{this.state.checkInput}</div>
+       <div>{this.state.checkTarget}</div>
+       <div>{this.state.variableErrors}</div>
+       <div id={`myAudioFiles`}></div>
+       <div>
+        <p>
+         <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
+                 {`\u2699`} Settings
+         </button>
+        </p>
+
+        <div className="collapse" id="mysettings">
+         <div className="card card-body">
+           <div>
+             <RegistrationForm />
            </div>
-
-             <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
-
-               Start a new game 
-             </button>
-             <br />
-
-           <div>{this.state.wordtest}</div>
-           <div>{this.state.checkInput}</div>
-           <div>{this.state.checkTarget}</div>
-           <div>{this.state.variableErrors}</div>
-           <div id={`myAudioFiles`}></div>
-           <p>
-            //<span class="flag-icon flag-icon-gr" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="bottom"></span>  
-            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#myaccount" aria-expanded="false" aria-controls="collapseExample">
-             My account 
-            </button>
-           </p>
-           <div className="collapse" id="myaccount">
-            <div className="card card-body">
-             <p>
-               <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
-                {`\u2699`} Settings
-               </button>
-             </p>
-
-             <div className="collapse" id="mysettings">
-              <div className="card card-body">
-                <div>
-                  <RegistrationForm />
-                </div>
-                <div id={`myFillInTheDateForm`}>
-                  <FillInTheDateForm />
-                </div>
-              </div>
-             </div>
-             <Sheet2Json />
-            </div>
+           <div id={`myFillInTheDateForm`}>
+             <FillInTheDateForm />
            </div>
-          </form>
+         </div>
+        </div>
+       </div>
+       </div>
+      </form>
     );
   }
 }
@@ -1618,17 +1518,3 @@ my two mistresses: what a beast am I to slack it!`,*/
 }
 
 ReactDOM.render(<BasicForm />, document.getElementById('root'));
-class Sheet2Json extends React.Component {
-  constructor(props) {
-  }
-  componentDidMount = () => {
-  }
-
-  render() {
-
-
-
-    return (
-    )
-  }
-}
