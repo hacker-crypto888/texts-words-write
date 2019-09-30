@@ -1,7 +1,8 @@
 import React, {setState} from 'react'; 
-import ReactDOM from 'react-dom'; 
+import ReactDOM from 'react-dom';
 import './index.css';
 import DatePicker from 'react-date-picker';
+import DisplayPdf from './App.js';
 const mammoth = require("mammoth");
 class BasicForm extends React.Component {
   constructor(props) {
@@ -295,6 +296,10 @@ class BasicForm extends React.Component {
            <div id={`myFillInTheDateForm`}>
              <FillInTheDateForm />
            </div>
+           <div>
+             <DisplayPdf urlForDisplay='compressed.tracemonkey-pldi-09.pdf'/>
+             <canvas id="theCanvas"></canvas>
+           </div>  
          </div>
         </div>
        </div>
@@ -1517,4 +1522,4 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 }
 
-ReactDOM.render(<BasicForm />, document.getElementById('root'));
+ReactDOM.render(<BasicForm/>, document.getElementById('root'));
