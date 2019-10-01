@@ -1,101 +1,15 @@
 import React, {setState} from 'react'; 
 import ReactDOM from 'react-dom'; 
-//THE DATA SET ATTRIBUTE CONTAINING THE JSON DATA TO BE EXPORTED ==> this is my Word List is a variable containing the words and their text ids
-//THE DATA SET ATTRIBUTE CONTAINING THE JSON DATA TO BE EXPORTED ==> this is my Text List is a variable containing the texts and their text ids
-//importedTexts.dataset.texts CONTAINS TEXTS AS THEY WERE LOADED
-
-//Program to write from the two arrays to CSV  and from CSV back to the two arrays + the program to allow sheet editing without editing the title of columns: only allow read and remove 
-
-//add the "user" property in the WORD list
-
 import './index.css';
-import axios from 'axios';
 import DatePicker from 'react-date-picker';
-const pdfjsLib = require('pdfjs-dist');
-pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
-var pdfPath = process.argv[2] || '../../web/compressed.tracemonkey-pldi-09.pdf';
-
-// Will be using promises to load document, pages and misc data instead of
-// callback.
-var loadingTask = pdfjsLib.getDocument(pdfPath);
-loadingTask.promise.then(function(doc) {
-  var numPages = doc.numPages;
-  console.log('# Document Loaded');
-  console.log('Number of Pages: ' + numPages);
-  console.log();
-
-  var lastPromise; // will be used to chain promises
-  lastPromise = doc.getMetadata().then(function (data) {
-    console.log('# Metadata Is Loaded');
-    console.log('## Info');
-    console.log(JSON.stringify(data.info, null, 2));
-    console.log();
-    if (data.metadata) {
-      console.log('## Metadata');
-      console.log(JSON.stringify(data.metadata.getAll(), null, 2));
-      console.log();
-    }
-  });
-
-  var loadPage = function (pageNum) {
-    return doc.getPage(pageNum).then(function (page) {
-      console.log('# Page ' + pageNum);
-      var viewport = page.getViewport({ scale: 1.0, });
-      console.log('Size: ' + viewport.width + 'x' + viewport.height);
-      console.log();
-      return page.getTextContent().then(function (content) {
-        // Content contains lots of information about the text layout and
-        // styles, but we need only strings at the moment
-        var strings = content.items.map(function (item) {
-          return item.str;
-        });
-        console.log('## Text Content');
-        console.log(strings.join(' '));
-      }).then(function () {
-        console.log();
-      });
-    });
-  };
-  // Loading of the first page will wait on metadata and subsequent loadings
-  // will wait on the previous pages.
-  for (var i = 1; i <= numPages; i++) {
-    lastPromise = lastPromise.then(loadPage.bind(null, i));
-  }
-  return lastPromise;
-}).then(function () {
-  console.log('# End of Document');
-}, function (err) {
-  console.error('Error: ' + err);
-});
+PDFJS.workerSrc = '../build/pdf.worker.js';
 const path = require('path');
 const fs = require('fs');
-//const pdfjsWorker = require('pdfjs-dist/build/pdf.worker.min');
-//const PDFExtract = require('pdf.js-extract').PDFExtract;
-//const pdfjsWorkerBlob = new Blob([pdfjsWorker]);
-//const pdfjsWorkerBlobURL = URL.createObjectURL(pdfjsWorkerBlob);
-//pdfjsLib.workerSrc = pdfjsWorkerBlobURL;
-//const pdfText = require('pdf-text');
-//const PdfReader = require("pdfreader").PdfReader;
-//const pdf = require('pdf-parse');
-//const docx = require('./docx')
-//const word2html = require('word2html');
-//const getDocumentProperties = require('office-document-properties');
-//const unoconv = require('unoconv');
-//const converter = require('office-converter')();
-//const WordExtractor = require("word-extractor");
-//const docxParser = require('docx-parser');
-//const office2html = require('office2html'),
-//  generateHtml = office2html.generateHtml;
-//const docxParser = require('docx-parser');
-//const anyFileParser = require('anyfileparser');
-//const dxe = require('docx-extractor');
-//const officeParser = require('officeparser');
-//const textract = require('textract');
 const mammoth = require("mammoth");
-const s = document.createElement("script");
-s.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js";
-s.onload = function(e){ /* now that its loaded, do something */ }; 
-document.head.appendChild(s); 
+//const s = document.createElement("script");
+//s.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js";
+//s.onload = function(e){ /* now that its loaded, do something */ }; 
+//document.head.appendChild(s); 
 class BasicForm extends React.Component {
   constructor(props) {
     super(props);
@@ -142,7 +56,7 @@ class BasicForm extends React.Component {
       dataOutput:null,
       someData:null,
       myAudioItems:null,
-      firstAudio:null
+      firstAudio:null,
     };
   }
   componentDidMount() {
@@ -840,7 +754,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       rawLength:null,
       pdfAsDataUri:null,
       pdfAsArray:null,
-      littleWordList:null
+      littleWordList:null,
+      PDF_URL:null,
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -1175,248 +1090,39 @@ my two mistresses: what a beast am I to slack it!`,*/
   sendOdsFile = (file) => {
 
   }
-  sendPdfFile = (file) => { //https://github.com/brianc/node-pdf-text
-    const input = document.getElementById('input');
-    const processor = document.getElementById("processor");
-    const outputpdf = document.getElementById("outputpdf");
-
-    //function fixBinary (bin) {
-    //  const length = bin.length;
-    //  const buf = new ArrayBuffer(length);
-    //  const arr = new Uint8Array(buf);
-    //  for (var i = 0; i < length; i++) {
-    //    arr[i] = bin.charCodeAt(i);
-    //  }
-    //  return buf;
-    //}
-    const display = document.getElementById('display');
-    display.innerHTML = (display.innerHTML || '');
-    function log(text) {
-      display.innerHTML += "\n" + text;
-    }  
-
+  sendPdfFile = (file) => { 
     const reader = new FileReader();
-    reader.onload = (file) => {
-      //const pdfAsArray = reader.result;
-      //console.log(pdfAsArray);
-      
-      const pdfAsDataUri = reader.result;
-      console.log(pdfAsDataUri);
-      const BASE64_MARKER = ';base64,';
-      
+    reader.onload = () => {
       function convertDataURIToBinary(dataURI) {
         const base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
-        console.log(base64Index);
+      //  console.log(base64Index);
         const base64 = dataURI.substring(base64Index);
-        console.log(base64 instanceof ArrayBuffer);
+      //  console.log(base64 instanceof ArrayBuffer);
         const raw = window.atob(base64);
-        console.log(raw instanceof ArrayBuffer);
+      //  console.log(raw instanceof ArrayBuffer);
         const rawLength = raw.length;
         const array = new Uint8Array(new ArrayBuffer(rawLength));
-        //const array = new ArrayBuffer(rawLength);
-      
+      //  //const array = new ArrayBuffer(rawLength);
+      //
         for(var i = 0; i < rawLength; i++) {
           array[i] = raw.charCodeAt(i);
         }
-        console.log(array instanceof ArrayBuffer);
+      //  console.log(array instanceof ArrayBuffer);
         return array;
       }
-      //console.log(pdfAsDataUri);
-      //
-      const pdfAsArray = convertDataURIToBinary(pdfAsDataUri); 
-      console.log(pdfAsArray instanceof ArrayBuffer);
-      //const binary = fixBinary(atob(base64)); 
-      //function ab2str(buffer) {
-      //  return String.fromCharCode.apply(null, new Uint8Array(buffer));
-      //}
-
-      const blob = new Blob([pdfAsArray], {type: 'application/pdf'});
-      const url = URL.createObjectURL(blob);
-      log('Created a png blob of size: ' + blob.size);
-      log('Inserting an img...');
-      log('Blob URL is: ' + url);
-      log('Fetching with ajax...');
-      if ('srcObject' in input) {
-        input.srcObject = url;
-      } else {
-        input.src = url;
-      }
-      //processor sends msg
-      processor.src = "http://hubgit.github.com/2011/11/pdftotext/";
-
-      window.addEventListener("message", function(event){
-          window.alert("msg");
-          window.alert(event.data);
-          window.alert(processor.contentWindow.postMessage);
-        //window.onload = (event) => {
-
-          if (event.source !== processor.contentWindow) return;
+      const PDF_URL = convertDataURIToBinary(reader.result);
+      PDFJS.getDocument(PDF_URL).then(function (PDFDocumentInstance) {
+          
+        // Use the PDFDocumentInstance To extract the text later
       
-          switch (event.data){
-            // "ready" = the processor is ready, so fetch the PDF file
-            case "ready":
-              const xhr = new XMLHttpRequest;
-
-              xhr.open('GET', input.getAttribute("src"), true);
-              xhr.responseType = "arraybuffer";
-              xhr.onload = (event) => {
-                processor.contentWindow.postMessage(this.response, "*");
-                //console.log(processor.contentWindow.postMessage(this.response, "*"));
-                //console.log(JSON.stringify(this.response));
-              };
-              xhr.send();
-
-            break;
-      
-            // anything else = the processor has returned the text of the PDF
-            default:
-              outputpdf.textContent = event.data.replace(/\s+/g, " ");
-
-              console.log(event.data);
-              //String.prototype.cleanup = function() {
-              //   return this.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-").split('-');
-              //}
-              //console.log(event.data.cleanup());
-            break;
-          }
-        //};
-      }, true);
-
-
-      //  //URL.createObjectURL(file);
-      //  //input.addEventListener('load', () => URL.revokeObjectURL(URL.createObjectURL(file)), {once: true});
-      //}
+      }, function (reason) {
+        // PDF loading error
+        console.error(reason);
+      });
 
     }
-    reader.readAsDataURL(file);
-    //const base64 = this.state;
-    //console.log(base64);
-    //console.log(atob(base64));
-
-
-
-
-
-      //console.log(JSON.stringify(btoa(atob(buf.split('base64,')[1]))));
-      //console.log(JSON.stringify(btoa(buf.split('base64,')[1])));
-      //buf.onload = () => {
-
-      //pdfjsLib.getDocument(arr).then(function(pdf) {
-      //  console.log(pdf);
-      //});
-      //pdf().then(function(data) {
-      //  console.log(data.text);
-      //})
-      //const pdfExtract = new PDFExtract();
-      //const options = {};
-      //pdfExtract.extract(arr, options, (err,data) => {
-      //  if (err) return console.log(err);
-      //  console.log(data);
-      //});
-      //}
-      //console.log(buf.toString('utf-8'));
-
-    //function str2ab(str) {
-      //var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
-    //  var bufView = new Uint16Array(buf);
-    //  for (var i=0, strLen=str.length; i < strLen; i++) {
-    //    bufView[i] = str.charCodeAt(i);
-    //  }
-    //  return buf;
-    //}
-
-      //console.log(ab2str(buf));
-      //const enc = new TextDecoder();
-      //const enc = new FileReader();
-      //console.log(new Buffer(ab2str(buf), 'binary'));
-      //console.log(ab2str(buf));
-      //console.log(file.path);
-      //this.pdfToText = function(buf) {
-
-      //    pdfjsLib.workerSrc = 'js/vendor/pdf.worker.js';
-      //    pdfjsLib.cMapUrl = 'js/vendor/pdfjs/cmaps/';
-      //    pdfjsLib.cMapPacked = true;
-
-      //    return PDFJS.getDocument(buf).then(function(pdf) {
-      //        var pages = [];
-      //        for (var i = 0; i < pdf.numPages; i++) {
-      //            pages.push(i);
-      //        }
-      //        return Promise.all(pages.map(function(pageNumber) {
-      //            return pdf.getPage(pageNumber + 1).then(function(page) {
-      //                return page.getTextContent().then(function(textContent) {
-      //                    return textContent.items.map(function(item) {
-      //                        return item.str;
-      //                    }).join(' ');
-      //                });
-      //            });
-      //        })).then(function(pages) {
-      //            return pages.join("\r\n");
-      //            console.log(pages);
-      //        });
-      //    });
-      //}
-
-      //console.log(enc.readAsBinaryString(new Blob([new Uint8Array(buf)])));
-      // reader.result contient le contenu du
-      // blob sous la forme d'un tableau typé
-      //pdfText(reader.result, function(err, chunks) {
-      //  console.log(chunks.join(' ')); 
-      //});
-    //});
-    //reader.readAsArrayBuffer(file);
-
-    //reader.readAsArrayBuffer(file);
-    //reader.readAsBinaryString(file);
-    //URL.createObjectURL 
-    //const reader = new FileReader();
-    //new PdfReader().parseFileItems(
-    //console.log(file);
-    //const pdffile1 = new FileReader();
-    //console.log(pdffile1.readAsBinaryString(file).result);
-    //const pdffile2 = new FileReader();
-    //console.log(pdffile2.readAsArrayBuffer(file).result);
-    //const pdffile3 = new FileReader();
-    //console.log(pdffile3.readAsText(file).result);
-    //, function(err, item){
-    //  if(item && item.text)
-    //    console.log(item.text);
-    //});
-    //const reader = new FileReader();
-    //const result1 = document.getElementById('result1');
-    //const result2 = document.getElementById('result2');
-    //const result3 = document.getElementById('result3');
-    //const pdfBuffer = URL.createObjectURL(file); 
-    //pdfBuffer.readAsArrayBuffer(file);
-    //fs.readFile(pdfBuffer.name, (err, pdfBuffer) => {
-      // pdfBuffer contains the file content
-      //new PdfReader().parseBuffer(pdfBuffer, function(err, item) {
-        //if (err) callback(err);
-        //else if (!item) callback();
-        //if (item.text) console.log(item.text);
-      //});
-    //});
-    //const rows = {};
-    //function printRows() {
-    //  Object.keys(rows) // => array of y-positions (type: float)
-    //    .sort((y1, y2) => parseFloat(y1) - parseFloat(y2)) // sort float positions
-    //    .forEach(y => console.log((rows[y] || []).join("")));
-    //}
     //
-    //new pdfreader.PdfReader().parseFileItems(file, function(
-    //  err,
-    //  item
-    //) {
-    //  if (!item || item.page) {
-    //    // end of file, or page
-    //    printRows();
-    //    console.log("PAGE:", item.page);
-    //    rows = {}; // clear rows for next page
-    //  } else if (item.text) {
-    //    // accumulate text items into rows object, per line
-    //    (rows[item.y] = rows[item.y] || []).push(item.text);
-    //  }
-    //});
+    reader.readAsDataURL(file); 
 
   }
 
