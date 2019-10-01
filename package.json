@@ -15,12 +15,11 @@
     "mammoth": "^1.4.8",
     "node-expat": "^2.3.18",
     "node-gyp": "^5.0.3",
-    "node-stream-zip": "^1.8.2",
     "nodejs": "0.0.0",
     "react": "^16.9.0",
     "react-date-picker": "^7.8.1",
     "react-dom": "^16.9.0",
-    "react-scripts": "3.1.1",
+    "react-scripts": "3.1.1"
   },
   "scripts": {
     "start": "react-scripts start",

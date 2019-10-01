@@ -3,13 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import DatePicker from 'react-date-picker';
 PDFJS.workerSrc = '../build/pdf.worker.js';
-const path = require('path');
-const fs = require('fs');
 const mammoth = require("mammoth");
-//const s = document.createElement("script");
-//s.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js";
-//s.onload = function(e){ /* now that its loaded, do something */ }; 
-//document.head.appendChild(s); 
 class BasicForm extends React.Component {
   constructor(props) {
     super(props);
@@ -251,69 +245,66 @@ class BasicForm extends React.Component {
     
     return(
       <form onSubmit={this.handleSubmit}>
-           <div className={`form-group`}> 
+       <div>
+       <div className={`form-group`}> 
 
 
-             <div className="spinner-border" id={`loadingAudioFiles`} role="status">
-               <span className="sr-only">Loading...</span>
-             </div>
-             <label htmlFor={`wordinput`}></label>
-             <input
-               className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
-               id={`wordinput`}
-               placeholder='Enter word'
-               value={this.state.inputValue}
-               //onMouseOver={this.displayAudio}
-               onClick={this.handleWordInput}
-               onFocus={this.handleWordInput}
-               onChange={e => this.setState({ inputValue: e.target.value }) }
+        <div className="spinner-border" id={`loadingAudioFiles`} role="status">
+         <span className="sr-only">Loading...</span>
+        </div>
+        <label htmlFor={`wordinput`}></label>
+        <input
+         className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
+         id={`wordinput`}
+         placeholder='Enter word'
+         value={this.state.inputValue}
+         //onMouseOver={this.displayAudio}
+         onClick={this.handleWordInput}
+         onFocus={this.handleWordInput}
+         onChange={e => this.setState({ inputValue: e.target.value }) }
                
-             />
-             <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
-               click me
-             </button>
+        />
+        <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
+         click me
+        </button>
 
+       </div>
+
+       <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
+
+        Start a new game 
+       </button>
+       <br />
+
+       <div>{this.state.wordtest}</div>
+       <div>{this.state.checkInput}</div>
+       <div>{this.state.checkTarget}</div>
+       <div>{this.state.variableErrors}</div>
+       <div id={`myAudioFiles`}></div>
+       <div>
+        <p>
+         <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
+                 {`\u2699`} Settings
+         </button>
+        </p>
+
+        <div className="collapse" id="mysettings">
+         <div className="card card-body">
+           <div>
+             <RegistrationForm />
            </div>
-
-             <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
-
-               Start a new game 
-             </button>
-             <br />
-
-           <div>{this.state.wordtest}</div>
-           <div>{this.state.checkInput}</div>
-           <div>{this.state.checkTarget}</div>
-           <div>{this.state.variableErrors}</div>
-           <div id={`myAudioFiles`}></div>
-           <p>
-            //<span class="flag-icon flag-icon-gr" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="bottom"></span>  
-            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#myaccount" aria-expanded="false" aria-controls="collapseExample">
-             My account 
-            </button>
-           </p>
-           <div className="collapse" id="myaccount">
-            <div className="card card-body">
-             <p>
-               <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
-                {`\u2699`} Settings
-               </button>
-             </p>
-
-             <div className="collapse" id="mysettings">
-              <div className="card card-body">
-                <div>
-                  <RegistrationForm />
-                </div>
-                <div id={`myFillInTheDateForm`}>
-                  <FillInTheDateForm />
-                </div>
-              </div>
-             </div>
-             <Sheet2Json />
-            </div>
+           <div id={`myFillInTheDateForm`}>
+             <FillInTheDateForm />
            </div>
-          </form>
+           <div>
+             <DisplayPdf urlForDisplay='compressed.tracemonkey-pldi-09.pdf'/>
+             <canvas id="theCanvas"></canvas>
+           </div>  
+         </div>
+        </div>
+       </div>
+       </div>
+      </form>
     );
   }
 }
@@ -1323,18 +1314,4 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 }
 
-ReactDOM.render(<BasicForm />, document.getElementById('root'));
-class Sheet2Json extends React.Component {
-  constructor(props) {
-  }
-  componentDidMount = () => {
-  }
-
-  render() {
-
-
-
-    return (
-    )
-  }
-}
+ReactDOM.render(<BasicForm/>, document.getElementById('root'));

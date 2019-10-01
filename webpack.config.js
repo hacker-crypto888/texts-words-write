@@ -1,13 +1,16 @@
+var webpack = require('webpack'); // eslint-disable-line no-unused-vars
+var path = require('path');
+
 module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader"
-        }
-      }
-    ]
-  }
-}
+  context: __dirname,
+  entry: {
+    'main': './main.js',
+    'pdf.worker': 'pdfjs-dist/build/pdf.worker.entry',
+  },
+  mode: 'none',
+  output: {
+    path: path.join(__dirname, '../../build/webpack'),
+    publicPath: '../../build/webpack/',
+    filename: '[name].bundle.js',
+  },
+};
