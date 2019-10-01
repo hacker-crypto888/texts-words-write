@@ -2,7 +2,9 @@ import React, {setState} from 'react';
 import ReactDOM from 'react-dom'; 
 import './index.css';
 import DatePicker from 'react-date-picker';
-PDFJS.workerSrc = '../build/pdf.worker.js';
+import PDFJS from 'pdfjs-dist/webpack';
+PDFJS.workerSrc = 'pdf.worker.js';
+PDFJS.GlobalWorkerOptions.workerSrc = 'pdf.worker.js';
 const mammoth = require("mammoth");
 class BasicForm extends React.Component {
   constructor(props) {
@@ -297,7 +299,6 @@ class BasicForm extends React.Component {
              <FillInTheDateForm />
            </div>
            <div>
-             <DisplayPdf urlForDisplay='compressed.tracemonkey-pldi-09.pdf'/>
              <canvas id="theCanvas"></canvas>
            </div>  
          </div>
@@ -747,6 +748,10 @@ my two mistresses: what a beast am I to slack it!`,*/
       pdfAsArray:null,
       littleWordList:null,
       PDF_URL:null,
+      totalPages:null,
+      pageNumber:null,
+      pdfDocument:null,
+      pagesPromises:null,
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -1085,31 +1090,90 @@ my two mistresses: what a beast am I to slack it!`,*/
     const reader = new FileReader();
     reader.onload = () => {
       function convertDataURIToBinary(dataURI) {
+        const BASE64_MARKER = ';base64,';
         const base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
-      //  console.log(base64Index);
+        console.log(base64Index);
         const base64 = dataURI.substring(base64Index);
-      //  console.log(base64 instanceof ArrayBuffer);
+        console.log(base64 instanceof ArrayBuffer);
         const raw = window.atob(base64);
-      //  console.log(raw instanceof ArrayBuffer);
+        console.log(raw instanceof ArrayBuffer);
         const rawLength = raw.length;
         const array = new Uint8Array(new ArrayBuffer(rawLength));
-      //  //const array = new ArrayBuffer(rawLength);
-      //
+        //const array = new ArrayBuffer(rawLength);
+      
         for(var i = 0; i < rawLength; i++) {
           array[i] = raw.charCodeAt(i);
         }
-      //  console.log(array instanceof ArrayBuffer);
+        console.log(array instanceof Uint8Array);
         return array;
       }
+      console.log(reader.result);
       const PDF_URL = convertDataURIToBinary(reader.result);
-      PDFJS.getDocument(PDF_URL).then(function (PDFDocumentInstance) {
-          
-        // Use the PDFDocumentInstance To extract the text later
-      
+      console.log(PDFJS);
+      PDFJS.getDocument(PDF_URL).then(function (pdf) {
+        console.log(pdf); 
+        pdf.getPage(0).then(function (page) {
+          console.log(page);
+        });
+        //const pdfDocument = pdf;
+        // Create an array that will contain our promises 
+        //const pagesPromises = [];
+
+        //for (var i = 0; i < pdf.numPages; i++) {
+        //    // Required to prevent that i is always the total of pages
+        //    (function (pageNumber) {
+        //        // Store the promise of getPageText that returns the text of a page
+        //        pagesPromises.push(getPageText(pageNumber, pdfDocument));
+        //    })(i + 1);
+        //}
+
+        // Execute all the promises
+        //Promise.all(pagesPromises).then(function (pagesText) {
+          //document.getElementById("loading-info").remove();
+
+          // Display text of all the pages in the console
+          // e.g ["Text content page 1", "Text content page 2", "Text content page 3" ... ]
+          //console.log(pagesText);
+          //for(var i = 0;i < pagesText.length;i++){
+          //	document.getElementById("pdf-text").append("<div><h3>Page "+ (i + 1) +"</h3><p>"+pagesText[i]+"</p><br></div>");
+          //}
+
+        //});
+ 
+
+        /**
+         * Retrieves the text of a specif page within a PDF Document obtained through pdf.js 
+         * 
+         * @param {Integer} pageNum Specifies the number of the page 
+         * @param {PDFDocument} PDFDocumentInstance The PDF document obtained 
+         **/
+        function getPageText(pageNum, PDFDocumentInstance) {
+            // Return a Promise that is solved once the text of the page is retrieven
+            return new Promise(function (resolve, reject) {
+                PDFDocumentInstance.getPage(pageNum).then(function (pdfPage) {
+                    // The main trick to obtain the text of the PDF page, use the getTextContent method
+                    pdfPage.getTextContent().then(function (textContent) {
+                        var textItems = textContent.items;
+                        var finalString = "";
+        
+                        // Concatenate the string of the item to the final string
+                        for (var i = 0; i < textItems.length; i++) {
+                            var item = textItems[i];
+        
+                            finalString += item.str + " ";
+                        }
+        
+                        // Solve promise with the text retrieven from the page
+                        resolve(finalString);
+                    });
+                });
+            });
+        }
       }, function (reason) {
         // PDF loading error
         console.error(reason);
       });
+
 
     }
     //
@@ -1285,6 +1349,11 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
+        <div id="pdf-text">
+          <div id="loading-info">
+            Extracting text ... hold tight !
+          </div>
+        </div>
         <p id={`result1`}></p>
         <p id={`result2`}></p>
         <p id={`result3`}></p>
