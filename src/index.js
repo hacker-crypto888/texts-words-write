@@ -1525,6 +1525,76 @@ class EditEntries extends React.Component {
       //const someData = document.createElement('a');
       //someData.id = 'some-data';
       //dataOutput.appendChild(someData);
+      exportText.forEach(function(f) {
+        //const myTextList = this.state;
+        importedTexts.dataset.wordInfo = f;
+        if (!this[f.word]) {
+          this[f.word] = { "word": f.word, "textsId": [] };
+
+          output.push(this[f.word]);
+        }
+        console.log(output);
+        this[f.word].textsId.push(f.textId);
+      }, Object.create(null));
+
+      myItems.forEach(function(f) {
+        if (!this[f.textId]) {
+          this[f.textId] = { "textId": f.textId, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath }
+          myTextList.push(this[f.textId]);
+        }
+        console.log(output);
+      }, Object.create(null));
+      output.forEach(function(f) {
+        console.log(f);
+        if (!this[f.myTextId]) {
+          //this[f.myTextId] = JSON.stringify(output.map(Object.entries));
+          //this[f.myTextId] = Array.from(output.map(Object.entries));
+          this[f.myTextId] = output.map(Object.entries);
+          //this[f.myTextId] = f;
+
+
+          thisIsMyWordList.push(this[f.myTextId]);
+        }
+      }, Object.create(null));
+      console.log(thisIsMyWordList);
+      console.log(thisIsMyWordList.flat());
+      document.getElementById('items_by_date').dataset.flatWordList = JSON.stringify(thisIsMyWordList.flat());
+      document.getElementById('items_by_date').dataset.importWordList = JSON.stringify(thisIsMyWordList[0]);
+      console.log(document.getElementById('items_by_date').dataset.importWordList);
+      //--------------------------------------------------------
+      myTextList.forEach(function(f) {
+        console.log(f);
+        if (!this[f.myTextId]) {
+          //this[f.myTextId] = JSON.stringify(myTextList.map(Object.entries));
+          this[f.myTextId] = myTextList.map(Object.entries);
+
+          thisIsMyTextList.push(this[f.myTextId]);
+        }
+
+      }, Object.create(null));
+      console.log(thisIsMyTextList);
+      console.log(thisIsMyTextList.flat());
+      document.getElementById('items_by_date').dataset.flatTextList = JSON.stringify(thisIsMyTextList.flat());
+
+      document.getElementById('items_by_date').dataset.importTextList = JSON.stringify(thisIsMyTextList[0]); 
+      console.log(document.getElementById('items_by_date').dataset.importTextList); 
+      //allMyTexts.length = 0;
+      //importedTexts.dataset.texts = JSON.stringify(allMyTexts);
+
+      const result = this.state;
+      result.length = 0;
+      //const myDatabaseForUpload = document.createElement('a');
+      
+      //myDatabaseForUpload.id = "items_by_date";
+      //myDatabaseForUpload.href = "";
+      document.getElementById('items_by_date').dataset.databaseJson = JSON.stringify({"items":[...Object.entries(myItems).map(([k, v]) => [k,v])]});
+      //document.getElementById('preview').appendChild(myDatabaseForUpload);
+      //document.getElementById('noDatabaseFile').removeAttribute('checked');
+      //this.setState({
+      //  databaseIsLoaded:
+      //    true
+      //});
+      
     }
   }
 
