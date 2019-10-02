@@ -25,6 +25,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
+It is very important that:
+
+- [ ] the lists were reinitiased after edits
+- [ ] the user could play the loaded words after edits
+- [ ] the user could add a single new word
+
 # My UI (User Interface)
 
 The user must be able to: 
