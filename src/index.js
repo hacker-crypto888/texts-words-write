@@ -1424,6 +1424,12 @@ class EditEntries extends React.Component {
       buttons:null,
       idx:null,
       textdiv:null,
+      output:null,
+      thisIsMyWordList:null,
+      myTextList:null,
+      myItems:null,
+      importedTexts:null,
+
     }
   }
   componentDidMount = () => {
@@ -1527,9 +1533,10 @@ class EditEntries extends React.Component {
       //dataOutput.appendChild(someData);
       exportText.forEach(function(f) {
         //const myTextList = this.state;
-        importedTexts.dataset.wordInfo = f;
-        if (!this[f.word]) {
-          this[f.word] = { "word": f.word, "textsId": [] };
+
+        f[6].slice(1).forEach(function(word) {
+          if (!this[word]) {
+            this[f.word] = { "word": f.word, "textsId": [] };
 
           output.push(this[f.word]);
         }
@@ -1537,9 +1544,12 @@ class EditEntries extends React.Component {
         this[f.word].textsId.push(f.textId);
       }, Object.create(null));
 
-      myItems.forEach(function(f) {
-        if (!this[f.textId]) {
-          this[f.textId] = { "textId": f.textId, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath }
+      exportText.forEach(function(f) {
+        importedTexts.dataset.wordInfo = f;
+        f[6].slice(1).forEach(function(word) {
+          if (!this[word]) {
+            //this[word] = { "textId": f.textId, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath }
+            this[word] = { "textId": f.textId, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath }
           myTextList.push(this[f.textId]);
         }
         console.log(output);
