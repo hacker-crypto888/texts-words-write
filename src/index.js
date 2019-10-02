@@ -2,9 +2,10 @@ import React, {setState} from 'react';
 import ReactDOM from 'react-dom'; 
 import './index.css';
 import DatePicker from 'react-date-picker';
-import PDFJS from 'pdfjs-dist/webpack';
+//import PDFJS from 'pdfjs-dist/webpack';
+const PDFJS = window['pdfjs-dist/build/pdf'];
 PDFJS.workerSrc = 'pdf.worker.js';
-PDFJS.GlobalWorkerOptions.workerSrc = 'pdf.worker.js';
+PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 const mammoth = require("mammoth");
 class BasicForm extends React.Component {
   constructor(props) {
@@ -59,10 +60,10 @@ class BasicForm extends React.Component {
     document.getElementById('loadingAudioFiles').hidden = true;
     this.btn.setAttribute('disabled','disabled'); 
     const allAudioElements = document.getElementsByTagName('audio'); 
-    const dataOutput = document.getElementById("outputJsonFile");
-    const someData = document.createElement('a');
-    someData.id = 'some-data';
-    dataOutput.appendChild(someData);
+    //const dataOutput = document.getElementById("outputJsonFile");
+    //const someData = document.createElement('a');
+    //someData.id = 'some-data';
+    //dataOutput.appendChild(someData);
   }
 
   fieldOnblur = () => {
@@ -299,7 +300,7 @@ class BasicForm extends React.Component {
              <FillInTheDateForm />
            </div>
            <div>
-             <canvas id="theCanvas"></canvas>
+             <EditEntries />
            </div>  
          </div>
         </div>
@@ -381,17 +382,6 @@ class FillInTheDateForm extends React.Component {
   componentDidMount() {
     const date = new Date();
     this.setState({date});
-    document.getElementById('dropzoneSortByDate').hidden = false;
-    document.getElementById('dropMyJson').hidden = true;
-    document.getElementById('labelDropMyJson').hidden = true;
-    document.getElementById('jsonInPublicDir').hidden = true;
-    document.getElementById('labelJsonInPublicDir').hidden = true;
-    document.getElementById('submit-date-btn').hidden = true;
-    document.getElementById('dropzoneSortByDate').hidden = true;
-    const dataOutput = document.getElementById("outputJsonFile");
-    const someData = document.createElement('a');
-    someData.id = 'some-data';
-    dataOutput.appendChild(someData);
   }
   onChange = (date) => {
     this.setState({ date });
@@ -435,55 +425,23 @@ class FillInTheDateForm extends React.Component {
 
         const outputJson = document.getElementById("outputJsonFile");
         
-        if(document.getElementById("items_by_date")) {
-          document.getElementById("items_by_date").remove();
-        }
+        //if(document.getElementById("items_by_date")) {
+        //  document.getElementById("items_by_date").remove();
+        //}
         const outputLink = document.createElement('a');
         //console.log(myItemsByDate);
         //BLOB TYPE: JSON, \\\\\\NO MORE NEEDED (THE APP CAN DIRECTLY LOAD THE WORDS THAT WERE DROPPED IN THE DROPZONE//////
         outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'})); //OBJECT TYPE: ARRAY
-        //ORIGIN: DATASET 
-        //COLUMNS: WORD, ID, DATES OF CONSULTATION
-        //IT WAS NOT PRECISED WHETHER DATA CAME FROM A FILE WITH SOME TYPE OR JUST THE TEXT TYPED IN THE TEXT AREA
-        //DATE OF EACH WORD (SEVERAL DATES FOR SEVERAL DAYS OF OCCURRENCE)
-
-        //\\THE DATASET WAS ASSIGNED TO ITS HTML ELEMENT ELSEWHERE IN THE CODE
         outputLink.innerHTML = "download JSON file (date of data entry: "+selectedDate+ ")";
         outputLink.download = 'items.json';
-        outputLink.id = 'items_by_date';
+        outputLink.id = 'items_link';
         outputLink.hidden = false;
 
         outputJson.hidden = false;
-        //alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
-        //DATASET TYPE: JSON
-
-        //////////////------------------------------------------/
-        //BLOB TYPE
-        //DATASET TYPES
-        //ARRAY TYPES / OBJECTS TYPES
-        //ARRAYS / OBJECTS FIELDS (EX: NAME, WORD, ID, DATE, TITLE
-        //FILE TYPES (FETCH) 
-        //////////////------------------------------------------/
-        //STORE IN: 1) JSON
-        //2)DATASET 
-        //////////////------------------------------------------/
-        //DATA INPUT(FOR THE AUDIO DISPLAYER)/OUTPUT(FOR THE FORM FIELDS) TO DISPLAY AUDIO IS A DATASET
-        //////////////------------------------------------------/
-        //BOOTSTRAP\\\\\\ CAN ONLY BE POSSIBLE IF ALL THE INFO FROM FETCH (FROM THE DROPPED FILES) AND THE BLOBS (DATABASES THAT ARE MADE WITH THE FORMDATA) IS COMPLETE
-        //////////////------------------------------------------/
-        //EVENT LISTENERS CAN ONLY BE WORKED OUT IF THE JSON IS CORRECTLY WORKED OUT AS WELL
-        //////////////------------------------------------------/
-        //WHERE THE DATABASES (IN CONSTANTS) ARE LOADED / ASSIGNED: LOOK FOR ITS LINES AND COLUMNS IN THE CODE ABOVE IT (USING THE PROPS)
         outputLink.dataset.databaseJson = JSON.stringify({"items": myItemsByDate}); //LINES: UNKNOWN
-        //COLUMNS: WORD, ID, ARRAY OF DATES (PROGRAM JAVASCRIPT)
         outputJson.appendChild(outputLink);
 
       } else {
-        //INITIALIZE DOWNLOAD LINKS AREA//
-        //const myOutputNode = document.getElementById('outputJsonFile');
-        //while(myOutputNode.firstChild) {
-        //  myOutputNode.removeChild(myOutputNode.firstChild);
-        //}
         const myInputNode = document.getElementById('inputJsonFile');
         while(myInputNode.firstChild) {
           myInputNode.removeChild(myInputNode.firstChild);
@@ -505,54 +463,20 @@ class FillInTheDateForm extends React.Component {
     }
 
   }
-  itemsByDateLoadForm = (event) => {
-    //alert('test');
-    if (document.getElementById('items_by_date') && document.getElementById('items_by_date').dataset.databaseJson) {
-      if(document.getElementById("items_by_date")) {
-        document.getElementById("items_by_date").remove();
-      }
-      event.target.removeEventListener('mouseover', this.itemsByDateLoadForm); 
-      //console.log(event.target.clientHeight);
-
-      document.getElementById('dropMyJson').removeAttribute('hidden');
-      document.getElementById('labelDropMyJson').removeAttribute('hidden');
-
-      document.getElementById('jsonInPublicDir').removeAttribute('hidden');
-      document.getElementById('dropzoneSortByDate').hidden = true;
-      document.getElementById('jsonInPublicDir').checked = true;
-      document.getElementById('labelJsonInPublicDir').removeAttribute('hidden');
-      document.getElementById('submit-date-btn').removeAttribute('hidden');
-      //document.getElementById('dropzoneSortByDate').removeAttribute('hidden');
-
-      
-    } 
-  }
   render() {    
     return (    
       <form onSubmit={this.handleSubmittedDate}>
-      <label>Load words by date</label>
-      <div id={`setImportMode`} onChange={event => this.setImportMode(event)}>
-        <input type={`radio`} id={`jsonInPublicDir`} value={`load`} name={`importMode`} />
-        <label id={`labelJsonInPublicDir`} for={`jsonInPublicDir`}>Sort items by date</label>
-        <input type={`radio`} id={`dropMyJson`} value={`drop`} name={`importMode`} />
-        <label id={`labelDropMyJson`} for={`dropMyJson`}> Rather load my own database.json file</label>
-      </div>
-      
-      <div id={`dropzoneSortByDate`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
-      <div id={`previewSortByDate`}></div>
+      <div id="items_by_date"><label>Load words by date</label></div>
       <div>
         <DatePicker
           id="myDatePicker"
           onChange={this.onChange}
-          onMouseOver={this.itemsByDateLoadForm}
           value={this.state.date}
         />
       </div>
       <div>
         <input type="submit" id="submit-date-btn" value="Submit selected date" className='btn btn-success btn-block' />  
       </div>
-      <div id={`inputJsonFile`}></div>
-      <div id={`outputJsonFile`}></div>
       </form>
     );
   }  
@@ -752,6 +676,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       pageNumber:null,
       pdfDocument:null,
       pagesPromises:null,
+      loadingTask:null,
+      fileContent:null,
+      JSON2AUDIO:null,
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -762,10 +689,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
     document.getElementById('noDatabaseFile').addEventListener('checked', this.checkBox);
-    const dataOutput = document.getElementById("outputJsonFile");
-    const someData = document.createElement('a');
-    someData.id = 'some-data';
-    dataOutput.appendChild(someData);
     const importedTexts = document.getElementById('preview');
     importedTexts.dataset.textValue = '';
     const wordList = [];
@@ -823,7 +746,13 @@ my two mistresses: what a beast am I to slack it!`,*/
       const littleWordList = [];
       const myTextList = [];
       const thisIsMyWordList = [];
+      if (document.getElementById('items_by_date').dataset.importWordList) {
+        thisIsMyWordList[0] =JSON.parse(document.getElementById('items_by_date').dataset.importWordList);
+      }
       const thisIsMyTextList = [];
+      if (document.getElementById('items_by_date').dataset.importTextList) {
+        thisIsMyTextList[0] =JSON.parse(document.getElementById('items_by_date').dataset.importTextList);
+      }
       const allMyTexts = JSON.parse(importedTexts.dataset.texts); //allMyTexts is a JSON ARRAY THAT CONTAINS ALL THE TEXTS HAVING BEEN INSERTED, DROPPED OR ADDED TO BE HANDLED BY THE PROGRAM
       console.log(allMyTexts);
       allMyTexts.forEach(function(mytext) { //mytext IS A JSON ARRAY THAT CONTAINS INFO ABOUT A TEXT
@@ -888,7 +817,9 @@ my two mistresses: what a beast am I to slack it!`,*/
           thisIsMyWordList.push(this[f.myTextId]);
         }
       }, Object.create(null));
+
       console.log(thisIsMyWordList);
+      console.log(document.getElementById('items_by_date').dataset.importWordList);
       //--------------------------------------------------------
       myTextList.forEach(function(f) {
         if (!this[f.myTextId]) {
@@ -899,11 +830,20 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
 
       }, Object.create(null));
+
       console.log(thisIsMyTextList);
+      console.log(document.getElementById('items_by_date').dataset.importTextList);
       //allMyTexts.length = 0;
       //importedTexts.dataset.texts = JSON.stringify(allMyTexts);
     };
 
+    //JSON to AudioFiles
+    const JSON2AUDIO = []; //Array of Objects to be turned into mp3 files list
+    //document.getElementById('items_by_date').dataset.importTextList.forEach(function(f) {
+    //});
+    //document.getElementById('items_by_date').dataset.importWordList.forEach(function(f) {
+
+    //});
     const result = this.state;
     result.length = 0;
   } 
@@ -1032,18 +972,88 @@ my two mistresses: what a beast am I to slack it!`,*/
       .then(thirdres => {
         const myItems = thirdres.map(obj => obj);
         this.setState({myItems});
+        const importedTexts = document.getElementById('preview');
+        const littleWordList = [];
+        const myTextList = [];
+        const thisIsMyWordList = [];
+        if (document.getElementById('items_by_date').dataset.importWordList) {
+          thisIsMyWordList[0] =JSON.parse(document.getElementById('items_by_date').dataset.importWordList);
+        }
+        const thisIsMyTextList = [];
+        if (document.getElementById('items_by_date').dataset.importTextList) {
+          thisIsMyTextList[0] =JSON.parse(document.getElementById('items_by_date').dataset.importTextList);
+        }
         console.log(myItems);
-        const myDatabaseForUpload = document.createElement('a');
+        const output = [];
+        myItems.forEach(function(f) {
+          //const myTextList = this.state;
+          importedTexts.dataset.wordInfo = f;
+          if (!this[f.word]) {
+            this[f.word] = { "word": f.word, "textsId": [] };
+
+            output.push(this[f.word]);
+          }
+          console.log(output);
+          this[f.word].textsId.push(f.textId);
+        }, Object.create(null));
+
+        myItems.forEach(function(f) {
+          if (!this[f.textId]) {
+            this[f.textId] = { "textId": f.textId, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath }
+            myTextList.push(this[f.textId]);
+          }
+          console.log(output);
+        }, Object.create(null));
+        output.forEach(function(f) {
+          console.log(f);
+          if (!this[f.myTextId]) {
+            //this[f.myTextId] = JSON.stringify(output.map(Object.entries));
+            //this[f.myTextId] = Array.from(output.map(Object.entries));
+            this[f.myTextId] = output.map(Object.entries);
+            //this[f.myTextId] = f;
+
+
+            thisIsMyWordList.push(this[f.myTextId]);
+          }
+        }, Object.create(null));
+        console.log(thisIsMyWordList);
+        console.log(thisIsMyWordList.flat());
+        document.getElementById('items_by_date').dataset.flatWordList = JSON.stringify(thisIsMyWordList.flat());
+        document.getElementById('items_by_date').dataset.importWordList = JSON.stringify(thisIsMyWordList[0]);
+        console.log(document.getElementById('items_by_date').dataset.importWordList);
+        //--------------------------------------------------------
+        myTextList.forEach(function(f) {
+          console.log(f);
+          if (!this[f.myTextId]) {
+            //this[f.myTextId] = JSON.stringify(myTextList.map(Object.entries));
+            this[f.myTextId] = myTextList.map(Object.entries);
+
+            thisIsMyTextList.push(this[f.myTextId]);
+          }
+
+        }, Object.create(null));
+        console.log(thisIsMyTextList);
+        console.log(thisIsMyTextList.flat());
+        document.getElementById('items_by_date').dataset.flatTextList = JSON.stringify(thisIsMyTextList.flat());
+
+        document.getElementById('items_by_date').dataset.importTextList = JSON.stringify(thisIsMyTextList[0]); 
+        console.log(document.getElementById('items_by_date').dataset.importTextList); 
+        //allMyTexts.length = 0;
+        //importedTexts.dataset.texts = JSON.stringify(allMyTexts);
+
+        const result = this.state;
+        result.length = 0;
+        //const myDatabaseForUpload = document.createElement('a');
         
-        myDatabaseForUpload.id = "items_by_date";
-        myDatabaseForUpload.href = "";
-        myDatabaseForUpload.dataset.databaseJson = JSON.stringify({"items":[...Object.entries(myItems).map(([k, v]) => [k,v])]});
-        document.getElementById('preview').appendChild(myDatabaseForUpload);
-        document.getElementById('noDatabaseFile').removeAttribute('checked');
-        this.setState({
-          databaseIsLoaded:
-            true
-        });
+        //myDatabaseForUpload.id = "items_by_date";
+        //myDatabaseForUpload.href = "";
+        document.getElementById('items_by_date').dataset.databaseJson = JSON.stringify({"items":[...Object.entries(myItems).map(([k, v]) => [k,v])]});
+        //document.getElementById('preview').appendChild(myDatabaseForUpload);
+        //document.getElementById('noDatabaseFile').removeAttribute('checked');
+        //this.setState({
+        //  databaseIsLoaded:
+        //    true
+        //});
       })
     console.log(this.state.myBlob);
   }
@@ -1064,7 +1074,6 @@ my two mistresses: what a beast am I to slack it!`,*/
 
       mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function (resultObject) {
         result2.innerHTML = resultObject.value
-        //console.log(resultObject.value)
         const importedTexts = document.getElementById('preview');
         const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":resultObject.value};
         console.log(newText);
@@ -1077,6 +1086,19 @@ my two mistresses: what a beast am I to slack it!`,*/
           importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
           newText.length = 0;
         }
+        //console.log(resultObject.value)
+        //const importedTexts = document.getElementById('preview');
+        //const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":resultObject.value};
+        //console.log(newText);
+        //const myTextInfo = [];
+        //myTextInfo.push(newText);
+        //if (importedTexts.dataset.texts !== (null||undefined)) {
+        //  importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+        //  newText.length = 0;
+        //} else if (importedTexts.dataset.texts === (null||undefined)) {
+        //  importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+        //  newText.length = 0;
+        //}
       })
     };
     reader.readAsArrayBuffer(file);
@@ -1097,49 +1119,65 @@ my two mistresses: what a beast am I to slack it!`,*/
         console.log(base64 instanceof ArrayBuffer);
         const raw = window.atob(base64);
         console.log(raw instanceof ArrayBuffer);
-        const rawLength = raw.length;
-        const array = new Uint8Array(new ArrayBuffer(rawLength));
-        //const array = new ArrayBuffer(rawLength);
+        //const rawLength = raw.length;
+        //const array = new Uint8Array(new ArrayBuffer(rawLength));
       
-        for(var i = 0; i < rawLength; i++) {
-          array[i] = raw.charCodeAt(i);
-        }
-        console.log(array instanceof Uint8Array);
-        return array;
+        //for(var i = 0; i < rawLength; i++) {
+        //  array[i] = raw.charCodeAt(i);
+        //}
+        //console.log(array instanceof Uint8Array);
+        //return array;
+        return raw;
       }
       console.log(reader.result);
       const PDF_URL = convertDataURIToBinary(reader.result);
-      console.log(PDFJS);
-      PDFJS.getDocument(PDF_URL).then(function (pdf) {
-        console.log(pdf); 
-        pdf.getPage(0).then(function (page) {
-          console.log(page);
+      const loadingTask = PDFJS.getDocument({data: PDF_URL});
+      loadingTask.promise.then(function (pdf) {
+        console.log('pdf loaded'); 
+        pdf.getPage(1).then(function (page) {
+          console.log('page 1 loaded');
         });
-        //const pdfDocument = pdf;
+        getPageText(1, pdf).then(function(textPage) {
+          console.log(textPage); 
+        });
+        const pdfDocument = pdf;
         // Create an array that will contain our promises 
-        //const pagesPromises = [];
+        const pagesPromises = [];
 
-        //for (var i = 0; i < pdf.numPages; i++) {
-        //    // Required to prevent that i is always the total of pages
-        //    (function (pageNumber) {
-        //        // Store the promise of getPageText that returns the text of a page
-        //        pagesPromises.push(getPageText(pageNumber, pdfDocument));
-        //    })(i + 1);
+        for (var i = 0; i < pdf.numPages; i++) {
+            // Required to prevent that i is always the total of pages
+            (function (pageNumber) {
+                // Store the promise of getPageText that returns the text of a page
+                pagesPromises.push(getPageText(pageNumber, pdfDocument));
+            })(i + 1);
+        }
+
+        //Execute all the promises
+        Promise.all(pagesPromises).then(function (pagesText) {
+        //document.getElementById("loading-info").remove();
+
+        // Display text of all the pages in the console
+        // e.g ["Text content page 1", "Text content page 2", "Text content page 3" ... ]
+          console.log(pagesText);
+          const importedTexts = document.getElementById('preview');
+          const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":pagesText.join(' ')};
+          console.log(newText);
+          const myTextInfo = [];
+          myTextInfo.push(newText);
+          if (importedTexts.dataset.texts !== (null||undefined)) {
+            importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+            newText.length = 0;
+          } else if (importedTexts.dataset.texts === (null||undefined)) {
+            importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+            newText.length = 0;
+          }
+        //for(var i = 0;i < pagesText.length;i++){
+        //	document.getElementById("pdf-text").append("<div><h3>Page "+ (i + 1) +"</h3><p>"+pagesText[i]+"</p><br></div>");
         //}
 
-        // Execute all the promises
-        //Promise.all(pagesPromises).then(function (pagesText) {
-          //document.getElementById("loading-info").remove();
+        });
 
-          // Display text of all the pages in the console
-          // e.g ["Text content page 1", "Text content page 2", "Text content page 3" ... ]
-          //console.log(pagesText);
-          //for(var i = 0;i < pagesText.length;i++){
-          //	document.getElementById("pdf-text").append("<div><h3>Page "+ (i + 1) +"</h3><p>"+pagesText[i]+"</p><br></div>");
-          //}
-
-        //});
- 
+          
 
         /**
          * Retrieves the text of a specif page within a PDF Document obtained through pdf.js 
@@ -1173,8 +1211,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         // PDF loading error
         console.error(reason);
       });
-
-
     }
     //
     reader.readAsDataURL(file); 
@@ -1349,20 +1385,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
-        <div id="pdf-text">
-          <div id="loading-info">
-            Extracting text ... hold tight !
-          </div>
-        </div>
-        <p id={`result1`}></p>
-        <p id={`result2`}></p>
-        <p id={`result3`}></p>
         <iframe id={`input`} type={`application/pdf`} />
-        <iframe id={`processor`}></iframe>
-        
-        <div id={`outputpdf`}></div>
-        <pre id={`display`}></pre>
-
         <label id={`labelText`}>
           Your Text:
 
@@ -1372,7 +1395,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           Add a new text
         </button>
 
-        <input type={`submit`} value={`Submit entered text`} className={`btn btn-success btn-block`} />  
+        <input type={`submit`} value={`Import all texts and words`} className={`btn btn-success btn-block`} />  
         <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
@@ -1382,5 +1405,157 @@ my two mistresses: what a beast am I to slack it!`,*/
     );
   }
 }
+class EditEntries extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      texts:null,
+      words:null,
+      wordsWithThisTextId:null,
+      textExport:null,
+      textInfo:null,
+      displayWord:null,
+      displayText:null,
+      removeText:null,
+      removeWord:null,
+      modalbody:null,
+      mytextid:null,
+      textelement:null,
+      buttons:null,
+      idx:null,
+      textdiv:null,
+    }
+  }
+  componentDidMount = () => {
+  }
+  editEntries = (event) => {
+    if (document.getElementById('items_by_date').dataset.flatTextList !== (undefined||null) && document.getElementById('items_by_date').dataset.flatWordList !== (undefined||null)) {
+      const texts = JSON.parse(document.getElementById('items_by_date').dataset.flatTextList);
+      const words = JSON.parse(document.getElementById('items_by_date').dataset.flatWordList);
+      const exportText = [];
+      console.log(words, texts);
+      texts.forEach(function(f) {
+        f.forEach(function(info) {
+          //words from this text are words with this text id
+          const wordsWithThisTextId = ['mycontent'];
+          if (info[0] === "textId") {
 
+            words.forEach(function(wordItem) {
+              console.log(wordItem);
+              console.log(wordItem.flat());
+              if (wordItem[1].flat().includes(info[1])) {
+                wordsWithThisTextId.push(wordItem[0][1]);
+              }
+            });
+            const textInfo = f;
+            textInfo.push(Array.from(wordsWithThisTextId));
+            exportText.push(textInfo);
+
+          }
+
+        });
+      });
+      console.log(exportText);
+      const modalbody = document.getElementById('modal-body');
+
+      exportText.forEach(function(text, rangeText, ObjectText) {
+        const textdiv = document.createElement('div'); 
+        textdiv.className = text[0][1];
+        modalbody.appendChild(textdiv);
+        const displayText = document.createElement('div');
+        text.forEach(function(info, rangeInfo, ObjectInfo) {
+          if (info[0] === 'mycontent' && ObjectInfo.length >= 2) {
+            info.slice(1).forEach(function(wordItem) {
+              const displayWord = document.createElement('div');
+              displayWord.textContent = wordItem;
+              textdiv.appendChild(displayWord);
+              const removeWord = document.createElement('button');
+              removeWord.classList.add("btn");
+              removeWord.classList.add("btn-secondary");
+              removeWord.type = "button";
+              removeWord.textContent = "Remove this word";
+              removeWord.onclick = (event) => {
+                console.log(info); 
+                const idx = info.indexOf(wordItem);
+                if (idx !== -1) {
+                  info.splice(idx, 1);
+                }
+                console.log(info); 
+                displayWord.remove();
+                removeWord.remove();
+              }
+              textdiv.appendChild(removeWord);
+            });
+          } else if (info[0] !== 'mycontent') {
+            displayText.textContent += info[0] + ' ' + info[1] + '\r\n';
+
+
+          }
+          textdiv.appendChild(displayText);
+        });
+
+        const removeText = document.createElement('button');
+        removeText.classList.add("btn");
+        removeText.classList.add("btn-secondary");
+        removeText.type = "button";
+        removeText.textContent = "Remove this text";
+        removeText.onclick = (event) => {
+          const idx = exportText.indexOf(text);
+          if (idx !== -1) {
+            exportText.splice(idx, 1);
+          }
+          console.log("onclick");
+          removeText.remove();
+          //if (modalbody.hasChildNodes()) {
+          const textelements = document.getElementsByClassName(text[0][1]);//modalbody.childNodes;
+          while (textelements[0].firstChild) {
+            textelements[0].removeChild(textelements[0].firstChild);
+          }
+            //for (let i=0; i<textelements.length; i++) {
+            //  console.log(text[0][1]);
+            //  if (textelements[i].dataset.textid = text[0][1]) {
+            //    modalbody.removeChild(textelements[i]);
+            //  };
+            //};
+          //}
+        };
+        modalbody.appendChild(removeText);
+      });
+      //const dataOutput = document.getElementById("outputJsonFile");
+      //const someData = document.createElement('a');
+      //someData.id = 'some-data';
+      //dataOutput.appendChild(someData);
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <button type="button" onClick={this.editEntries} id="editentries" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
+          Edit entries 
+        </button>
+        
+        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div id="modal-body" class="modal-body">
+                 
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
 ReactDOM.render(<BasicForm/>, document.getElementById('root'));

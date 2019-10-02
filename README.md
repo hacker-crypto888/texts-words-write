@@ -48,15 +48,9 @@ The program can handle following file formats in the input:
 
 - [x] plain text
 - [x] TXT
-- [ ] PDFs 
+- [x] PDFs 
 - [x] DOCX
 - [ ] HTML
-
-Note: PDF extraction requires pdftotext be installed, link(http://www.xpdfreader.com/download.html).
-
-DOC extraction requires antiword be installed, link, unless on OSX in which case textutil (installed by default) is used. (http://www.winfield.demon.nl/)
-
-RTF extraction requires unrtf be installed, link, unless on OSX in which case textutil (installed by default) is used. (https://www.gnu.org/software/unrtf/)
 
 The user can: 
 
