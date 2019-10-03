@@ -25,6 +25,14 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
+Tests to be made on the audio files launcher:
+
+The user could:
+
+- [ ] load a JSON file, then launch the audio files thanks to start game button
+- [ ] load a JSON file, then edit the items, then launch the audio files
+- [ ] load JSON and-or other files, and launch the audio files
+
 It is very important that:
 
 - [ ] the lists were reinitiased after edits
