@@ -2,7 +2,6 @@ import React, {setState} from 'react';
 import ReactDOM from 'react-dom'; 
 import './index.css';
 import DatePicker from 'react-date-picker';
-//import PDFJS from 'pdfjs-dist/webpack';
 const PDFJS = window['pdfjs-dist/build/pdf'];
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
@@ -686,6 +685,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       textInfo:null,
       textObject:null,
       idx:null,
+      wordsWithTextId:null,
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -746,25 +746,18 @@ my two mistresses: what a beast am I to slack it!`,*/
       const littleWordList = [];
       const myTextList = [];
       const thisIsMyWordList = [];
-      if (document.getElementById('items_by_date').dataset.importWordList) {
-        thisIsMyWordList[0] =JSON.parse(document.getElementById('items_by_date').dataset.importWordList);
-      }
       const thisIsMyTextList = [];
-      if (document.getElementById('items_by_date').dataset.importTextList) {
-        thisIsMyTextList[0] =JSON.parse(document.getElementById('items_by_date').dataset.importTextList);
-      }
       const allMyTexts = JSON.parse(importedTexts.dataset.texts); //allMyTexts is a JSON ARRAY THAT CONTAINS ALL THE TEXTS HAVING BEEN INSERTED, DROPPED OR ADDED TO BE HANDLED BY THE PROGRAM
       console.log("allMyTexts",allMyTexts);
       allMyTexts.forEach(function(mytext) { //mytext IS A JSON ARRAY THAT CONTAINS INFO ABOUT A TEXT
         const textObject = {};
         mytext.forEach(function(info) {
-          if (info[0] === "mycontent") {
-            textObject["mycontent"] = info; 
-          } else if (info.length === 2){ 
-            textObject[info[0]] = info[1];
-          }
+          textObject[info[0]] = info[1];
         });
-        const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+        if (!textObject.textId) {
+          const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+          textObject.textId = newTextId; 
+        }
         console.log(textObject.mycontent);
         const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
         if(textObject.mycontent !== (null||undefined)) {
@@ -772,44 +765,6 @@ my two mistresses: what a beast am I to slack it!`,*/
             return (element !== (null||undefined));
           });
 
-          importedTexts.dataset.words.split(',').forEach(function(word) { //importedTexts.dataset.words IS AN ARRAY OF STRINGS THAT ARE THE WORDS OF THE TEXT THAT HAS BEEN SPLITTED INTO STRINGS OF WORDS
-            if (word === "") { return; } 
-            if (word === " ") { return; } 
-
-            const myWordInfo = {}; 
-            //myWordInfo['word']=word; // output is AN OBJECT THAT CONTAINS THE PRINCIPAL INFO ABOUT THE WORD AND ITS TEXT
-            myWordInfo.word=word; // output is AN OBJECT THAT CONTAINS THE PRINCIPAL INFO ABOUT THE WORD AND ITS TEXT
-            myWordInfo.textId=newTextId;
-
-            //myWordInfo['myTextId']=myTextId;
-            mytext.forEach(function(data){ //mytext IS A JSON ARRAY THAT CONTAINS ALL THE INFORMATION ABOUT THE TEXT THAT WAS DROPPED OR CREATED
-              myWordInfo[data[0]]=data[1]
-            });
-            console.log("MY WORD INFO", myWordInfo);
-
-            //console.log(output);
-            littleWordList.push(myWordInfo);
-            console.log("LITTLE WORD LIST", littleWordList);
-          });  
-        }
-        //const idx = allMyTexts.indexOf(mytext);
-        //if (idx !== -1) {
-        //  allMyTexts.splice(idx,1);
-        //}
-      });
-      const output = [];
-      //littleWordList.forEach(function(f) {
-      //  //const myTextList = this.state;
-      //  importedTexts.dataset.wordInfo = f;
-      //  if (!this[f.word]) {
-      //    this[f.word] = { "word": f.word, "textsId": [] };
-
-      //    //output.push(this[f.word]);
-      //    thisIsMyWordList.push(this[f.word]);
-      //  }
-      //  //console.log(output);
-      //  this[f.word].textsId.push(f.textId);
-      //}, Object.create(null));
 
       littleWordList.forEach(function(f) {
         if (!this[f.textId]) {
@@ -1053,40 +1008,44 @@ my two mistresses: what a beast am I to slack it!`,*/
         const exportText = [];
         console.log("WORDS", words,"TEXTS",texts);
         texts.forEach(function(f) {
+          const textObject = {};
           f.forEach(function(info) {
-            //words from this text are words with this text id
-            const wordsWithThisTextId = ['mycontent'];
-            if (info[0] === "textId") {
-
-              words.forEach(function(wordItem) {
-                console.log("WORDITEM", wordItem);
-                console.log("WORD ITEM FLATTENED",wordItem.flat());
-                if (wordItem[1].flat().includes(info[1])) {
-                  wordsWithThisTextId.push(wordItem[0][1]);
-                }
-              });
-              const textInfo = f;
-              textInfo.push(Array.from(wordsWithThisTextId));
-              exportText.push(textInfo);
-
-            }
-
+            textObject[info[0]] = info[1];
           });
+
+          //words from this text are words with this text id
+          const wordsWithThisTextId = [];
+          //wordsWithThisTextId.push("mycontent");
+          wordsWithThisTextId.push([]);
+          words.forEach(function(wordItem) {
+            console.log("WORDITEM", wordItem);
+            console.log("WORD ITEM FLATTENED",wordItem.flat());
+            if (wordItem[1].flat().includes(textObject.textId)) {
+              wordsWithThisTextId[0].push(wordItem[0][1]);
+            }
+          });
+          textObject.mycontent = wordsWithThisTextId[0];
+          console.log(f, textObject); 
+          exportText.push(textObject);
+          //exportText.push(["mycontent",wordsWithThisTextId]);
+
+
+
         });
         console.log("EXPORT TEXT", exportText);
-        exportText.forEach(function(text) {
+        exportText.forEach(function(textObject) {
           const importedTexts = document.getElementById('preview');
           //const textObject = text.map(Object.entries);
           //console.log(textObject);
-          const textObject = {};
-          text.forEach(function(info) {
-            if (info[0] === "mycontent") {
-              info.shift();
-              textObject["mycontent"] = info; 
-            } else if (info.length === 2){ 
-              textObject[info[0]] = info[1];
-            }
-          });
+          //const textObject = {};
+          //text.forEach(function(info) {
+          //  if (info[0] === "mycontent") {
+          //    info.shift();
+          //    textObject["mycontent"] = info; 
+          //  } else if (info.length === 2){ 
+          //    textObject[info[0]] = info[1];
+          //  }
+          //});
           console.log("textObject",textObject); 
           const newText = {"lastModified": textObject.lastModified, "lastModifiedDate":textObject.lastModifiedDate, "name": textObject.name, "webkitRelativePath": textObject.webkitRelativePath, "size": textObject.size, "type": textObject.type, "mycontent":textObject.mycontent};
           console.log("newText",newText);
@@ -1097,9 +1056,9 @@ my two mistresses: what a beast am I to slack it!`,*/
           } else if (importedTexts.dataset.texts === (null||undefined)) {
             importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
           }
-          console.log("importedTexts.dataset.texts",importedTexts.dataset.texts);
+          console.log("importedTexts.dataset.texts FILE DROPPED",JSON.parse(importedTexts.dataset.texts));
         });
-        document.getElementById('import_texts_words').click(); 
+        //document.getElementById('import_texts_words').click(); 
 
         document.getElementById('items_by_date').dataset.importTextList = JSON.stringify(thisIsMyTextList[0]); 
         console.log("getElementById('items_by_date').dataset.importTextList",document.getElementById('items_by_date').dataset.importTextList); 
@@ -1404,6 +1363,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   }
   addNewText = (event) => {
+    const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
     this.setState({
       value:
         event.target.value
@@ -1414,18 +1374,15 @@ my two mistresses: what a beast am I to slack it!`,*/
     const daysDate = new Date();
     const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
     const msTime = Date.now();
-    const newText = {"lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
-    importedTexts.dataset.textValue = "";
+    const newText = {"textId":newTextId, "lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
     if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
       const myTextInfo = [];
       myTextInfo.push(newText);
       importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-      newText.length = 0;
     } else if (importedTexts.dataset.texts === (null||undefined) || importedTexts.dataset.texts.length === 0) {
       const myTextInfo = [];
       myTextInfo.push(newText);
       importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      newText.length = 0;
     }
 
     console.log(document.getElementById('wordinput').value);
@@ -1505,8 +1462,8 @@ class EditEntries extends React.Component {
   componentDidMount = () => {
   }
   editEntries = (event) => {
-    const importedTexts = document.getElementById('preview');
-    console.log(JSON.parse(importedTexts.dataset.texts));
+
+
     if (document.getElementById('items_by_date').dataset.flatTextList !== (undefined||null) && document.getElementById('items_by_date').dataset.flatWordList !== (undefined||null)) {
       const texts = JSON.parse(document.getElementById('items_by_date').dataset.flatTextList);
       const words = JSON.parse(document.getElementById('items_by_date').dataset.flatWordList);
@@ -1543,8 +1500,8 @@ class EditEntries extends React.Component {
         const displayText = document.createElement('div');
         text.forEach(function(info, rangeInfo, ObjectInfo) {
           if (info[0] === 'mycontent' && ObjectInfo.length >= 2) {
-            info.slice(1);
             info.forEach(function(wordItem) {
+              if (wordItem === "mycontent") {return;}
               const displayWord = document.createElement('div');
               displayWord.textContent = wordItem;
               textdiv.appendChild(displayWord);
@@ -1554,42 +1511,21 @@ class EditEntries extends React.Component {
               removeWord.type = "button";
               removeWord.textContent = "Remove this word";
               removeWord.onclick = (event) => {
-                console.log(info); 
+
+                const importedTexts = document.getElementById('preview');
+                importedTexts.dataset.texts = "";
+
+
                 const idx = info.indexOf(wordItem);
                 if (idx !== -1) {
                   info.splice(idx, 1);
                 }
                 console.log("INFO SLICE 1",info); 
+                console.log(exportText);
                 displayWord.remove();
                 removeWord.remove();
-                const importedTexts = document.getElementById('preview');
-                importedTexts.dataset.texts = "";
-
-                ObjectText.forEach(function(text) {
-                  const importedTexts = document.getElementById('preview');
-                  //const textObject = text.map(Object.entries);
-                  //console.log(textObject);
-                  const textObject = {};
-                  text.forEach(function(info) {
-                    if (info[0] === "mycontent") {
-                      info.shift();
-                      //info.slice(1);
-                      textObject["mycontent"] = info; 
-                    } else if (info.length === 2){ 
-                      textObject[info[0]] = info[1];
-                    }
-                  });
-                  console.log(textObject); 
-                  const newText = {"lastModified": textObject.lastModified, "lastModifiedDate":textObject.lastModifiedDate, "name": textObject.name, "webkitRelativePath": textObject.webkitRelativePath, "size": textObject.size, "type": textObject.type, "mycontent":textObject.mycontent};
-                  console.log(newText);
-                  const myTextInfo = [];
-                  myTextInfo.push(newText);
-                  if (importedTexts.dataset.texts !== (null||undefined)) {
-                    importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-                  } else if (importedTexts.dataset.texts === (null||undefined)) {
-                    importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-                  }
-                });
+                importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
+                console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
               }
               textdiv.appendChild(removeWord);
             });
@@ -1597,8 +1533,6 @@ class EditEntries extends React.Component {
             console.log("INFO", info);
           } else if (info[0] !== 'mycontent') {
             displayText.textContent += info[0] + ' ' + info[1] + '\r\n';
-
-
           }
           textdiv.appendChild(displayText);
         });
@@ -1609,12 +1543,15 @@ class EditEntries extends React.Component {
         removeText.type = "button";
         removeText.textContent = "Remove this text";
         removeText.onclick = (event) => {
+
+          const importedTexts = document.getElementById('preview');
+          importedTexts.dataset.texts = "";
+
           const idx = exportText.indexOf(text);
           if (idx !== -1) {
             exportText.splice(idx, 1);
           }
           console.log("onclick");
-          //console.log(importedTexts.dataset.texts);
           removeText.remove();
           //if (modalbody.hasChildNodes()) {
           const textelements = document.getElementsByClassName(text[0][1]);//modalbody.childNodes;
@@ -1622,35 +1559,18 @@ class EditEntries extends React.Component {
             textelements[0].removeChild(textelements[0].firstChild);
           }
 
-          const importedTexts = document.getElementById('preview');
-          importedTexts.dataset.texts = "";
-
-          ObjectText.forEach(function(text) {
-            const importedTexts = document.getElementById('preview');
-            //const textObject = text.map(Object.entries);
-            //console.log(textObject);
-            const textObject = {};
-            text.forEach(function(info) {
-              if (info[0] === "mycontent") {
-                info.shift();
-                //info.slice(1);
-                textObject["mycontent"] = info; 
-              } else if (info.length === 2){ 
-                textObject[info[0]] = info[1];
-              }
-            });
-            console.log(textObject); 
-            const newText = {"lastModified": textObject.lastModified, "lastModifiedDate":textObject.lastModifiedDate, "name": textObject.name, "webkitRelativePath": textObject.webkitRelativePath, "size": textObject.size, "type": textObject.type, "mycontent":textObject.mycontent};
-            console.log(newText);
-            const myTextInfo = [];
-            myTextInfo.push(newText);
-            if (importedTexts.dataset.texts !== (null||undefined)) {
-              importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-            } else if (importedTexts.dataset.texts === (null||undefined)) {
-              importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-            }
-          });
+          console.log("Object text on click remove text", ObjectText);
+          //exportText.forEach(function(textItem) {
+          //  if (importedTexts.dataset.texts !== (null||undefined)) {
+          //    importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), textItem.map(Object.entries)[0]]);
+          //  } else if (importedTexts.dataset.texts === (null||undefined)) {
+          importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.entries))];
+          //  }
+          //});
+          console.log("importTexts texts on click remove text", JSON.parse(importedTexts.dataset.texts));
+          
         };
+
         modalbody.appendChild(removeText);
       });
       //const dataOutput = document.getElementById("outputJsonFile");
@@ -1659,7 +1579,7 @@ class EditEntries extends React.Component {
       //dataOutput.appendChild(someData);
 
       //console.log(importedTexts.dataset.texts);
-      document.getElementById('import_texts_words').click(); 
+      //document.getElementById('import_texts_words').click(); 
     }
   }
 
