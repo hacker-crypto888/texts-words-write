@@ -745,7 +745,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     if(importedTexts.dataset.texts && JSON.parse(importedTexts.dataset.texts).length) {
       const littleWordList = [];
       const myTextList = [];
-      const thisIsMyWordList = [];
+      //const thisIsMyWordList = [];
       const thisIsMyTextList = [];
       const allMyTexts = JSON.parse(importedTexts.dataset.texts); //allMyTexts is a JSON ARRAY THAT CONTAINS ALL THE TEXTS HAVING BEEN INSERTED, DROPPED OR ADDED TO BE HANDLED BY THE PROGRAM
       console.log("allMyTexts",allMyTexts);
@@ -760,62 +760,19 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
         console.log(textObject.mycontent);
         const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-        if(textObject.mycontent !== (null||undefined)) {
-          importedTexts.dataset.words = x(textObject.mycontent[0][0].split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+        if(typeof textObject.mycontent === 'string') {
+          const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
             return (element !== (null||undefined));
           });
-
-
-      littleWordList.forEach(function(f) {
-        if (!this[f.textId]) {
-          this[f.textId] = { "textId": f.textId, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath }
-          myTextList.push(this[f.textId]);
+          textObject.mycontent = thisIsMyWordList;
         }
-      }, Object.create(null));
-      console.log("MY TEXT LIST", myTextList);
-      //output.forEach(function(f) {
-      //  if (!this[f.myTextId]) {
-      //    //this[f.myTextId] = JSON.stringify(output.map(Object.entries));
-      //    this[f.myTextId] = Array.from(output.map(Object.entries));
-
-
-      //    thisIsMyWordList.push(this[f.myTextId]);
-      //  }
-      //}, Object.create(null));
-
-      console.log("THIS IS MY WORD LIST", thisIsMyWordList);
-      //console.log(document.getElementById('items_by_date').dataset.importWordList);
-      //--------------------------------------------------------
-      myTextList.forEach(function(f) {
-        if (!this[f.myTextId]) {
-          //this[f.myTextId] = JSON.stringify(myTextList.map(Object.entries));
-          this[f.myTextId] = myTextList.map(Object.entries);
-
-          thisIsMyTextList.push(this[f.myTextId]);
-        }
-
-      }, Object.create(null));
-
-      console.log("THIS IS MY TEXT LIST", thisIsMyTextList);
-      console.log("ITEMS BY DATE -> IMPORT TEXT LIST", document.getElementById('items_by_date').dataset.importTextList);
-      //allMyTexts.length = 0;
-      //importedTexts.dataset.texts = JSON.stringify(allMyTexts);
+        thisIsMyTextList.push(textObject);
+      });
+      importedTexts.dataset.texts = "";
+      importedTexts.dataset.texts = [JSON.stringify(thisIsMyTextList.map(Object.entries))];
+      console.log('handle text function -> allMyTexts importedTexts texts', JSON.parse(importedTexts.dataset.texts));
     };
-
-    //JSON to AudioFiles
-    const JSON2AUDIO = []; //Array of Objects to be turned into mp3 files list
-    //document.getElementById('items_by_date').dataset.importTextList.forEach(function(f) {
-    //});
-    //document.getElementById('items_by_date').dataset.importWordList.forEach(function(f) {
-
-    //});
-    const result = this.state;
-    result.length = 0;
   } 
-
-  //addNew Text function => when you click on add new text(create new text) button
-  //handle Text change => value of text when you modify the input
-  
   handleSubmittedText = event => { //handle submitted texts including that in the text input field
     event.preventDefault();
     this.handleText();
@@ -939,147 +896,25 @@ my two mistresses: what a beast am I to slack it!`,*/
         this.setState({myItems});
         const importedTexts = document.getElementById('preview');
         const littleWordList = [];
-        const myTextList = [];
         const thisIsMyWordList = [];
-        if (document.getElementById('items_by_date').dataset.importWordList) {
-          thisIsMyWordList[0] =JSON.parse(document.getElementById('items_by_date').dataset.importWordList);
-        }
         const thisIsMyTextList = [];
-        if (document.getElementById('items_by_date').dataset.importTextList) {
-          thisIsMyTextList[0] =JSON.parse(document.getElementById('items_by_date').dataset.importTextList);
-          console.log("THIS IS MY TEXT LIST", thisIsMyTextList);
-        }
+
         console.log("MY ITEMS", myItems);
-        const output = [];
-        myItems.forEach(function(f) {
-          //const myTextList = this.state;
-          console.log("MY ITEMS FOREACH F", f);
-          importedTexts.dataset.wordInfo = f;
-          if (!this[f.word]) {
-            this[f.word] = { "word": f.word, "textsId": [] };
-
-            output.push(this[f.word]);
-          }
-
-          this[f.word].textsId.push(f.textId);
-        }, Object.create(null));
-        console.log("OUTPUT", output);
-
         myItems.forEach(function(f) {
           if (!this[f.textId]) {
-            this[f.textId] = { "textId": f.textId, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath }
-            myTextList.push(this[f.textId]);
+            this[f.textId] = { "textId": f.textId, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath, "mycontent":[] }
+            thisIsMyTextList.push(this[f.textId]);
           }
+          this[f.textId].mycontent.push(f.word);
         }, Object.create(null));
-        console.log("MY TEXT LIST", myTextList);
-        output.forEach(function(f) {
-          console.log(f);
-          if (!this[f.myTextId]) {
-            //this[f.myTextId] = JSON.stringify(output.map(Object.entries));
-            //this[f.myTextId] = Array.from(output.map(Object.entries));
-            this[f.myTextId] = output.map(Object.entries);
-            //this[f.myTextId] = f;
-
-
-            thisIsMyWordList.push(this[f.myTextId]);
-          }
-        }, Object.create(null));
-        console.log("THIS IS MY WORD LIST", thisIsMyWordList);
-        console.log("THIS IS MY WORD LIST FLATTENED", thisIsMyWordList.flat());
-        document.getElementById('items_by_date').dataset.flatWordList = JSON.stringify(thisIsMyWordList.flat());
-        document.getElementById('items_by_date').dataset.importWordList = JSON.stringify(thisIsMyWordList[0]);
-        console.log("DOCUMENT ITEMS BY DATE IMPORT WORD LIST", document.getElementById('items_by_date').dataset.importWordList);
-        //--------------------------------------------------------
-        myTextList.forEach(function(f) {
-          console.log("MY TEXT LIST FOREACH FUNCTION F",f);
-          if (!this[f.myTextId]) {
-            //this[f.myTextId] = JSON.stringify(myTextList.map(Object.entries));
-            this[f.myTextId] = myTextList.map(Object.entries);
-
-            thisIsMyTextList.push(this[f.myTextId]);
-          }
-
-        }, Object.create(null));
-        console.log("THIS IS MY TEXT LIST", thisIsMyTextList);
-        console.log("THIS IS MY TEXT LIST FLATTENED", thisIsMyTextList.flat());
-        document.getElementById('items_by_date').dataset.flatTextList = JSON.stringify(thisIsMyTextList.flat());
-        const texts = JSON.parse(document.getElementById('items_by_date').dataset.flatTextList);
-        const words = JSON.parse(document.getElementById('items_by_date').dataset.flatWordList);
-        const exportText = [];
-        console.log("WORDS", words,"TEXTS",texts);
-        texts.forEach(function(f) {
-          const textObject = {};
-          f.forEach(function(info) {
-            textObject[info[0]] = info[1];
-          });
-
-          //words from this text are words with this text id
-          const wordsWithThisTextId = [];
-          //wordsWithThisTextId.push("mycontent");
-          wordsWithThisTextId.push([]);
-          words.forEach(function(wordItem) {
-            console.log("WORDITEM", wordItem);
-            console.log("WORD ITEM FLATTENED",wordItem.flat());
-            if (wordItem[1].flat().includes(textObject.textId)) {
-              wordsWithThisTextId[0].push(wordItem[0][1]);
-            }
-          });
-          textObject.mycontent = wordsWithThisTextId[0];
-          console.log(f, textObject); 
-          exportText.push(textObject);
-          //exportText.push(["mycontent",wordsWithThisTextId]);
-
-
-
-        });
-        console.log("EXPORT TEXT", exportText);
-        exportText.forEach(function(textObject) {
-          const importedTexts = document.getElementById('preview');
-          //const textObject = text.map(Object.entries);
-          //console.log(textObject);
-          //const textObject = {};
-          //text.forEach(function(info) {
-          //  if (info[0] === "mycontent") {
-          //    info.shift();
-          //    textObject["mycontent"] = info; 
-          //  } else if (info.length === 2){ 
-          //    textObject[info[0]] = info[1];
-          //  }
-          //});
-          console.log("textObject",textObject); 
-          const newText = {"lastModified": textObject.lastModified, "lastModifiedDate":textObject.lastModifiedDate, "name": textObject.name, "webkitRelativePath": textObject.webkitRelativePath, "size": textObject.size, "type": textObject.type, "mycontent":textObject.mycontent};
-          console.log("newText",newText);
-          const myTextInfo = [];
-          myTextInfo.push(newText);
-          if (importedTexts.dataset.texts !== (null||undefined)) {
-            importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-          } else if (importedTexts.dataset.texts === (null||undefined)) {
-            importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-          }
-          console.log("importedTexts.dataset.texts FILE DROPPED",JSON.parse(importedTexts.dataset.texts));
-        });
-        //document.getElementById('import_texts_words').click(); 
-
-        document.getElementById('items_by_date').dataset.importTextList = JSON.stringify(thisIsMyTextList[0]); 
-        console.log("getElementById('items_by_date').dataset.importTextList",document.getElementById('items_by_date').dataset.importTextList); 
-        //allMyTexts.length = 0;
-        //importedTexts.dataset.texts = JSON.stringify(allMyTexts);
-
-        const result = this.state;
-        result.length = 0;
-        //const myDatabaseForUpload = document.createElement('a');
-        
-        //myDatabaseForUpload.id = "items_by_date";
-        //myDatabaseForUpload.href = "";
-        document.getElementById('items_by_date').dataset.databaseJson = JSON.stringify({"items":[...Object.entries(myItems).map(([k, v]) => [k,v])]});
-        //document.getElementById('preview').appendChild(myDatabaseForUpload);
-        //document.getElementById('noDatabaseFile').removeAttribute('checked');
-        //this.setState({
-        //  databaseIsLoaded:
-        //    true
-        //});
+        //console.log("MY TEXT LIST", thisIsMyTextList);
+        if (importedTexts.dataset.texts !== (null||undefined)) {
+          importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), thisIsMyTextList.map(Object.entries)[0]]);
+        } else if (importedTexts.dataset.texts === (null||undefined)) {
+          importedTexts.dataset.texts = [JSON.stringify(thisIsMyTextList.map(Object.entries))];
+        }
+        console.log(JSON.parse(importedTexts.dataset.texts));
       })
-    console.log("myBlob",this.state.myBlob);
   }
   sendDocxFile = (file) => {
     console.time();
@@ -1462,125 +1297,89 @@ class EditEntries extends React.Component {
   componentDidMount = () => {
   }
   editEntries = (event) => {
+    const importedTexts = document.getElementById('preview'); 
+    const modalbody = document.getElementById('modal-body');
+    const exportText = JSON.parse(importedTexts.dataset.texts);
+    exportText.forEach(function(text) {
+      const textdiv = document.createElement('div'); 
+      console.log('text array of edit entries', text);
+      textdiv.className = text[0][1];
+      modalbody.appendChild(textdiv);
+      const displayText = document.createElement('div');
+      text.forEach(function(info, rangeInfo, ObjectInfo) {
+        if (info[0] === 'mycontent') {
+          info[1].forEach(function(wordItem) {
+            //if (wordItem === "mycontent") {return;}
+            const displayWord = document.createElement('div');
+            displayWord.textContent = wordItem;
+            textdiv.appendChild(displayWord);
+            const removeWord = document.createElement('button');
+            removeWord.classList.add("btn");
+            removeWord.classList.add("btn-secondary");
+            removeWord.type = "button";
+            removeWord.textContent = "Remove this word";
+            removeWord.onclick = (event) => {
+
+              const importedTexts = document.getElementById('preview');
+              importedTexts.dataset.texts = "";
 
 
-    if (document.getElementById('items_by_date').dataset.flatTextList !== (undefined||null) && document.getElementById('items_by_date').dataset.flatWordList !== (undefined||null)) {
-      const texts = JSON.parse(document.getElementById('items_by_date').dataset.flatTextList);
-      const words = JSON.parse(document.getElementById('items_by_date').dataset.flatWordList);
-      const exportText = [];
-      console.log(words, texts);
-      texts.forEach(function(f) {
-        f.forEach(function(info) {
-          //words from this text are words with this text id
-          const wordsWithThisTextId = ['mycontent'];
-          if (info[0] === "textId") {
-
-            words.forEach(function(wordItem) {
-              console.log(wordItem);
-              console.log(wordItem.flat());
-              if (wordItem[1].flat().includes(info[1])) {
-                wordsWithThisTextId.push(wordItem[0][1]);
+              const idx = info.indexOf(wordItem);
+              if (idx !== -1) {
+                info.splice(idx, 1);
               }
-            });
-            const textInfo = f;
-            textInfo.push(Array.from(wordsWithThisTextId));
-            exportText.push(textInfo);
-
-          }
-
-        });
+              console.log("INFO SLICE 1",info); 
+              console.log(exportText);
+              displayWord.remove();
+              removeWord.remove();
+              importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
+              console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
+            }
+            textdiv.appendChild(removeWord);
+          });
+          //info.unshift("mycontent");
+          console.log("INFO", info);
+        } else if (info[0] !== 'mycontent') {
+          displayText.textContent += info[0] + ' ' + info[1] + '\r\n';
+        }
+        textdiv.appendChild(displayText);
       });
-      console.log(exportText);
-      const modalbody = document.getElementById('modal-body');
 
-      exportText.forEach(function(text, rangeText, ObjectText) {
-        const textdiv = document.createElement('div'); 
-        textdiv.className = text[0][1];
-        modalbody.appendChild(textdiv);
-        const displayText = document.createElement('div');
-        text.forEach(function(info, rangeInfo, ObjectInfo) {
-          if (info[0] === 'mycontent' && ObjectInfo.length >= 2) {
-            info.forEach(function(wordItem) {
-              if (wordItem === "mycontent") {return;}
-              const displayWord = document.createElement('div');
-              displayWord.textContent = wordItem;
-              textdiv.appendChild(displayWord);
-              const removeWord = document.createElement('button');
-              removeWord.classList.add("btn");
-              removeWord.classList.add("btn-secondary");
-              removeWord.type = "button";
-              removeWord.textContent = "Remove this word";
-              removeWord.onclick = (event) => {
+      const removeText = document.createElement('button');
+      removeText.classList.add("btn");
+      removeText.classList.add("btn-secondary");
+      removeText.type = "button";
+      removeText.textContent = "Remove this text";
+      removeText.onclick = (event) => {
 
-                const importedTexts = document.getElementById('preview');
-                importedTexts.dataset.texts = "";
+        const importedTexts = document.getElementById('preview');
+        importedTexts.dataset.texts = "";
 
+        const idx = exportText.indexOf(text);
+        if (idx !== -1) {
+          exportText.splice(idx, 1);
+        }
+        console.log("onclick");
+        removeText.remove();
+        //if (modalbody.hasChildNodes()) {
+        const textelements = document.getElementsByClassName(text[0][1]);//modalbody.childNodes;
+        while (textelements[0].firstChild) {
+          textelements[0].removeChild(textelements[0].firstChild);
+        }
 
-                const idx = info.indexOf(wordItem);
-                if (idx !== -1) {
-                  info.splice(idx, 1);
-                }
-                console.log("INFO SLICE 1",info); 
-                console.log(exportText);
-                displayWord.remove();
-                removeWord.remove();
-                importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
-                console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
-              }
-              textdiv.appendChild(removeWord);
-            });
-            //info.unshift("mycontent");
-            console.log("INFO", info);
-          } else if (info[0] !== 'mycontent') {
-            displayText.textContent += info[0] + ' ' + info[1] + '\r\n';
-          }
-          textdiv.appendChild(displayText);
-        });
+        //exportText.forEach(function(textItem) {
+        //  if (importedTexts.dataset.texts !== (null||undefined)) {
+        //    importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), textItem.map(Object.entries)[0]]);
+        //  } else if (importedTexts.dataset.texts === (null||undefined)) {
+        importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.entries))];
+        //  }
+        //});
+        console.log("importTexts texts on click remove text", JSON.parse(importedTexts.dataset.texts));
+        
+      };
 
-        const removeText = document.createElement('button');
-        removeText.classList.add("btn");
-        removeText.classList.add("btn-secondary");
-        removeText.type = "button";
-        removeText.textContent = "Remove this text";
-        removeText.onclick = (event) => {
-
-          const importedTexts = document.getElementById('preview');
-          importedTexts.dataset.texts = "";
-
-          const idx = exportText.indexOf(text);
-          if (idx !== -1) {
-            exportText.splice(idx, 1);
-          }
-          console.log("onclick");
-          removeText.remove();
-          //if (modalbody.hasChildNodes()) {
-          const textelements = document.getElementsByClassName(text[0][1]);//modalbody.childNodes;
-          while (textelements[0].firstChild) {
-            textelements[0].removeChild(textelements[0].firstChild);
-          }
-
-          console.log("Object text on click remove text", ObjectText);
-          //exportText.forEach(function(textItem) {
-          //  if (importedTexts.dataset.texts !== (null||undefined)) {
-          //    importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), textItem.map(Object.entries)[0]]);
-          //  } else if (importedTexts.dataset.texts === (null||undefined)) {
-          importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.entries))];
-          //  }
-          //});
-          console.log("importTexts texts on click remove text", JSON.parse(importedTexts.dataset.texts));
-          
-        };
-
-        modalbody.appendChild(removeText);
-      });
-      //const dataOutput = document.getElementById("outputJsonFile");
-      //const someData = document.createElement('a');
-      //someData.id = 'some-data';
-      //dataOutput.appendChild(someData);
-
-      //console.log(importedTexts.dataset.texts);
-      //document.getElementById('import_texts_words').click(); 
-    }
+      modalbody.appendChild(removeText);
+    });
   }
 
   render() {
