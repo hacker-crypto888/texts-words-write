@@ -6,6 +6,10 @@ const PDFJS = window['pdfjs-dist/build/pdf'];
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 const mammoth = require("mammoth");
+//handle dates ----> do like for "remove text function " (import and export texts in imported Texts field and remove the items not matching the selected date (on click)
+//    const daysDate = new Date();
+//    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+//    const msTime = Date.now();
 class BasicForm extends React.Component {
   constructor(props) {
     super(props);
@@ -53,16 +57,17 @@ class BasicForm extends React.Component {
       someData:null,
       myAudioItems:null,
       firstAudio:null,
+      importedTexts:null,
+      importText:null,
+      textObject:null,
+      thisIsMyTextList:null,
+      thisIsMyText:null,
     };
   }
   componentDidMount() {
     document.getElementById('loadingAudioFiles').hidden = true;
     this.btn.setAttribute('disabled','disabled'); 
     const allAudioElements = document.getElementsByTagName('audio'); 
-    //const dataOutput = document.getElementById("outputJsonFile");
-    //const someData = document.createElement('a');
-    //someData.id = 'some-data';
-    //dataOutput.appendChild(someData);
   }
 
   fieldOnblur = () => {
@@ -112,6 +117,25 @@ class BasicForm extends React.Component {
     });
   };
   displayAudio = event => {
+    const importedTexts = document.getElementById("preview");
+    const importText = JSON.parse(importedTexts.dataset.texts); 
+    const thisIsMyTextList = [];
+    importText.forEach(function(mytext) {
+      const textObject = {};
+
+      mytext.forEach(function(myinfo) {
+        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;};
+        textObject[myinfo[0]] = myinfo[1];
+      });
+      if(textObject === {}) {return;};
+      if(!textObject.mycontent) {return;};
+      console.log(textObject.content); 
+      thisIsMyTextList.push(textObject);
+      
+    });
+    if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
+    console.log(thisIsMyTextList);
+
     const myNode = document.getElementById('myAudioFiles');
     while(myNode.firstChild) {
       myNode.removeChild(myNode.firstChild);
@@ -123,18 +147,20 @@ class BasicForm extends React.Component {
         return response.json();
       })
       .then(function(mp3WordList){
-        if(document.getElementById('items_by_date') && document.getElementById('items_by_date').dataset.databaseJson) {
+        document.getElementById('loadingAudioFiles').hidden = false;
 
-          document.getElementById('loadingAudioFiles').hidden = false;
-          const myBlub = JSON.parse(document.getElementById('items_by_date').dataset.databaseJson);
-          const items = myBlub.items;
-          items.forEach(function(item, index, object) {
-            //console.log(item);
-            //const myAudioFiles = document.getElementById('myAudioFiles');
+        const importText = JSON.parse(importedTexts.dataset.texts);
+        importText.forEach(function(item, index, object) {
+          const textObject = {};
+          item.forEach(function(textitem) {
+            textObject[textitem[0]]=textitem[1];
+          });
+          console.log(textObject, textObject.mycontent);
+          textObject.mycontent.forEach(function(myworditem) {
             const audioFilePreview = document.createElement('audio'); 
-            audioFilePreview.className=item.word;
-            audioFilePreview.key=item.id;
-            audioFilePreview.id=item.word;
+            audioFilePreview.className=myworditem;
+            audioFilePreview.key=index;
+            audioFilePreview.id=myworditem;
             audioFilePreview.controls=true;
             audioFilePreview.onpause = (event) => {
               event.currentTarget.currentTime = 0;
@@ -142,64 +168,30 @@ class BasicForm extends React.Component {
             if (document.getElementById('playAllTheWords').checked) {
               audioFilePreview.onended = (event) => {
                 const allAudioElements = document.getElementsByTagName('audio');
-                //console.log(event.currentTarget);
-                //allAudioElements[0].remove(); 
-                //if (allAudioElements[1]) {
                 if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
-                  //const allAudioElements = document.getElementsByTagName('audio');
-                  //const firstAudio = allAudioElements[0];
-
-
-                  //allAudioElements[0].remove(); 
-                  //const myAudioItems = document.getElementById('myAudioFiles');       
-                  //myAudioItems.appendChild(firstAudio);
-                  //oItems.firstChild.play();
-                  //allAudioElements[0].remove(); 
-                  //allAudioElements[0].play();
-                  //const allAudioElements = document.getElementsByTagName('audio');
                   const myAudioItems = document.getElementById('myAudioFiles');
-                  //const firstAudio = allAudioElements[0];
 
                   const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
-                  //event.currentTarget.remove();
                   myAudioItems.childNodes[indexAudioElement].play();
-                  //myAudioItems.insertBefore(event.currentTarget, myAudioItems.children[indexAudioElement]);
 
                 }
               };
             }
-              //const indexes = [];
-              ////const mylist = ['a', 'b', 'a', 'c', 'a', 'd'];
-              //const mylist = allAudioElements;
-              //const element = event.currentTarget;
-              //const idx = mylist.indexOf(element);
-              //while (idx != -1) {
-              //  indexes.push(idx);
-              //  idx = mylist.indexOf(element, idx + 1);
-              //}
-              //console.log(indexes);
-              
-
-            
-
             audioFilePreview.onplay = (event) => { 
               const wordInputField = document.getElementById('wordinput');
               wordInputField.dataset.targetValue = audioFilePreview.id;
             };
-            //console.log(item.word);
             [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
-              if(mp3[0] === item.word && mp3[1].length){
+              if(mp3[0] === myworditem && mp3[1].length){
                 mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
                   const theFirstChild = audioFilePreview.firstChild;
                   const sourceFile = document.createElement('source');
                   sourceFile.src = mp3link; 
-                  //console.log(mp3link);
-                  sourceFile.className = item.word; 
+                  sourceFile.className = myworditem; 
                   sourceFile.type = 'audio/mpeg'; 
                   audioFilePreview.insertBefore(sourceFile, theFirstChild);
 
                 })
-                //myAudioFiles.appendChild(audioFilePreview);
                 myAudioFiles.push(audioFilePreview);
                 
               }
@@ -208,15 +200,12 @@ class BasicForm extends React.Component {
             document.getElementById('loadingAudioFiles').hidden = true;
 
           });
-        }
-        const previewMyAudioFiles = document.getElementById('myAudioFiles');
-        myAudioFiles.forEach(function(item, index, object) {
-          previewMyAudioFiles.appendChild(item); 
-        });
+          const previewMyAudioFiles = document.getElementById('myAudioFiles');
+          myAudioFiles.forEach(function(item, index, object) {
+            previewMyAudioFiles.appendChild(item); 
+          });
+        })
       })
- 
-    //display AUDIO FILES THAT ARE IN AN ARRAY ONE BY ONE 
-
   }
   removeAudioPlayer = (props) => {
     const targetValue = document.getElementById('wordinput').dataset.targetValue;
@@ -271,7 +260,9 @@ class BasicForm extends React.Component {
         </button>
 
        </div>
-
+       <div id="items_loaded">
+         no items loaded
+       </div>
        <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
 
         Start a new game 
@@ -686,6 +677,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       textObject:null,
       idx:null,
       wordsWithTextId:null,
+      valueword:'',
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -742,6 +734,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   handleText = (event) => {
     const importedTexts = document.getElementById('preview');
+      
     if(importedTexts.dataset.texts && JSON.parse(importedTexts.dataset.texts).length) {
       const littleWordList = [];
       const myTextList = [];
@@ -760,6 +753,10 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
         console.log(textObject.mycontent);
         const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
+        if (textObject.mycontent === "") {return;};
+        if (typeof textObject.mycontent[0] === 'string' && textObject.mycontent.length === 1) {
+          textObject.mycontent = [textObject.mycontent[0]];
+        };
         if(typeof textObject.mycontent === 'string') {
           const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
             return (element !== (null||undefined));
@@ -849,6 +846,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
   }
   sendTextFile = (file) => {
+    const importedTexts = document.getElementById('preview');
     const fd = new FormData();
     fd.append('myFile', file);
     fetch(URL.createObjectURL(file))
@@ -875,9 +873,23 @@ my two mistresses: what a beast am I to slack it!`,*/
         //this.handleText();    
         //text FILE
         //array of arrays containing columns: text imported, file type, file name, text content,
+    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
+      importedTexts.dataset.loadedfiles = [JSON.stringify(["json"])];
+    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
+      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+      if (loadedfiles.includes("json") === false) {
+        loadedfiles.push("json");
+        importedTexts.dataset.loadedfiles = [JSON.stringify(loadedfiles)];
+      }
+    }
+    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+    loadedfiles.forEach(function(eachtype) {
+      document.getElementById('items_loaded').innerHtml += eachtype + " ";
+    });
   }
 
   sendFile = (file) => {
+    const importedTexts = document.getElementById('preview');
     const fd = new FormData();
     fd.append('myFile', file);
     fetch(URL.createObjectURL(file))
@@ -915,6 +927,19 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
         console.log(JSON.parse(importedTexts.dataset.texts));
       })
+    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
+      importedTexts.dataset.loadedfiles = [JSON.stringify(["plain text"])];
+    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
+      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+      if (loadedfiles.includes("plain text") === false) {
+        loadedfiles.push("plain text");
+        importedTexts.dataset.loadedfiles = [JSON.stringify(loadedfiles)];
+      }
+    }
+    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+    loadedfiles.forEach(function(eachtype) {
+      document.getElementById('items_loaded').innerHtml += eachtype + " ";
+    });
   }
   sendDocxFile = (file) => {
     console.time();
@@ -1122,6 +1147,12 @@ my two mistresses: what a beast am I to slack it!`,*/
         event.target.value
     });
   }
+  handleWordChange = (event) => {
+    this.setState({
+      valueword:
+        event.target.valueword
+    });
+  }
 
 
   checkBox = (event) => {
@@ -1135,11 +1166,16 @@ my two mistresses: what a beast am I to slack it!`,*/
         el.onended = (event) => {
           const allAudioElements = audioTagName;
           console.log(event.currentTarget);
+          console.log(allAudioElements);
           //allAudioElements[0].remove(); 
           if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
+
             const myAudioItems = document.getElementById('myAudioFiles');
+            console.log(myAudioItems.children);
             const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
-            myAudioItems.childNodes[this.state.indexAudioElement].play();
+            if (indexAudioElement < allAudioElements.length) {
+              myAudioItems.childNodes[indexAudioElement].play();
+            }
           }
         };
       }
@@ -1197,6 +1233,46 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
 
   }
+  addNewWord = (event) => {
+    const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+    this.setState({
+      valueword:
+        event.target.valueword
+    });
+    const valueword = document.getElementById("valueword").value;
+    const importedTexts = document.getElementById('preview');
+    if (valueword === "") {return;};
+    importedTexts.dataset.textValue = "";
+    importedTexts.dataset.textValue += valueword;
+    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
+      importedTexts.dataset.loadedfiles = [JSON.stringify(["text"])];
+    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
+      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+      if (loadedfiles.includes("text") === false) {
+        loadedfiles.push("text");
+        importedTexts.dataset.loadedfiles = [JSON.stringify(loadedfiles)];
+      }
+    }
+    document.getElementById('items_loaded').innerHtml = "loaded data type(s): ";
+    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+    loadedfiles.forEach(function(eachtype) {
+      document.getElementById('items_loaded').innerHtml += eachtype + " ";
+    });
+    const daysDate = new Date();
+    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+    const msTime = Date.now();
+    const newText = {"textId":newTextId, "lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": ""};
+    newText.mycontent = [valueword];
+    if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
+      const myTextInfo = [];
+      myTextInfo.push(newText);
+      importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+    } else if (importedTexts.dataset.texts === (null||undefined) || importedTexts.dataset.texts.length === 0) {
+      const myTextInfo = [];
+      myTextInfo.push(newText);
+      importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+    }
+  }
   addNewText = (event) => {
     const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
     this.setState({
@@ -1204,8 +1280,23 @@ my two mistresses: what a beast am I to slack it!`,*/
         event.target.value
     });
     const importedTexts = document.getElementById('preview');
+    if (this.state.value === "") {return;};
     importedTexts.dataset.textValue = "";
     importedTexts.dataset.textValue += this.state.value;
+    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
+      importedTexts.dataset.loadedfiles = [JSON.stringify(["text"])];
+    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
+      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+      if (loadedfiles.includes("text") === false) {
+        loadedfiles.push("text");
+        importedTexts.dataset.loadedfiles = [JSON.stringify(loadedfiles)];
+      }
+    }
+    document.getElementById('items_loaded').innerHtml = "loaded data type(s): ";
+    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+    loadedfiles.forEach(function(eachtype) {
+      document.getElementById('items_loaded').innerHtml += eachtype + " ";
+    });
     const daysDate = new Date();
     const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
     const msTime = Date.now();
@@ -1219,11 +1310,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       myTextInfo.push(newText);
       importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
     }
+   
 
-    console.log(document.getElementById('wordinput').value);
-    console.log(importedTexts.dataset.textValue); 
-    console.log(this.state.value); 
-    console.log(event.currentTarget.value); 
   }
   render() {
 
@@ -1243,6 +1331,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
         <iframe id={`input`} type={`application/pdf`} />
+        <input type={`submit`} value={`Import all texts and words`} id={`import_texts_words`} className={`btn btn-success btn-block`} />  
         <label id={`labelText`}>
           Your Text:
 
@@ -1251,8 +1340,17 @@ my two mistresses: what a beast am I to slack it!`,*/
         <button onClick={this.addNewText} className={`btn btn-success btn-block`}>  
           Add a new text
         </button>
+        <label id={`labelWord`}>
+          Your Word:
 
-        <input type={`submit`} value={`Import all texts and words`} id={`import_texts_words`} className={`btn btn-success btn-block`} />  
+
+        </label>
+        <br /><input onChange={this.handleWordChange} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
+        <button onClick={this.addNewWord} className={`btn btn-success btn-block`}>  
+          Add a new word 
+        </button>
+
+
         <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
@@ -1371,7 +1469,7 @@ class EditEntries extends React.Component {
         //  if (importedTexts.dataset.texts !== (null||undefined)) {
         //    importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), textItem.map(Object.entries)[0]]);
         //  } else if (importedTexts.dataset.texts === (null||undefined)) {
-        importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.entries))];
+        importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
         //  }
         //});
         console.log("importTexts texts on click remove text", JSON.parse(importedTexts.dataset.texts));
