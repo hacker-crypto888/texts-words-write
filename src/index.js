@@ -7,6 +7,8 @@ PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 const mammoth = require("mammoth");
 //handle dates ----> do like for "remove text function " (import and export texts in imported Texts field and remove the items not matching the selected date (on click)
+
+//dates output in the array. before being able to "sort by date"
 //    const daysDate = new Date();
 //    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
 //    const msTime = Date.now();
@@ -62,12 +64,17 @@ class BasicForm extends React.Component {
       textObject:null,
       thisIsMyTextList:null,
       thisIsMyText:null,
+      itemsloaded:null,
     };
   }
   componentDidMount() {
     document.getElementById('loadingAudioFiles').hidden = true;
     this.btn.setAttribute('disabled','disabled'); 
     const allAudioElements = document.getElementsByTagName('audio'); 
+    this.setState({
+      itemsloaded:
+        'no items loaded'
+    });
   }
 
   fieldOnblur = () => {
@@ -260,9 +267,7 @@ class BasicForm extends React.Component {
         </button>
 
        </div>
-       <div id="items_loaded">
-         no items loaded
-       </div>
+
        <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
 
         Start a new game 
@@ -678,6 +683,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       idx:null,
       wordsWithTextId:null,
       valueword:'',
+      displaytype:null,
+      textloadedtypes:'',
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -751,6 +758,26 @@ my two mistresses: what a beast am I to slack it!`,*/
           const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
           textObject.textId = newTextId; 
         }
+//handle dates ----> do like for "remove text function " (import and export texts in imported Texts field and remove the items not matching the selected date (on click)
+        const daysDate = new Date();
+        const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+        const msTime = Date.now();
+        if (textObject.dates === (null||undefined||[])) { //addNEw TExt function adds date already /*if this is a json you should add date of today*/
+          textObject.dates = [today];
+        } 
+        ///*but not if you want to sort by date the items you loaded before*/
+        ///*the load by date option is only reserved for the json */
+        ///*export the json file before you load it by date */
+
+        //1-/*export json*/
+        //start from importedTexts.dataset.texts that contains all texts
+        //turn into arra of objects
+        //export word by word without text info
+
+        //2-/*sort by date*/
+        //import json 
+        //remove whole texts with date
+
         console.log(textObject.mycontent);
         const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
         if (textObject.mycontent === "") {return;};
@@ -759,7 +786,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         };
         if(typeof textObject.mycontent === 'string') {
           const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-            return (element !== (null||undefined));
+            return (element !== (null||undefined||""));
           });
           textObject.mycontent = thisIsMyWordList;
         }
@@ -866,26 +893,6 @@ my two mistresses: what a beast am I to slack it!`,*/
           importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
         }
       })
-        
-
-         
-        //this.handleText(value);
-        //this.handleText();    
-        //text FILE
-        //array of arrays containing columns: text imported, file type, file name, text content,
-    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
-      importedTexts.dataset.loadedfiles = [JSON.stringify(["json"])];
-    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
-      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
-      if (loadedfiles.includes("json") === false) {
-        loadedfiles.push("json");
-        importedTexts.dataset.loadedfiles = [JSON.stringify(loadedfiles)];
-      }
-    }
-    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
-    loadedfiles.forEach(function(eachtype) {
-      document.getElementById('items_loaded').innerHtml += eachtype + " ";
-    });
   }
 
   sendFile = (file) => {
@@ -914,8 +921,14 @@ my two mistresses: what a beast am I to slack it!`,*/
         console.log("MY ITEMS", myItems);
         myItems.forEach(function(f) {
           if (!this[f.textId]) {
-            this[f.textId] = { "textId": f.textId, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath, "mycontent":[] }
+            this[f.textId] = { "textId": f.textId, "dates":f.dates, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath, "mycontent":[] }
             thisIsMyTextList.push(this[f.textId]);
+          }
+          const daysDate = new Date();
+          const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+          const msTime = Date.now();
+          if(this[f.textId].dates instanceof Array && this[f.textId].dates.length === 0) {
+            this[f.textId].dates = [today];
           }
           this[f.textId].mycontent.push(f.word);
         }, Object.create(null));
@@ -927,19 +940,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
         console.log(JSON.parse(importedTexts.dataset.texts));
       })
-    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
-      importedTexts.dataset.loadedfiles = [JSON.stringify(["plain text"])];
-    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
-      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
-      if (loadedfiles.includes("plain text") === false) {
-        loadedfiles.push("plain text");
-        importedTexts.dataset.loadedfiles = [JSON.stringify(loadedfiles)];
-      }
-    }
-    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
-    loadedfiles.forEach(function(eachtype) {
-      document.getElementById('items_loaded').innerHtml += eachtype + " ";
-    });
   }
   sendDocxFile = (file) => {
     console.time();
@@ -986,6 +986,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
     };
     reader.readAsArrayBuffer(file);
+    const importedTexts = document.getElementById('preview');
 
   }
 
@@ -1098,7 +1099,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     //
     reader.readAsDataURL(file); 
-
   }
 
   dropbox = (files) => {
@@ -1244,24 +1244,11 @@ my two mistresses: what a beast am I to slack it!`,*/
     if (valueword === "") {return;};
     importedTexts.dataset.textValue = "";
     importedTexts.dataset.textValue += valueword;
-    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
-      importedTexts.dataset.loadedfiles = [JSON.stringify(["text"])];
-    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
-      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
-      if (loadedfiles.includes("text") === false) {
-        loadedfiles.push("text");
-        importedTexts.dataset.loadedfiles = [JSON.stringify(loadedfiles)];
-      }
-    }
-    document.getElementById('items_loaded').innerHtml = "loaded data type(s): ";
-    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
-    loadedfiles.forEach(function(eachtype) {
-      document.getElementById('items_loaded').innerHtml += eachtype + " ";
-    });
+
     const daysDate = new Date();
     const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
     const msTime = Date.now();
-    const newText = {"textId":newTextId, "lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": ""};
+    const newText = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": ""};
     newText.mycontent = [valueword];
     if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
       const myTextInfo = [];
@@ -1283,24 +1270,10 @@ my two mistresses: what a beast am I to slack it!`,*/
     if (this.state.value === "") {return;};
     importedTexts.dataset.textValue = "";
     importedTexts.dataset.textValue += this.state.value;
-    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
-      importedTexts.dataset.loadedfiles = [JSON.stringify(["text"])];
-    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
-      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
-      if (loadedfiles.includes("text") === false) {
-        loadedfiles.push("text");
-        importedTexts.dataset.loadedfiles = [JSON.stringify(loadedfiles)];
-      }
-    }
-    document.getElementById('items_loaded').innerHtml = "loaded data type(s): ";
-    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
-    loadedfiles.forEach(function(eachtype) {
-      document.getElementById('items_loaded').innerHtml += eachtype + " ";
-    });
     const daysDate = new Date();
     const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
     const msTime = Date.now();
-    const newText = {"textId":newTextId, "lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
+    const newText = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
     if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
       const myTextInfo = [];
       myTextInfo.push(newText);
@@ -1316,8 +1289,10 @@ my two mistresses: what a beast am I to slack it!`,*/
   render() {
 
 
+    const itemsloaded = this.state.itemsloaded;
 
     return (
+
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
         <div>
           <input type="checkbox" id="playAllTheWords" value={this.state.preloadOrAutoplay} onChange={this.checkBox} name="playAllTheWords"/>
@@ -1381,6 +1356,7 @@ class EditEntries extends React.Component {
       textdiv:null,
       output:null,
       thisIsMyWordList:null,
+      thisIsMyTextList:null,
       myTextList:null,
       myItems:null,
       importedTexts:null,
@@ -1390,12 +1366,30 @@ class EditEntries extends React.Component {
       allTheTexts:null,
       value:null,
       textObject:null,
+      importText:null,
     }
   }
   componentDidMount = () => {
   }
   editEntries = (event) => {
     const importedTexts = document.getElementById('preview'); 
+    const importText = JSON.parse(importedTexts.dataset.texts); 
+    const thisIsMyTextList = [];
+    importText.forEach(function(mytext) {
+      const textObject = {};
+
+      mytext.forEach(function(myinfo) {
+        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;};
+        textObject[myinfo[0]] = myinfo[1];
+      });
+      if(textObject === {}) {return;};
+      if(!textObject.mycontent) {return;};
+      console.log(textObject.content); 
+      thisIsMyTextList.push(textObject);
+      
+    });
+    if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
+    console.log(thisIsMyTextList);
     const modalbody = document.getElementById('modal-body');
     const exportText = JSON.parse(importedTexts.dataset.texts);
     exportText.forEach(function(text) {

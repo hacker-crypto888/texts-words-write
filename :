@@ -1,39 +1,15 @@
 import React, {setState} from 'react'; 
 import ReactDOM from 'react-dom'; 
 import './index.css';
-import axios from 'axios';
 import DatePicker from 'react-date-picker';
-const pdfjsLib = require('pdfjs-dist');
-pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
-const path = require('path');
-const fs = require('fs');
-//const pdfjsWorker = require('pdfjs-dist/build/pdf.worker.min');
-//const PDFExtract = require('pdf.js-extract').PDFExtract;
-//const pdfjsWorkerBlob = new Blob([pdfjsWorker]);
-//const pdfjsWorkerBlobURL = URL.createObjectURL(pdfjsWorkerBlob);
-//pdfjsLib.workerSrc = pdfjsWorkerBlobURL;
-//const pdfText = require('pdf-text');
-//const PdfReader = require("pdfreader").PdfReader;
-//const pdf = require('pdf-parse');
-//const docx = require('./docx')
-//const word2html = require('word2html');
-//const getDocumentProperties = require('office-document-properties');
-//const unoconv = require('unoconv');
-//const converter = require('office-converter')();
-//const WordExtractor = require("word-extractor");
-//const docxParser = require('docx-parser');
-//const office2html = require('office2html'),
-//  generateHtml = office2html.generateHtml;
-//const docxParser = require('docx-parser');
-//const anyFileParser = require('anyfileparser');
-//const dxe = require('docx-extractor');
-//const officeParser = require('officeparser');
-//const textract = require('textract');
+const PDFJS = window['pdfjs-dist/build/pdf'];
+PDFJS.workerSrc = 'pdf.worker.js';
+PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 const mammoth = require("mammoth");
-const s = document.createElement("script");
-s.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js";
-s.onload = function(e){ /* now that its loaded, do something */ }; 
-document.head.appendChild(s); 
+//handle dates ----> do like for "remove text function " (import and export texts in imported Texts field and remove the items not matching the selected date (on click)
+//    const daysDate = new Date();
+//    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+//    const msTime = Date.now();
 class BasicForm extends React.Component {
   constructor(props) {
     super(props);
@@ -80,17 +56,18 @@ class BasicForm extends React.Component {
       dataOutput:null,
       someData:null,
       myAudioItems:null,
-      firstAudio:null
+      firstAudio:null,
+      importedTexts:null,
+      importText:null,
+      textObject:null,
+      thisIsMyTextList:null,
+      thisIsMyText:null,
     };
   }
   componentDidMount() {
     document.getElementById('loadingAudioFiles').hidden = true;
     this.btn.setAttribute('disabled','disabled'); 
     const allAudioElements = document.getElementsByTagName('audio'); 
-    const dataOutput = document.getElementById("outputJsonFile");
-    const someData = document.createElement('a');
-    someData.id = 'some-data';
-    dataOutput.appendChild(someData);
   }
 
   fieldOnblur = () => {
@@ -140,6 +117,25 @@ class BasicForm extends React.Component {
     });
   };
   displayAudio = event => {
+    const importedTexts = document.getElementById("preview");
+    const importText = JSON.parse(importedTexts.dataset.texts); 
+    const thisIsMyTextList = [];
+    importText.forEach(function(mytext) {
+      const textObject = {};
+
+      mytext.forEach(function(myinfo) {
+        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;};
+        textObject[myinfo[0]] = myinfo[1];
+      });
+      if(textObject === {}) {return;};
+      if(!textObject.mycontent) {return;};
+      console.log(textObject.content); 
+      thisIsMyTextList.push(textObject);
+      
+    });
+    if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
+    console.log(thisIsMyTextList);
+
     const myNode = document.getElementById('myAudioFiles');
     while(myNode.firstChild) {
       myNode.removeChild(myNode.firstChild);
@@ -151,18 +147,20 @@ class BasicForm extends React.Component {
         return response.json();
       })
       .then(function(mp3WordList){
-        if(document.getElementById('items_by_date') && document.getElementById('items_by_date').dataset.databaseJson) {
+        document.getElementById('loadingAudioFiles').hidden = false;
 
-          document.getElementById('loadingAudioFiles').hidden = false;
-          const myBlub = JSON.parse(document.getElementById('items_by_date').dataset.databaseJson);
-          const items = myBlub.items;
-          items.forEach(function(item, index, object) {
-            //console.log(item);
-            //const myAudioFiles = document.getElementById('myAudioFiles');
+        const importText = JSON.parse(importedTexts.dataset.texts);
+        importText.forEach(function(item, index, object) {
+          const textObject = {};
+          item.forEach(function(textitem) {
+            textObject[textitem[0]]=textitem[1];
+          });
+          console.log(textObject, textObject.mycontent);
+          textObject.mycontent.forEach(function(myworditem) {
             const audioFilePreview = document.createElement('audio'); 
-            audioFilePreview.className=item.word;
-            audioFilePreview.key=item.id;
-            audioFilePreview.id=item.word;
+            audioFilePreview.className=myworditem;
+            audioFilePreview.key=index;
+            audioFilePreview.id=myworditem;
             audioFilePreview.controls=true;
             audioFilePreview.onpause = (event) => {
               event.currentTarget.currentTime = 0;
@@ -170,64 +168,30 @@ class BasicForm extends React.Component {
             if (document.getElementById('playAllTheWords').checked) {
               audioFilePreview.onended = (event) => {
                 const allAudioElements = document.getElementsByTagName('audio');
-                //console.log(event.currentTarget);
-                //allAudioElements[0].remove(); 
-                //if (allAudioElements[1]) {
                 if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
-                  //const allAudioElements = document.getElementsByTagName('audio');
-                  //const firstAudio = allAudioElements[0];
-
-
-                  //allAudioElements[0].remove(); 
-                  //const myAudioItems = document.getElementById('myAudioFiles');       
-                  //myAudioItems.appendChild(firstAudio);
-                  //oItems.firstChild.play();
-                  //allAudioElements[0].remove(); 
-                  //allAudioElements[0].play();
-                  //const allAudioElements = document.getElementsByTagName('audio');
                   const myAudioItems = document.getElementById('myAudioFiles');
-                  //const firstAudio = allAudioElements[0];
 
                   const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
-                  //event.currentTarget.remove();
                   myAudioItems.childNodes[indexAudioElement].play();
-                  //myAudioItems.insertBefore(event.currentTarget, myAudioItems.children[indexAudioElement]);
 
                 }
               };
             }
-              //const indexes = [];
-              ////const mylist = ['a', 'b', 'a', 'c', 'a', 'd'];
-              //const mylist = allAudioElements;
-              //const element = event.currentTarget;
-              //const idx = mylist.indexOf(element);
-              //while (idx != -1) {
-              //  indexes.push(idx);
-              //  idx = mylist.indexOf(element, idx + 1);
-              //}
-              //console.log(indexes);
-              
-
-            
-
             audioFilePreview.onplay = (event) => { 
               const wordInputField = document.getElementById('wordinput');
               wordInputField.dataset.targetValue = audioFilePreview.id;
             };
-            //console.log(item.word);
             [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
-              if(mp3[0] === item.word && mp3[1].length){
+              if(mp3[0] === myworditem && mp3[1].length){
                 mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
                   const theFirstChild = audioFilePreview.firstChild;
                   const sourceFile = document.createElement('source');
                   sourceFile.src = mp3link; 
-                  //console.log(mp3link);
-                  sourceFile.className = item.word; 
+                  sourceFile.className = myworditem; 
                   sourceFile.type = 'audio/mpeg'; 
                   audioFilePreview.insertBefore(sourceFile, theFirstChild);
 
                 })
-                //myAudioFiles.appendChild(audioFilePreview);
                 myAudioFiles.push(audioFilePreview);
                 
               }
@@ -236,15 +200,12 @@ class BasicForm extends React.Component {
             document.getElementById('loadingAudioFiles').hidden = true;
 
           });
-        }
-        const previewMyAudioFiles = document.getElementById('myAudioFiles');
-        myAudioFiles.forEach(function(item, index, object) {
-          previewMyAudioFiles.appendChild(item); 
-        });
+          const previewMyAudioFiles = document.getElementById('myAudioFiles');
+          myAudioFiles.forEach(function(item, index, object) {
+            previewMyAudioFiles.appendChild(item); 
+          });
+        })
       })
- 
-    //display AUDIO FILES THAT ARE IN AN ARRAY ONE BY ONE 
-
   }
   removeAudioPlayer = (props) => {
     const targetValue = document.getElementById('wordinput').dataset.targetValue;
@@ -275,58 +236,67 @@ class BasicForm extends React.Component {
     
     return(
       <form onSubmit={this.handleSubmit}>
-           <div className={`form-group`}> 
+       <div>
+       <div className={`form-group`}> 
 
 
-             <div className="spinner-border" id={`loadingAudioFiles`} role="status">
-               <span className="sr-only">Loading...</span>
-             </div>
-             <label htmlFor={`wordinput`}></label>
-             <input
-               className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
-               id={`wordinput`}
-               placeholder='Enter word'
-               value={this.state.inputValue}
-               //onMouseOver={this.displayAudio}
-               onClick={this.handleWordInput}
-               onFocus={this.handleWordInput}
-               onChange={e => this.setState({ inputValue: e.target.value }) }
+        <div className="spinner-border" id={`loadingAudioFiles`} role="status">
+         <span className="sr-only">Loading...</span>
+        </div>
+        <label htmlFor={`wordinput`}></label>
+        <input
+         className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
+         id={`wordinput`}
+         placeholder='Enter word'
+         value={this.state.inputValue}
+         //onMouseOver={this.displayAudio}
+         onClick={this.handleWordInput}
+         onFocus={this.handleWordInput}
+         onChange={e => this.setState({ inputValue: e.target.value }) }
                
-             />
-             <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
-               click me
-             </button>
+        />
+        <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
+         click me
+        </button>
 
+       </div>
+       <div id={"items_loaded"}>
+         no items loaded
+       </div>
+       <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
+
+        Start a new game 
+       </button>
+       <br />
+
+       <div>{this.state.wordtest}</div>
+       <div>{this.state.checkInput}</div>
+       <div>{this.state.checkTarget}</div>
+       <div>{this.state.variableErrors}</div>
+       <div id={`myAudioFiles`}></div>
+       <div>
+        <p>
+         <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
+                 {`\u2699`} Settings
+         </button>
+        </p>
+
+        <div className="collapse" id="mysettings">
+         <div className="card card-body">
+           <div>
+             <RegistrationForm />
            </div>
-
-             <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
-
-               Start a new game 
-             </button>
-             <br />
-
-           <div>{this.state.wordtest}</div>
-           <div>{this.state.checkInput}</div>
-           <div>{this.state.checkTarget}</div>
-           <div>{this.state.variableErrors}</div>
-           <div id={`myAudioFiles`}></div>
-
-           <p>
-             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
-              {`\u2699`} Settings
-             </button>
-           </p>
-           <div className="collapse" id="mysettings">
-            <div className="card card-body">
-              <div>
-                <RegistrationForm />
-              </div>
-              <div id={`myFillInTheDateForm`}>
-                <FillInTheDateForm />
-              </div>
-            </div>
+           <div id={`myFillInTheDateForm`}>
+             <FillInTheDateForm />
            </div>
-          </form>
+           <div>
+             <EditEntries />
+           </div>  
+         </div>
+        </div>
+       </div>
+       </div>
+      </form>
     );
   }
 }
@@ -402,17 +372,6 @@ class FillInTheDateForm extends React.Component {
   componentDidMount() {
     const date = new Date();
     this.setState({date});
-    document.getElementById('dropzoneSortByDate').hidden = false;
-    document.getElementById('dropMyJson').hidden = true;
-    document.getElementById('labelDropMyJson').hidden = true;
-    document.getElementById('jsonInPublicDir').hidden = true;
-    document.getElementById('labelJsonInPublicDir').hidden = true;
-    document.getElementById('submit-date-btn').hidden = true;
-    document.getElementById('dropzoneSortByDate').hidden = true;
-    const dataOutput = document.getElementById("outputJsonFile");
-    const someData = document.createElement('a');
-    someData.id = 'some-data';
-    dataOutput.appendChild(someData);
   }
   onChange = (date) => {
     this.setState({ date });
@@ -456,55 +415,23 @@ class FillInTheDateForm extends React.Component {
 
         const outputJson = document.getElementById("outputJsonFile");
         
-        if(document.getElementById("items_by_date")) {
-          document.getElementById("items_by_date").remove();
-        }
+        //if(document.getElementById("items_by_date")) {
+        //  document.getElementById("items_by_date").remove();
+        //}
         const outputLink = document.createElement('a');
         //console.log(myItemsByDate);
         //BLOB TYPE: JSON, \\\\\\NO MORE NEEDED (THE APP CAN DIRECTLY LOAD THE WORDS THAT WERE DROPPED IN THE DROPZONE//////
         outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'})); //OBJECT TYPE: ARRAY
-        //ORIGIN: DATASET 
-        //COLUMNS: WORD, ID, DATES OF CONSULTATION
-        //IT WAS NOT PRECISED WHETHER DATA CAME FROM A FILE WITH SOME TYPE OR JUST THE TEXT TYPED IN THE TEXT AREA
-        //DATE OF EACH WORD (SEVERAL DATES FOR SEVERAL DAYS OF OCCURRENCE)
-
-        //\\THE DATASET WAS ASSIGNED TO ITS HTML ELEMENT ELSEWHERE IN THE CODE
         outputLink.innerHTML = "download JSON file (date of data entry: "+selectedDate+ ")";
         outputLink.download = 'items.json';
-        outputLink.id = 'items_by_date';
+        outputLink.id = 'items_link';
         outputLink.hidden = false;
 
         outputJson.hidden = false;
-        //alert('Your JSON file with items sorted by date is ready. save it under public/ directory of your app, reload page and start playing!');
-        //DATASET TYPE: JSON
-
-        //////////////------------------------------------------/
-        //BLOB TYPE
-        //DATASET TYPES
-        //ARRAY TYPES / OBJECTS TYPES
-        //ARRAYS / OBJECTS FIELDS (EX: NAME, WORD, ID, DATE, TITLE
-        //FILE TYPES (FETCH) 
-        //////////////------------------------------------------/
-        //STORE IN: 1) JSON
-        //2)DATASET 
-        //////////////------------------------------------------/
-        //DATA INPUT(FOR THE AUDIO DISPLAYER)/OUTPUT(FOR THE FORM FIELDS) TO DISPLAY AUDIO IS A DATASET
-        //////////////------------------------------------------/
-        //BOOTSTRAP\\\\\\ CAN ONLY BE POSSIBLE IF ALL THE INFO FROM FETCH (FROM THE DROPPED FILES) AND THE BLOBS (DATABASES THAT ARE MADE WITH THE FORMDATA) IS COMPLETE
-        //////////////------------------------------------------/
-        //EVENT LISTENERS CAN ONLY BE WORKED OUT IF THE JSON IS CORRECTLY WORKED OUT AS WELL
-        //////////////------------------------------------------/
-        //WHERE THE DATABASES (IN CONSTANTS) ARE LOADED / ASSIGNED: LOOK FOR ITS LINES AND COLUMNS IN THE CODE ABOVE IT (USING THE PROPS)
         outputLink.dataset.databaseJson = JSON.stringify({"items": myItemsByDate}); //LINES: UNKNOWN
-        //COLUMNS: WORD, ID, ARRAY OF DATES (PROGRAM JAVASCRIPT)
         outputJson.appendChild(outputLink);
 
       } else {
-        //INITIALIZE DOWNLOAD LINKS AREA//
-        //const myOutputNode = document.getElementById('outputJsonFile');
-        //while(myOutputNode.firstChild) {
-        //  myOutputNode.removeChild(myOutputNode.firstChild);
-        //}
         const myInputNode = document.getElementById('inputJsonFile');
         while(myInputNode.firstChild) {
           myInputNode.removeChild(myInputNode.firstChild);
@@ -526,54 +453,20 @@ class FillInTheDateForm extends React.Component {
     }
 
   }
-  itemsByDateLoadForm = (event) => {
-    //alert('test');
-    if (document.getElementById('items_by_date') && document.getElementById('items_by_date').dataset.databaseJson) {
-      if(document.getElementById("items_by_date")) {
-        document.getElementById("items_by_date").remove();
-      }
-      event.target.removeEventListener('mouseover', this.itemsByDateLoadForm); 
-      //console.log(event.target.clientHeight);
-
-      document.getElementById('dropMyJson').removeAttribute('hidden');
-      document.getElementById('labelDropMyJson').removeAttribute('hidden');
-
-      document.getElementById('jsonInPublicDir').removeAttribute('hidden');
-      document.getElementById('dropzoneSortByDate').hidden = true;
-      document.getElementById('jsonInPublicDir').checked = true;
-      document.getElementById('labelJsonInPublicDir').removeAttribute('hidden');
-      document.getElementById('submit-date-btn').removeAttribute('hidden');
-      //document.getElementById('dropzoneSortByDate').removeAttribute('hidden');
-
-      
-    } 
-  }
   render() {    
     return (    
       <form onSubmit={this.handleSubmittedDate}>
-      <label>Load words by date</label>
-      <div id={`setImportMode`} onChange={event => this.setImportMode(event)}>
-        <input type={`radio`} id={`jsonInPublicDir`} value={`load`} name={`importMode`} />
-        <label id={`labelJsonInPublicDir`} for={`jsonInPublicDir`}>Sort items by date</label>
-        <input type={`radio`} id={`dropMyJson`} value={`drop`} name={`importMode`} />
-        <label id={`labelDropMyJson`} for={`dropMyJson`}> Rather load my own database.json file</label>
-      </div>
-      
-      <div id={`dropzoneSortByDate`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
-      <div id={`previewSortByDate`}></div>
+      <div id="items_by_date"><label>Load words by date</label></div>
       <div>
         <DatePicker
           id="myDatePicker"
           onChange={this.onChange}
-          onMouseOver={this.itemsByDateLoadForm}
           value={this.state.date}
         />
       </div>
       <div>
         <input type="submit" id="submit-date-btn" value="Submit selected date" className='btn btn-success btn-block' />  
       </div>
-      <div id={`inputJsonFile`}></div>
-      <div id={`outputJsonFile`}></div>
       </form>
     );
   }  
@@ -702,11 +595,11 @@ my two mistresses: what a beast am I to slack it!`,*/
       myDivForNewData:null,
       newTexts: null,
       importedTexts:null,
-      myTextInfo:null,
       finalArray:null,
       output:null,
       myTextContent:null,
       allWordsFromTexts:null,
+      myTextInfo:null,
       myWordInfo:null,
       newText:null,
       mySuperWordList:null,
@@ -716,7 +609,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       c:null,
       myResult:null,
       myTextList:null,
-      myTextId:null,
+      newTextId:null,
       allMyWords:null,
       allMyTexts:null,
       thisIsMyTextList:null,
@@ -759,12 +652,36 @@ my two mistresses: what a beast am I to slack it!`,*/
       binary:null,
       img:null,
       returnedBlob:null,
-      returnedBase64:null
-      
+      returnedBase64:null,
+      BASE64_MARKER:null,
+      base64Index:null,
+      base64:null,
+      raw:null,
+      rawLength:null,
+      pdfAsDataUri:null,
+      pdfAsArray:null,
+      littleWordList:null,
+      PDF_URL:null,
+      totalPages:null,
+      pageNumber:null,
+      pdfDocument:null,
+      pagesPromises:null,
+      loadingTask:null,
+      fileContent:null,
+      JSON2AUDIO:null,
+      texts:null,
+      words:null,
+      exportText:null,
+      wordsWithThisTextId:null,
+      textInfo:null,
+      textObject:null,
+      idx:null,
+      wordsWithTextId:null,
+      valueword:'',
+      displaytype:null,
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
-
   }
 
   componentDidMount() {
@@ -772,11 +689,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
     document.getElementById('noDatabaseFile').addEventListener('checked', this.checkBox);
-    const dataOutput = document.getElementById("outputJsonFile");
-    const someData = document.createElement('a');
-    someData.id = 'some-data';
-    dataOutput.appendChild(someData);
-    //const allTheImportedTexts = document.getElementById('preview').dataset.textImport;
     const importedTexts = document.getElementById('preview');
     importedTexts.dataset.textValue = '';
     const wordList = [];
@@ -784,11 +696,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     const thisIsMyWordList = [];
     const thisIsMyTextList = [];
     const allMyTexts = []; 
-    //allTheImportedTexts = {};
-
-
-
-
   }
 
   handleNameChange = event => {
@@ -818,13 +725,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         email.length > 3 ? null : 'Email must be longer than 3 characters' 
     });
   }
-  importAllWords = (event) => {
-    //axios.get(`./database.json`)
-    //  .then(res => {
-    //    const database = res.data.items.map(obj => obj);
-    //    this.setState({ database });
-    //  });
-  }
   splitContent = () => {
     const importedTexts = document.getElementById('preview');
     //const importText = importedTexts.dataset.splitContent;
@@ -834,339 +734,53 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   handleText = (event) => {
-    //const wordList = [];
-    //YOU HAVE NO DATABASE.JSON AND YOU HAVE NO ITEMS
-    //if (this.state.value === (null||undefined)) {
-    //  this.state.value = document.getElementById('preview').dataset.textValue;
-    //}
     const importedTexts = document.getElementById('preview');
-    //if (importedTexts.dataset.textValue === undefined) {
-    //  importedTexts.dataset.textValue = "";
-    //}
-    //importedTexts.dataset.textValue += this.state.value;
-    console.log(importedTexts.dataset.textValue);
-    //if (document.getElementById('noDatabaseFile').checked === true && this.state.myItems === ([]||undefined)) {
-    //}
-
-    //ALERT BOXES (TEXT IN TEXTAREA)
-    //if (/*this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") === ""*/) {
-    //YOU IMPORT THE TEXT YOU ENTERED INTO THE VARIABLE WORDLIST
-    const daysDate = new Date();
-    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-    const msTime = Date.now();
-
-    const newText = {"lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
-    const mySuperList = this.state;
-    //TO HAVE IMPORTED TEXTS
-    if (importedTexts.dataset.texts && importedTexts.dataset.texts.length && importedTexts.dataset.textValue !== "") {
-      const myTextInfo = [];
-      myTextInfo.push(newText);
-      importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-      //importedTexts.dataset.textValue = "";
-      //console.log(JSON.parse(importedTexts.dataset.texts));
-    } else if (importedTexts.dataset.texts === (null||undefined) && importedTexts.dataset.textValue !== "") {
       
-      const myTextInfo = [];
-      myTextInfo.push(newText);
-      //console.log(myTextInfo);
-      //importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      //importedTexts.dataset.textValue = "";
-      //console.log(importedTexts.dataset.texts);
-      //console.log(JSON.parse(importedTexts.dataset.texts));
-    }
-    //if(importedTexts.dataset.texts && importedTexts.dataset.texts.length) {
-    //  console.log(importedTexts.dataset.texts);
-    //  //importedTexts.dataset.texts.push(newText);
-    //}
-
-    //const indataset = Object.entries(allTheImportedTexts).map(([k,v]) => [k,v]);
-    //indataset.push(Object.entries(newText).map(([k,v]) => [k,v]));
-    //const allTheImportedTexts = this.state;
-
-    //console.log(this.state.allTheImportedTexts);
-    
-    //console.log(allTheImportedTexts);
-    //const importText = '';
-    //const databaseJson = [];
-    ///////////////////////////////////////////////////
-    //if you only imported JSON
-    //else if you imported JSON and texts OR if you imported texts and did not import JSON(add JSON import at the end of else loop)
-    ///////////////////////////////////////////////////
-    //- import PDF, DOC, 
-    // - 
-    // - export JSON
-    //////////////////////////////////////////////////
-    //const wordList = [];
-    //TO HAVE DROPPED FILES
     if(importedTexts.dataset.texts && JSON.parse(importedTexts.dataset.texts).length) {
+      const littleWordList = [];
       const myTextList = [];
-      const thisIsMyWordList = [];
+      //const thisIsMyWordList = [];
       const thisIsMyTextList = [];
       const allMyTexts = JSON.parse(importedTexts.dataset.texts); //allMyTexts is a JSON ARRAY THAT CONTAINS ALL THE TEXTS HAVING BEEN INSERTED, DROPPED OR ADDED TO BE HANDLED BY THE PROGRAM
+      console.log("allMyTexts",allMyTexts);
       allMyTexts.forEach(function(mytext) { //mytext IS A JSON ARRAY THAT CONTAINS INFO ABOUT A TEXT
-        const myTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
-
-
-
-
-
-        //if(importedTexts.dataset.words === (undefined||null)) {
-        //  importedTexts.dataset.words = []; 
-        //}
-        //json word by word 
-        if (mytext && mytext.length === 7){ //mytext IS AN OBJECT THAT CONTAINS INFO ABOUT THE TEXT OF THE FILE
-          //console.log(mytext[6][1]);
-          importedTexts.dataset.splitContent = mytext[6][1]; //importedTexts.dataset.splitContent IS A STRING THAT CONTAINS THE TEXTUAL CONTENT OF THE FILE
-          //console.log(importedTexts.dataset.splitContent); //String in Array
-          //console.log(mytext);
-          mytext.pop();
-        }
-
-        //if (importedTexts.dataset.words === (undefined||null)) {
-        //  importedTexts.dataset.words = [];
-        //}
-        //const wordList = this.state;
-        const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-        if(importedTexts.dataset.splitContent !== (null||undefined)) {
-          importedTexts.dataset.words = x(importedTexts.dataset.splitContent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-            return (element !== (null||undefined));
-            //importedTexts.dataset.words.push(element);
-            //console.log(importedTexts.dataset.words);
-          });
-          //importedTexts.dataset.mywords = importedTexts.dataset.words.split(',');
-          //console.log(importedTexts.dataset.mywords);
-          //console.log(importedTexts.dataset.mywords.type);
-
-          importedTexts.dataset.words.split(',').forEach(function(word) { //importedTexts.dataset.words IS AN ARRAY OF STRINGS THAT ARE THE WORDS OF THE TEXT THAT HAS BEEN SPLITTED INTO STRINGS OF WORDS
-            //console.log(word); 
-            //console.log(mytext); 
-            if (word === "") { return; } 
-
-            const output = {}; 
-            mytext.forEach(function(data){ //mytext IS A JSON ARRAY THAT CONTAINS ALL THE INFORMATION ABOUT THE TEXT THAT WAS DROPPED OR CREATED
-              output[data[0]]=data[1]
-            });
-            output["word"]=word; // output is AN OBJECT THAT CONTAINS THE PRINCIPAL INFO ABOUT THE WORD AND ITS TEXT
-            output['myTextId']=myTextId;
-            //console.log(output);
-            const myWordInfo = []; //myWordInfo IS AN ARRAY OF OBJECTS
-            myWordInfo.push(output);
-            //console.log(myWordInfo);
-            //console.log(importedTexts.dataset.wordList);
-
-            if (myWordInfo !== (null||undefined) && importedTexts.dataset.wordList !== (null||undefined)) {
-              importedTexts.dataset.wordList = JSON.stringify([...JSON.parse(importedTexts.dataset.wordList), myWordInfo.map(Object.entries)[0]]); //importedTexts.dataset.wordList IS A JSON STRING THAT CONTAINS THE WORD LIST OF THE FORM THAT WAS JUST SUBMITTED
-
-              //console.log(JSON.parse(importedTexts.dataset.wordList));
-              //console.log(importedTexts.dataset.wordList);
-              //console.log(JSON.parse(importedTexts.dataset.wordList));
-            } else if (myWordInfo !== (null||undefined) && importedTexts.dataset.wordList === (null||undefined)) {
-              importedTexts.dataset.wordList = [JSON.stringify(myWordInfo.map(Object.entries))];
-
-            //  console.log(JSON.parse(importedTexts.dataset.wordList));
-            }
-            
-
-          });  
-        }
-
-      });
-      console.log(JSON.parse(importedTexts.dataset.wordList));
-      //Text import
-      //const myBiggestWordList = [];
-      const output = [];
-      const result = JSON.parse(importedTexts.dataset.wordList);
-      //const result = []; 
-      //const wordList = this.state;
-      //const mySuperWordList = JSON.parse(importedTexts.dataset.wordList).forEach(function(output) {
-      //  const a = {}; 
-      //  output.forEach(function(data){
-      //    a[data[0]]=data[1]
-      //  });
-      //  myBiggestWordList.push(a);
-      // 
-      //});
-      //console.log(myBiggestWordList);
-      const myResult = [];
-      console.log(result);
-      result.forEach(function(b) { //result is a JSON OBJECT THAT CONTAINS WORD AND INFO
-        //console.log()
-        const a = {}; 
-        b.forEach(function(data){
-          a[data[0]]=data[1]
+        const textObject = {};
+        mytext.forEach(function(info) {
+          textObject[info[0]] = info[1];
         });
-        myResult.push(a);
-        console.log(b);
-        console.log(a);
+        if (!textObject.textId) {
+          const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+          textObject.textId = newTextId; 
+        }
+        console.log(textObject.mycontent);
+        const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
+        if (textObject.mycontent === "") {return;};
+        if (typeof textObject.mycontent[0] === 'string' && textObject.mycontent.length === 1) {
+          textObject.mycontent = [textObject.mycontent[0]];
+        };
+        if(typeof textObject.mycontent === 'string') {
+          const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+            return (element !== (null||undefined));
+          });
+          textObject.mycontent = thisIsMyWordList;
+        }
+        thisIsMyTextList.push(textObject);
       });
-      //  console.log(b);
-      //  console.log(b.lastModified);
-      //  if (b.word === "") { return; } 
-
-      //  const newText = {"lastModified": b.lastModified, "lastModifiedDate": b.lastModifiedDate, "name": b.name, "webkitRelativePath": b.webkitRelativePath, "size":b.size, "type":b.type};
-      //  const myTextInfo = [];
-      //  myTextInfo.push(newText);
-      console.log(myResult); //OBJECT CONTAINS LIST OF WORDS AND THEIR INFO
-      myResult.forEach(function(f) {
-        //const myTextList = this.state;
-        importedTexts.dataset.wordInfo = f;
-        if (!this[f.word]) {
-          this[f.word] = { "word": f.word, "textsId": [] };
-
-          output.push(this[f.word]);
-        }
-        //textId
-        const myTextId = this.state;
-        this[f.word].textsId.push(f.myTextId);
-        const myTextInfo = f;
-        delete myTextInfo["word"];
-        //delete myTextInfo[f.myTextId];
-        //myTextInfo["myTextId"] = f.myTextId;
-        const myTest = myTextList.some(v => v.myTextId === myTextInfo.myTextId);
-        console.log(myTextList.myTextId);
-        console.log(myTextInfo.myTextId);
-        console.log(myTest);
-        console.log(myTextList.length);
-        if (myTest === false) {
-       
-          myTextList.push(myTextInfo); 
-        }
-      }, Object.create(null));
-      //const myTextList = this.state;
-      console.log(output);
-      //importedTexts.dataset.addedWords = JSON.stringify(output.map(Object.entries));
-      output.forEach(function(f) {
-        if (!this[f.myTextId]) {
-          this[f.myTextId] = JSON.stringify(output.map(Object.entries));
-
-          thisIsMyWordList.push(this[f.myTextId]);
-        }
-      }, Object.create(null));
-      //importedTexts.dataset.bigWordList = JSON.stringify(output.map(Object.entries));
-      //console.log(JSON.parse(importedTexts.dataset.addedWords));
-      //importedTexts.dataset.bigWordList = '';
-      //--------------------------------------------------------
-      //importedTexts.dataset.addedTexts = JSON.stringify(myTextList.map(Object.entries));
-      myTextList.forEach(function(f) {
-        if (!this[f.myTextId]) {
-          this[f.myTextId] = JSON.stringify(myTextList.map(Object.entries));
-
-          thisIsMyTextList.push(this[f.myTextId]);
-        }
-      }, Object.create(null));
-      //importedTexts.dataset.bigTextList = JSON.stringify(myTextList.map(Object.entries));
-      //console.log(JSON.parse(importedTexts.dataset.addedTexts));
-      //--------------------------------------------------------
-
-    
-          //if (importedTexts.dataset.result !== (null||undefined) && importedTexts.dataset.result && importedTexts.dataset.result.length && importedTexts.dataset.result.length > 0) { 
-            //importedTexts.dataset.result = [...importedTexts.dataset.result, this[b.word]];
-          //} else if (importedTexts.dataset.result === (null||undefined)) {
-          //  importedTexts.dataset.result = [];
-          //importedTexts.dataset.result = [Object.entries(this[b.word])];
-          //}
-
-
-        //}
-        //if(this[a.word].texts && this[a.word].length === 0) {
-        //
-        //  this[a.word].texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-        //} else if(this[a.word].texts && this[a.word].length > 0){
-
-        //this[b.word].texts = JSON.stringify([...JSON.parse(this[b.word].texts), myTextInfo.map(Object.entries)[0]]);
-        //console.log(this[b.word].texts);
-        //console.log(this[b.word].texts);
-        //console.log(myTextInfo.map(Object.entries)[0]);
-        //if(!this[b.word].texts.includes(myTextInfo.map(Object.entries)[0])) {
-        //  this[b.word].texts.push(myTextInfo.map(Object.entries)[0]);
-        //}
-        //for (var i=0; i<this[b.word].texts.length ; i++) {
-        //} 
-        //const myTest = this[b.word].texts.some(v => v === myTextInfo.map(Object.entries)[0]);  
-        //console.log(myTest);
-        //{
-          //if(text === myTextInfo.map(Object.entries)[0]) {
-          //  return;
-          //} 
-        //});
-
-        //this[b.word].texts.push(myTextInfo.map(Object.entries)[0]);
-
-          
-        //console.log(this[b.word].texts);
-        //} 
-      //}, Object.create(null));
-
-
-      //console.log(result);
-      //importedTexts.dataset.result = JSON.stringify(result);
-
+      importedTexts.dataset.texts = "";
+      importedTexts.dataset.texts = [JSON.stringify(thisIsMyTextList.map(Object.entries))];
+      console.log('handle text function -> allMyTexts importedTexts texts', JSON.parse(importedTexts.dataset.texts));
     };
-    const result = this.state;
-    result.length = 0;
-    if (document.getElementById('noDatabaseFile').checked === false) {
-      this.alertNoDatabaseFile();
-    }
-
-
-    //YOU HAVE NO DATABASE.JSON AND YOU ENTERED A TEXT
-    //if(document.getElementById('noDatabaseFile').checked && this.state.value !== "") {
-      //ACTIVATION OF ONE DOWNLOAD LINK
-    //this.a.setAttribute("href","items.json");
-
-    this.setState({
-      textAtFileCreation:
-        this.state.value
-    });
-
-    //UPDATES DAY'S DATE
-    //const daysDate = new Date();
-    //const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-    //}
-
-      //importedTexts.dataset.result.push(this[a.word]);
-
-      
-
-        //importedTexts.dataset.result.push(this[a.word]);
-        //console.log(this[a.word]);
-      
-      //remove duplicate array: no duplicate text
-      //button to add several texts
-      
-
-
-    //console.log(importedTexts.dataset.result);
-    //console.log(importedTexts.dataset.result.length);
-    
-
   } 
-
-  handleSubmittedText = event => {
-
-
+  handleSubmittedText = event => { //handle submitted texts including that in the text input field
     event.preventDefault();
-    if(this.state.textAtFileCreation !== null) {
-      if(document.getElementById('databaseAfterNewText')) {
-        document.getElementById('databaseAfterNewText').remove();
-      }
-      this.a.removeAttribute('href');
-      this.a.textContent = "";
-    }
-    if(this.state.value !== null) { 
-      this.handleText();
-    } else {
-      this.setState({
-        textareaIsEmpty:
-          "The text input field is empty. You cannot proceed."
-      });
-    }
+    this.handleText();
+
   }
 
   handleDateChange = date => {
     this.setState({date});
   }
+
   downloadItems = (event) => {
     console.log(this.state.wordIdItems);
     const blobData = new Blob([JSON.stringify({"items": this.state.wordIdItems},null,2)], {type: 'application/json'});
@@ -1233,6 +847,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
   }
   sendTextFile = (file) => {
+    const importedTexts = document.getElementById('preview');
     const fd = new FormData();
     fd.append('myFile', file);
     fetch(URL.createObjectURL(file))
@@ -1252,16 +867,26 @@ my two mistresses: what a beast am I to slack it!`,*/
           importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
         }
       })
-        
+    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+    if(loadedfiles === (null||undefined)) {
+      importedTexts.dataset.loadedfiles = [JSON.stringify("json")];
+    } else if(loadedfiles instanceof Array && loadedfiles.length > 0 ) {
+      if (loadedfiles.includes("json") === false) {
+        loadedfiles.push("json");
+        importedTexts.dataset.loadedfiles = JSON.stringify(loadedfiles);
+      }
+    }
 
-         
-        //this.handleText(value);
-        //this.handleText();    
-        //text FILE
-        //array of arrays containing columns: text imported, file type, file name, text content,
+    const displaytype = document.getElementById('items_loaded');
+    displaytype.innerHTML = "loaded data type(s): ";
+    loadedfiles.forEach(function(eachtype) {
+
+      displaytype.innerHTML += eachtype + " ";
+    });
   }
 
   sendFile = (file) => {
+    const importedTexts = document.getElementById('preview');
     const fd = new FormData();
     fd.append('myFile', file);
     fetch(URL.createObjectURL(file))
@@ -1278,20 +903,43 @@ my two mistresses: what a beast am I to slack it!`,*/
       .then(thirdres => {
         const myItems = thirdres.map(obj => obj);
         this.setState({myItems});
-        console.log(myItems);
-        const myDatabaseForUpload = document.createElement('a');
-        
-        myDatabaseForUpload.id = "items_by_date";
-        myDatabaseForUpload.href = "";
-        myDatabaseForUpload.dataset.databaseJson = JSON.stringify({"items":[...Object.entries(myItems).map(([k, v]) => [k,v])]});
-        document.getElementById('preview').appendChild(myDatabaseForUpload);
-        document.getElementById('noDatabaseFile').removeAttribute('checked');
-        this.setState({
-          databaseIsLoaded:
-            true
-        });
+        const importedTexts = document.getElementById('preview');
+        const littleWordList = [];
+        const thisIsMyWordList = [];
+        const thisIsMyTextList = [];
+
+        console.log("MY ITEMS", myItems);
+        myItems.forEach(function(f) {
+          if (!this[f.textId]) {
+            this[f.textId] = { "textId": f.textId, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath, "mycontent":[] }
+            thisIsMyTextList.push(this[f.textId]);
+          }
+          this[f.textId].mycontent.push(f.word);
+        }, Object.create(null));
+        //console.log("MY TEXT LIST", thisIsMyTextList);
+        if (importedTexts.dataset.texts !== (null||undefined)) {
+          importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), thisIsMyTextList.map(Object.entries)[0]]);
+        } else if (importedTexts.dataset.texts === (null||undefined)) {
+          importedTexts.dataset.texts = [JSON.stringify(thisIsMyTextList.map(Object.entries))];
+        }
+        console.log(JSON.parse(importedTexts.dataset.texts));
       })
-    console.log(this.state.myBlob);
+    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
+      importedTexts.dataset.loadedfiles = [JSON.stringify("plain text")];
+    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
+      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+      if (loadedfiles.includes("plain text") === false) {
+        loadedfiles.push("plain text");
+        importedTexts.dataset.loadedfiles = JSON.stringify(loadedfiles);
+      }
+    }
+    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+    const displaytype = document.getElementById('items_loaded');
+    displaytype.innerHTML = "loaded data type(s): ";
+    loadedfiles.forEach(function(eachtype) {
+
+      displaytype.innerHTML += eachtype + " ";
+    });
   }
   sendDocxFile = (file) => {
     console.time();
@@ -1304,239 +952,184 @@ my two mistresses: what a beast am I to slack it!`,*/
       const result3 = document.getElementById('result3');
       mammoth.convertToHtml({arrayBuffer: arrayBuffer}).then(function (resultObject) {
         result1.innerHTML = resultObject.value
-        console.log(resultObject.value)
+        console.log("resultObject.value",resultObject.value)
       })
       console.timeEnd();
 
       mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function (resultObject) {
         result2.innerHTML = resultObject.value
-        //console.log(resultObject.value)
         const importedTexts = document.getElementById('preview');
         const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":resultObject.value};
-        console.log(newText);
+        console.log("newText",newText);
         const myTextInfo = [];
         myTextInfo.push(newText);
         if (importedTexts.dataset.texts !== (null||undefined)) {
           importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+          newText.length = 0;
         } else if (importedTexts.dataset.texts === (null||undefined)) {
           importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+          newText.length = 0;
         }
+        //console.log(resultObject.value)
+        //const importedTexts = document.getElementById('preview');
+        //const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":resultObject.value};
+        //console.log(newText);
+        //const myTextInfo = [];
+        //myTextInfo.push(newText);
+        //if (importedTexts.dataset.texts !== (null||undefined)) {
+        //  importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+        //  newText.length = 0;
+        //} else if (importedTexts.dataset.texts === (null||undefined)) {
+        //  importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+        //  newText.length = 0;
+        //}
       })
     };
     reader.readAsArrayBuffer(file);
+    const importedTexts = document.getElementById('preview');
+    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
+      importedTexts.dataset.loadedfiles = [JSON.stringify("docx")];
+    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
+      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+      if (loadedfiles.includes("docx") === false) {
+        loadedfiles.push("docx");
+        importedTexts.dataset.loadedfiles = JSON.stringify(loadedfiles);
+      }
+    }
+    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+    const displaytype = document.getElementById('items_loaded');
+    displaytype.innerHTML = "loaded data type(s): ";
+    loadedfiles.forEach(function(eachtype) {
+      displaytype.innerHTML += eachtype + " ";
+    });
 
   }
 
   sendOdsFile = (file) => {
 
   }
-  sendPdfFile = (file) => { //https://github.com/brianc/node-pdf-text
-    'use strict';
-    if ('srcObject' in input) {
-      input.srcObject = file;
-    } else {
-      input.src = JSON.stringify(reader.result);
-      //URL.createObjectURL(file);
-      //input.addEventListener('load', () => URL.revokeObjectURL(URL.createObjectURL(file)), {once: true});
-    }
-
-    function fixBinary (bin) {
-      const length = bin.length;
-      const buf = new ArrayBuffer(length);
-      const arr = new Uint8Array(buf);
-      for (var i = 0; i < length; i++) {
-        arr[i] = bin.charCodeAt(i);
-      }
-      return buf;
-      console.log(buf); 
-    }
-    const display = document.getElementById('display');
-    display.innerHTML = (display.innerHTML || '');
-    function log(text) {
-      display.innerHTML += "\n" + text;
-    }  
-    const input = document.getElementById('input');
+  sendPdfFile = (file) => { 
     const reader = new FileReader();
-    reader.onloadend = (event) => {
-      console.log(reader.result);
-      //const buf = new Uint8Array(reader.result);
+    reader.onload = () => {
+      function convertDataURIToBinary(dataURI) {
+        const BASE64_MARKER = ';base64,';
+        const base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+        console.log(base64Index);
+        const base64 = dataURI.substring(base64Index);
+        console.log(base64 instanceof ArrayBuffer);
+        const raw = window.atob(base64);
+        console.log(raw instanceof ArrayBuffer);
+        //const rawLength = raw.length;
+        //const array = new Uint8Array(new ArrayBuffer(rawLength));
       
-      const base64 = reader.result.split('base64,')[1];
-
-
-
-      //function ab2str(buffer) {
-      //  return String.fromCharCode.apply(null, new Uint8Array(buffer));
-      //}
-
-    }
-    reader.readAsDataURL(file);
-    const base64 = this.state;
-    const binary = fixBinary(atob(base64)); 
-    const processor = document.getElementById("processor");
-    const outputpdf = document.getElementById("outputpdf");
-    const blob = new Blob([binary], {type: 'image/png'});
-    const url = URL.createObjectURL(blob);
-    console.log('Created a png blob of size: ' + blob.size);
-    console.log('Inserting an img...');
-    console.log('Blob URL is: ' + url);
-    console.log('Fetching with ajax...');
-    window.addEventListener("message", function(event){
-      //window.onload = (event) => {
-        if (event.source !== processor.contentWindow) return;
-    
-        switch (event.data){
-          // "ready" = the processor is ready, so fetch the PDF file
-          case "ready":
-            const xhr = new XMLHttpRequest;
-
-            xhr.open('GET', url, true);
-            xhr.responseType = "arraybuffer";
-            xhr.onload = (event) => {
-              processor.contentWindow.postMessage(this.response, "*");
-              //console.log(processor.contentWindow.postMessage(this.response, "*"));
-              //console.log(JSON.stringify(this.response));
-            };
-            xhr.send();
-
-          break;
-    
-          // anything else = the processor has returned the text of the PDF
-          default:
-            outputpdf.textContent = event.data.replace(/\s+/g, " ");
-
-            console.log(event.data);
-            //String.prototype.cleanup = function() {
-            //   return this.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-").split('-');
-            //}
-            //console.log(event.data.cleanup());
-          break;
-        }
-      //};
-    }, true);
-
-
-
-      //console.log(JSON.stringify(btoa(atob(buf.split('base64,')[1]))));
-      //console.log(JSON.stringify(btoa(buf.split('base64,')[1])));
-      //buf.onload = () => {
-
-      //pdfjsLib.getDocument(arr).then(function(pdf) {
-      //  console.log(pdf);
-      //});
-      //pdf().then(function(data) {
-      //  console.log(data.text);
-      //})
-      //const pdfExtract = new PDFExtract();
-      //const options = {};
-      //pdfExtract.extract(arr, options, (err,data) => {
-      //  if (err) return console.log(err);
-      //  console.log(data);
-      //});
-      //}
-      //console.log(buf.toString('utf-8'));
-
-    function str2ab(str) {
-      var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
-      var bufView = new Uint16Array(buf);
-      for (var i=0, strLen=str.length; i < strLen; i++) {
-        bufView[i] = str.charCodeAt(i);
+        //for(var i = 0; i < rawLength; i++) {
+        //  array[i] = raw.charCodeAt(i);
+        //}
+        //console.log(array instanceof Uint8Array);
+        //return array;
+        return raw;
       }
-      return buf;
+      console.log(reader.result);
+      const PDF_URL = convertDataURIToBinary(reader.result);
+      const loadingTask = PDFJS.getDocument({data: PDF_URL});
+      loadingTask.promise.then(function (pdf) {
+        console.log('pdf loaded'); 
+        pdf.getPage(1).then(function (page) {
+          console.log('page 1 loaded');
+        });
+        getPageText(1, pdf).then(function(textPage) {
+          console.log(textPage); 
+        });
+        const pdfDocument = pdf;
+        // Create an array that will contain our promises 
+        const pagesPromises = [];
+
+        for (var i = 0; i < pdf.numPages; i++) {
+            // Required to prevent that i is always the total of pages
+            (function (pageNumber) {
+                // Store the promise of getPageText that returns the text of a page
+                pagesPromises.push(getPageText(pageNumber, pdfDocument));
+            })(i + 1);
+        }
+
+        //Execute all the promises
+        Promise.all(pagesPromises).then(function (pagesText) {
+        //document.getElementById("loading-info").remove();
+
+        // Display text of all the pages in the console
+        // e.g ["Text content page 1", "Text content page 2", "Text content page 3" ... ]
+          console.log(pagesText);
+          const importedTexts = document.getElementById('preview');
+          const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":pagesText.join(' ')};
+          console.log(newText);
+          const myTextInfo = [];
+          myTextInfo.push(newText);
+          if (importedTexts.dataset.texts !== (null||undefined)) {
+            importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+            newText.length = 0;
+          } else if (importedTexts.dataset.texts === (null||undefined)) {
+            importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+            newText.length = 0;
+          }
+        //for(var i = 0;i < pagesText.length;i++){
+        //	document.getElementById("pdf-text").append("<div><h3>Page "+ (i + 1) +"</h3><p>"+pagesText[i]+"</p><br></div>");
+        //}
+
+        });
+
+          
+
+        /**
+         * Retrieves the text of a specif page within a PDF Document obtained through pdf.js 
+         * 
+         * @param {Integer} pageNum Specifies the number of the page 
+         * @param {PDFDocument} PDFDocumentInstance The PDF document obtained 
+         **/
+        function getPageText(pageNum, PDFDocumentInstance) {
+            // Return a Promise that is solved once the text of the page is retrieven
+            return new Promise(function (resolve, reject) {
+                PDFDocumentInstance.getPage(pageNum).then(function (pdfPage) {
+                    // The main trick to obtain the text of the PDF page, use the getTextContent method
+                    pdfPage.getTextContent().then(function (textContent) {
+                        var textItems = textContent.items;
+                        var finalString = "";
+        
+                        // Concatenate the string of the item to the final string
+                        for (var i = 0; i < textItems.length; i++) {
+                            var item = textItems[i];
+        
+                            finalString += item.str + " ";
+                        }
+        
+                        // Solve promise with the text retrieven from the page
+                        resolve(finalString);
+                    });
+                });
+            });
+        }
+      }, function (reason) {
+        // PDF loading error
+        console.error(reason);
+      });
     }
-
-      //console.log(ab2str(buf));
-      //const enc = new TextDecoder();
-      //const enc = new FileReader();
-      //console.log(new Buffer(ab2str(buf), 'binary'));
-      //console.log(ab2str(buf));
-      //console.log(file.path);
-      //this.pdfToText = function(buf) {
-
-      //    pdfjsLib.workerSrc = 'js/vendor/pdf.worker.js';
-      //    pdfjsLib.cMapUrl = 'js/vendor/pdfjs/cmaps/';
-      //    pdfjsLib.cMapPacked = true;
-
-      //    return PDFJS.getDocument(buf).then(function(pdf) {
-      //        var pages = [];
-      //        for (var i = 0; i < pdf.numPages; i++) {
-      //            pages.push(i);
-      //        }
-      //        return Promise.all(pages.map(function(pageNumber) {
-      //            return pdf.getPage(pageNumber + 1).then(function(page) {
-      //                return page.getTextContent().then(function(textContent) {
-      //                    return textContent.items.map(function(item) {
-      //                        return item.str;
-      //                    }).join(' ');
-      //                });
-      //            });
-      //        })).then(function(pages) {
-      //            return pages.join("\r\n");
-      //            console.log(pages);
-      //        });
-      //    });
-      //}
-
-      //console.log(enc.readAsBinaryString(new Blob([new Uint8Array(buf)])));
-      // reader.result contient le contenu du
-      // blob sous la forme d'un tableau typé
-      //pdfText(reader.result, function(err, chunks) {
-      //  console.log(chunks.join(' ')); 
-      //});
-    //});
-    //reader.readAsArrayBuffer(file);
-
-    //reader.readAsArrayBuffer(file);
-    //reader.readAsBinaryString(file);
-    //URL.createObjectURL 
-    //const reader = new FileReader();
-    //new PdfReader().parseFileItems(
-    //console.log(file);
-    //const pdffile1 = new FileReader();
-    //console.log(pdffile1.readAsBinaryString(file).result);
-    //const pdffile2 = new FileReader();
-    //console.log(pdffile2.readAsArrayBuffer(file).result);
-    //const pdffile3 = new FileReader();
-    //console.log(pdffile3.readAsText(file).result);
-    //, function(err, item){
-    //  if(item && item.text)
-    //    console.log(item.text);
-    //});
-    //const reader = new FileReader();
-    //const result1 = document.getElementById('result1');
-    //const result2 = document.getElementById('result2');
-    //const result3 = document.getElementById('result3');
-    //const pdfBuffer = URL.createObjectURL(file); 
-    //pdfBuffer.readAsArrayBuffer(file);
-    //fs.readFile(pdfBuffer.name, (err, pdfBuffer) => {
-      // pdfBuffer contains the file content
-      //new PdfReader().parseBuffer(pdfBuffer, function(err, item) {
-        //if (err) callback(err);
-        //else if (!item) callback();
-        //if (item.text) console.log(item.text);
-      //});
-    //});
-    //const rows = {};
-    //function printRows() {
-    //  Object.keys(rows) // => array of y-positions (type: float)
-    //    .sort((y1, y2) => parseFloat(y1) - parseFloat(y2)) // sort float positions
-    //    .forEach(y => console.log((rows[y] || []).join("")));
-    //}
     //
-    //new pdfreader.PdfReader().parseFileItems(file, function(
-    //  err,
-    //  item
-    //) {
-    //  if (!item || item.page) {
-    //    // end of file, or page
-    //    printRows();
-    //    console.log("PAGE:", item.page);
-    //    rows = {}; // clear rows for next page
-    //  } else if (item.text) {
-    //    // accumulate text items into rows object, per line
-    //    (rows[item.y] = rows[item.y] || []).push(item.text);
-    //  }
-    //});
+    reader.readAsDataURL(file); 
+    const importedTexts = document.getElementById('preview');
+    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
+      importedTexts.dataset.loadedfiles = [JSON.stringify("pdf")];
+    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
+      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+      if (loadedfiles.includes("pdf") === false) {
+        loadedfiles.push("pdf");
+        importedTexts.dataset.loadedfiles = JSON.stringify(loadedfiles);
+      }
+    }
+    const displaytype = document.getElementById('items_loaded');
+    displaytype.innerHTML = "loaded data type(s): ";
+    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+    loadedfiles.forEach(function(eachtype) {
+      displaytype.innerHTML += eachtype + " ";
+    });
 
   }
 
@@ -1585,9 +1178,11 @@ my two mistresses: what a beast am I to slack it!`,*/
       value:
         event.target.value
     });
+  }
+  handleWordChange = (event) => {
     this.setState({
-      textareaIsEmpty:
-        ''
+      valueword:
+        event.target.valueword
     });
   }
 
@@ -1603,11 +1198,16 @@ my two mistresses: what a beast am I to slack it!`,*/
         el.onended = (event) => {
           const allAudioElements = audioTagName;
           console.log(event.currentTarget);
+          console.log(allAudioElements);
           //allAudioElements[0].remove(); 
           if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
+
             const myAudioItems = document.getElementById('myAudioFiles');
+            console.log(myAudioItems.children);
             const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
-            myAudioItems.childNodes[this.state.indexAudioElement].play();
+            if (indexAudioElement < allAudioElements.length) {
+              myAudioItems.childNodes[indexAudioElement].play();
+            }
           }
         };
       }
@@ -1656,20 +1256,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       //document.getElementById('noDatabaseFile').checked = true;
     } 
   }
-  alertNoDatabaseFile = (event) => {
-    if (/*this.state.value.replace(/[!?:;.,]+/g, "").replace(/(\r\n|\n|\r)/gm,"") !== "" &&*/ document.getElementById('noDatabaseFile').checked === false && document.getElementById('preview').innerHTML === "" && window.confirm("You dropped no file. Ok to continue and generate a new database or Cancel and upload a file.")) {
-      document.getElementById('noDatabaseFile').checked = true;
-      this.setState({
-        jsonSecondConfirm:
-          true
-      });
-      console.log("alert");
-      document.getElementById('dropzone').hidden = true;
-      //this.handleText();
-    } else {
-      document.getElementById('noDatabaseFile').removeAttribute('checked');   
-    }
-  }
   autoplay = (event) => {
     //const allAudioElements = this.state;
     const myElements = document.getElementsByTagName('audio');
@@ -1679,22 +1265,91 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
 
   }
+  addNewWord = (event) => {
+    const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+    this.setState({
+      valueword:
+        event.target.valueword
+    });
+    const valueword = document.getElementById("valueword").value;
+    const importedTexts = document.getElementById('preview');
+    if (valueword === "") {return;};
+    importedTexts.dataset.textValue = "";
+    importedTexts.dataset.textValue += valueword;
+    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+    if(loadedfiles === (null||undefined)) {
+      importedTexts.dataset.loadedfiles = [JSON.stringify("plain text")];
+    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
+      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+      if (loadedfiles.includes("plain text") === false) {
+        loadedfiles.push("plain text");
+        importedTexts.dataset.loadedfiles = JSON.stringify(loadedfiles);
+      }
+    }
+    const displaytype = document.getElementById('items_loaded');
+    displaytype.innerHTML = "loaded data type(s): ";
+    loadedfiles.forEach(function(eachtype) {
+      displaytype.innerHTML += eachtype + " ";
+    });
+    const daysDate = new Date();
+    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+    const msTime = Date.now();
+    const newText = {"textId":newTextId, "lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": ""};
+    newText.mycontent = [valueword];
+    if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
+      const myTextInfo = [];
+      myTextInfo.push(newText);
+      importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+    } else if (importedTexts.dataset.texts === (null||undefined) || importedTexts.dataset.texts.length === 0) {
+      const myTextInfo = [];
+      myTextInfo.push(newText);
+      importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+    }
+  }
   addNewText = (event) => {
+    const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
     this.setState({
       value:
         event.target.value
     });
     const importedTexts = document.getElementById('preview');
-    if(importedTexts.dataset.textValue ===(null||undefined||false)) {
-      importedTexts.dataset.textValue = "";
-    }
+    if (this.state.value === "") {return;};
+    importedTexts.dataset.textValue = "";
     importedTexts.dataset.textValue += this.state.value;
-    console.log(document.getElementById('wordinput').value);
-    console.log(importedTexts.dataset.textValue); 
-    console.log(this.state.value); 
-    console.log(event.currentTarget.value); 
+    if(JSON.parse(importedTexts.dataset.loadedfiles) === (null||undefined)) {
+      importedTexts.dataset.loadedfiles = [JSON.stringify("plain text")];
+    } else if(JSON.parse(importedTexts.dataset.loadedfiles) instanceof Array && JSON.parse(importedTexts.dataset.loadedfiles).length > 0 ) {
+      const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+      if (loadedfiles.includes("plain text") === false) {
+        loadedfiles.push("plain text");
+        importedTexts.dataset.loadedfiles = JSON.stringify(loadedfiles);
+      }
+    }
+    const displaytype = document.getElementById('items_loaded');
+    displaytype.innerHTML = "loaded data type(s): ";
+    const loadedfiles = JSON.parse(importedTexts.dataset.loadedfiles);
+    loadedfiles.forEach(function(eachtype) {
+      displaytype.innerHTML += eachtype + " ";
+    });
+    const daysDate = new Date();
+    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+    const msTime = Date.now();
+    const newText = {"textId":newTextId, "lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
+    if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
+      const myTextInfo = [];
+      myTextInfo.push(newText);
+      importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+    } else if (importedTexts.dataset.texts === (null||undefined) || importedTexts.dataset.texts.length === 0) {
+      const myTextInfo = [];
+      myTextInfo.push(newText);
+      importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
+    }
+   
+
   }
   render() {
+
+
 
     return (
       <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
@@ -1709,26 +1364,27 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
-        <p id={`result1`}></p>
-        <p id={`result2`}></p>
-        <p id={`result3`}></p>
-        <embed id={`input`} type={`application/pdf`} />
-        <iframe id={`processor`} src="http://hubgit.github.com/2011/11/pdftotext/"></iframe>
-        
-        <div id={`outputpdf`}></div>
-        <pre id={`display`}></pre>
-
+        <iframe id={`input`} type={`application/pdf`} />
+        <input type={`submit`} value={`Import all texts and words`} id={`import_texts_words`} className={`btn btn-success btn-block`} />  
         <label id={`labelText`}>
           Your Text:
 
           <br /><textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
-          {this.state.textareaIsEmpty}
         </label>
         <button onClick={this.addNewText} className={`btn btn-success btn-block`}>  
           Add a new text
         </button>
+        <label id={`labelWord`}>
+          Your Word:
 
-        <input type={`submit`} value={`Submit entered text`} className={`btn btn-success btn-block`} />  
+
+        </label>
+        <br /><input onChange={this.handleWordChange} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
+        <button onClick={this.addNewWord} className={`btn btn-success btn-block`}>  
+          Add a new word 
+        </button>
+
+
         <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
@@ -1738,5 +1394,154 @@ my two mistresses: what a beast am I to slack it!`,*/
     );
   }
 }
+class EditEntries extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      texts:null,
+      words:null,
+      wordsWithThisTextId:null,
+      textExport:null,
+      textInfo:null,
+      displayWord:null,
+      displayText:null,
+      removeText:null,
+      removeWord:null,
+      modalbody:null,
+      mytextid:null,
+      textelement:null,
+      buttons:null,
+      idx:null,
+      textdiv:null,
+      output:null,
+      thisIsMyWordList:null,
+      myTextList:null,
+      myItems:null,
+      importedTexts:null,
+      textAfterEdit:null,
+      newText:null,
+      myTextInfo:null,
+      allTheTexts:null,
+      value:null,
+      textObject:null,
+    }
+  }
+  componentDidMount = () => {
+  }
+  editEntries = (event) => {
+    const importedTexts = document.getElementById('preview'); 
+    const modalbody = document.getElementById('modal-body');
+    const exportText = JSON.parse(importedTexts.dataset.texts);
+    exportText.forEach(function(text) {
+      const textdiv = document.createElement('div'); 
+      console.log('text array of edit entries', text);
+      textdiv.className = text[0][1];
+      modalbody.appendChild(textdiv);
+      const displayText = document.createElement('div');
+      text.forEach(function(info, rangeInfo, ObjectInfo) {
+        if (info[0] === 'mycontent') {
+          info[1].forEach(function(wordItem) {
+            //if (wordItem === "mycontent") {return;}
+            const displayWord = document.createElement('div');
+            displayWord.textContent = wordItem;
+            textdiv.appendChild(displayWord);
+            const removeWord = document.createElement('button');
+            removeWord.classList.add("btn");
+            removeWord.classList.add("btn-secondary");
+            removeWord.type = "button";
+            removeWord.textContent = "Remove this word";
+            removeWord.onclick = (event) => {
 
-ReactDOM.render(<BasicForm />, document.getElementById('root'));
+              const importedTexts = document.getElementById('preview');
+              importedTexts.dataset.texts = "";
+
+
+              const idx = info.indexOf(wordItem);
+              if (idx !== -1) {
+                info.splice(idx, 1);
+              }
+              console.log("INFO SLICE 1",info); 
+              console.log(exportText);
+              displayWord.remove();
+              removeWord.remove();
+              importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
+              console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
+            }
+            textdiv.appendChild(removeWord);
+          });
+          //info.unshift("mycontent");
+          console.log("INFO", info);
+        } else if (info[0] !== 'mycontent') {
+          displayText.textContent += info[0] + ' ' + info[1] + '\r\n';
+        }
+        textdiv.appendChild(displayText);
+      });
+
+      const removeText = document.createElement('button');
+      removeText.classList.add("btn");
+      removeText.classList.add("btn-secondary");
+      removeText.type = "button";
+      removeText.textContent = "Remove this text";
+      removeText.onclick = (event) => {
+
+        const importedTexts = document.getElementById('preview');
+        importedTexts.dataset.texts = "";
+
+        const idx = exportText.indexOf(text);
+        if (idx !== -1) {
+          exportText.splice(idx, 1);
+        }
+        console.log("onclick");
+        removeText.remove();
+        //if (modalbody.hasChildNodes()) {
+        const textelements = document.getElementsByClassName(text[0][1]);//modalbody.childNodes;
+        while (textelements[0].firstChild) {
+          textelements[0].removeChild(textelements[0].firstChild);
+        }
+
+        //exportText.forEach(function(textItem) {
+        //  if (importedTexts.dataset.texts !== (null||undefined)) {
+        //    importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), textItem.map(Object.entries)[0]]);
+        //  } else if (importedTexts.dataset.texts === (null||undefined)) {
+        importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
+        //  }
+        //});
+        console.log("importTexts texts on click remove text", JSON.parse(importedTexts.dataset.texts));
+        
+      };
+
+      modalbody.appendChild(removeText);
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <button type="button" onClick={this.editEntries} id="editentries" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
+          Edit entries 
+        </button>
+        
+        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div id="modal-body" class="modal-body">
+                 
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+ReactDOM.render(<BasicForm/>, document.getElementById('root'));
