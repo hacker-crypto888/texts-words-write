@@ -1367,6 +1367,8 @@ class EditEntries extends React.Component {
       value:null,
       textObject:null,
       importText:null,
+      exportMyTexts:null,
+      myWord:null,
     }
   }
   componentDidMount = () => {
@@ -1473,10 +1475,39 @@ class EditEntries extends React.Component {
       modalbody.appendChild(removeText);
     });
   }
+  exportItems = (event) => {
+    const importedTexts = document.getElementById('preview'); 
+    const importText = JSON.parse(importedTexts.dataset.texts); 
+    const thisIsMyTextList = [];
+    importText.forEach(function(mytext) {
+      const textObject = {};
 
+      mytext.forEach(function(myinfo) {
+        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;};
+        textObject[myinfo[0]] = myinfo[1];
+      });
+      if(textObject === {}) {return;};
+      if(!textObject.mycontent) {return;};
+      console.log(textObject.mycontent); 
+      thisIsMyTextList.push(textObject);
+      
+    });
+    if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;} 
+    const exportMyTexts = [];
+    const myWord = {};
+    console.log(thisIsMyTextList);
+    thisIsMyTextList.forEach(function(mytext) {
+      mytext.mycontent.forEach(function(myitem) {
+        myWord = mytext;
+        myWord["word"] = myitem;
+        delete myWord.mycontent;
+      }); 
+    });
+  }
   render() {
     return (
       <div>
+        <a id={`download_items`} ref={a => {this.a = a}} onClick={this.exportItems} download={`database.json`} href={``} >Export my items</a>
         <button type="button" onClick={this.editEntries} id="editentries" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
           Edit entries 
         </button>
