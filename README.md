@@ -47,6 +47,6 @@ After importing any normal text, the items are sorted automatically. The app ena
 | Add new word | Word | Add entry | word list | 
 | add new text | text | add entries | new text entry | 
 | drop a file | text list | add entries | new text entry | 
-| start a new game | audio files | play each entry | scores | 
+| start a new game | audio files | play each entry | none | 
 | play all the words | audio files | play all entries | none | 
 
