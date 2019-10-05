@@ -35,7 +35,7 @@ The user can:
 - [x] work with text in english
 - [ ] work with text in french 
 - [x] load a file in a dropzone to play the words
-- [x] use the mp3 words from an online database for which all the links are stored in the json file (using fetch github.com/...../file.json)
+- [x] use the mp3 words from an online database for which all the links are stored in the json file using fetch github.com.....file.json
 - [x] play the words continuously on the click of a button
 - [x] load a JSON file, then launch the audio files thanks to start game button
 - [x] load a JSON file, then edit the items, then launch the audio files
