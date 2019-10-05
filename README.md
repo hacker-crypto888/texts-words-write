@@ -37,7 +37,7 @@ The program can handle following file formats in the input:
 
 ## Use `database.json` in Your Application
 
-The [database.json](database.json) file contains the information about to the text files for all imported words.<br>
+The [database.json](database.json) file contains the information about the text files for all imported words.<br>
 For example, the output of the text lists resembles something like:
 
 ```json
