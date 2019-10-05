@@ -23,13 +23,13 @@ The program can handle following file formats in the input:
 
 
 
-| Format | Supported          | By dropping a file | Input format | Extracted data |
+| Format | Supported | By dropping a file | Input format | Extracted data |
 | ------- | ------------------ | ---- | ---- | --- |
-| plain text   | :white_check_mark: | :x: |  plain text  |  |
-| TXT   | :white_check_mark: | :white_check_mark: | file |  |
-| PDFs   | :white_check_mark: | :white_check_mark: | file |  |
-| DOCX   | :white_check_mark: | :white_check_mark: | file |  |
-| HTML   | :x: | :x: | URL |  |
+| plain text   | :white_check_mark: | :x: |  plain text  | text |
+| TXT   | :white_check_mark: | :white_check_mark: | file | text |
+| PDFs   | :white_check_mark: | :white_check_mark: | file | text |
+| DOCX   | :white_check_mark: | :white_check_mark: | file | text |
+| HTML   | :x: | :x: | URL | text |
 
 
 
