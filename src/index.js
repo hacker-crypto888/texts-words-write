@@ -932,7 +932,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           }
           this[f.textId].mycontent.push(f.word);
         }, Object.create(null));
-        //console.log("MY TEXT LIST", thisIsMyTextList);
+        console.log("MY TEXT LIST", thisIsMyTextList);
         if (importedTexts.dataset.texts !== (null||undefined)) {
           importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), thisIsMyTextList.map(Object.entries)[0]]);
         } else if (importedTexts.dataset.texts === (null||undefined)) {
@@ -1345,6 +1345,7 @@ class EditEntries extends React.Component {
       textExport:null,
       textInfo:null,
       displayWord:null,
+      i:null,
       displayText:null,
       removeText:null,
       removeWord:null,
@@ -1369,6 +1370,18 @@ class EditEntries extends React.Component {
       importText:null,
       exportMyTexts:null,
       myWord:null,
+      blobData:null,
+      url:null,
+      wordsFromText:null,
+      myTextList:null,
+      idx:null,
+      exportMyItems:null,
+      mycontent:null,
+      myTextInfo:null,
+      idx1:null,
+      idx2:null,
+      testWord:null,
+      textInfoNew:null,
     }
   }
   componentDidMount = () => {
@@ -1476,38 +1489,41 @@ class EditEntries extends React.Component {
     });
   }
   exportItems = (event) => {
+    const exportMyItems = [];
+    const wordsFromText = [];
     const importedTexts = document.getElementById('preview'); 
     const importText = JSON.parse(importedTexts.dataset.texts); 
-    const thisIsMyTextList = [];
-    importText.forEach(function(mytext) {
-      const textObject = {};
-
-      mytext.forEach(function(myinfo) {
-        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;};
-        textObject[myinfo[0]] = myinfo[1];
-      });
-      if(textObject === {}) {return;};
-      if(!textObject.mycontent) {return;};
-      console.log(textObject.mycontent); 
-      thisIsMyTextList.push(textObject);
-      
-    });
-    if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;} 
-    const exportMyTexts = [];
-    const myWord = {};
-    console.log(thisIsMyTextList);
-    thisIsMyTextList.forEach(function(mytext) {
-      mytext.mycontent.forEach(function(myitem) {
-        myWord = mytext;
-        myWord["word"] = myitem;
-        delete myWord.mycontent;
+    /**/
+    importText.forEach(function(textInfo){
+      textInfo.forEach(function(info){
+        if(info[0] === "mycontent") {
+          //console.log(info[1] instanceof Array);
+          //console.log(typeof info[1][0] === 'string' && typeof info[1][1] === 'string');
+          info[1].forEach(function(myitem){ 
+            console.log("my item is a string",typeof myitem === 'string');
+            const testWord = textInfo.some(x => x[0] === "word");
+            console.log("there is a word or several in the list", testWord); 
+            if (testWord === false) {
+              textInfo.push(["word",myitem]);
+              exportMyItems.push(textInfo);
+            } else if (testWord === true) {
+              const textInfoNew = textInfo.filter(x => x[0] !== "word"); 
+              textInfoNew.push(["word",myitem]);
+              exportMyItems.push(textInfoNew);
+            } 
+          });
+        }
       }); 
     });
+    /**/
+    const blobData = new Blob([JSON.stringify({"items": exportMyItems},null,2)], {type: 'application/json'});
+    const url = window.URL.createObjectURL(blobData);
+    document.getElementById('export_all_items').href = url;
   }
   render() {
     return (
       <div>
-        <a id={`download_items`} ref={a => {this.a = a}} onClick={this.exportItems} download={`database.json`} href={``} >Export my items</a>
+        <a id={`export_all_items`} ref={a => {this.a = a}} onClick={this.exportItems} download={`database.json`} href={``} >Export my items</a>
         <button type="button" onClick={this.editEntries} id="editentries" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
           Edit entries 
         </button>
