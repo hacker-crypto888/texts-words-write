@@ -409,6 +409,10 @@ class FillInTheDateForm extends React.Component {
     this.loadByDate();
   }
   loadByDate = () => {
+    const modalbody = document.getElementById('modal-bodyloadbydate');
+    while (modalbody.firstChild) {
+      modalbody.removeChild(modalbody.firstChild);
+    }
     const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
     const importedTexts = document.getElementById('preview'); 
     const importText = JSON.parse(importedTexts.dataset.texts); 
@@ -429,7 +433,6 @@ class FillInTheDateForm extends React.Component {
     });
     if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
     console.log(thisIsMyTextList);
-    const modalbody = document.getElementById('modal-bodyloadbydate');
     modalbody.innerHTML = "";
     const exportText = JSON.parse(importedTexts.dataset.texts);
     exportText.forEach(function(text) {
@@ -963,6 +966,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         myTextInfo.push(newText);
         if (importedTexts.dataset.texts !== (null||undefined)) {
           importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+
         } else if (importedTexts.dataset.texts === (null||undefined)) {
           importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
         }
@@ -1456,11 +1460,16 @@ class EditEntries extends React.Component {
       idx2:null,
       testWord:null,
       textInfoNew:null,
+      jsonobj:null,
     }
   }
   componentDidMount = () => {
   }
   editEntries = (event) => {
+    const modalbody = document.getElementById('modal-body');
+    while (modalbody.firstChild) {
+      modalbody.removeChild(modalbody.firstChild);
+    }
     const importedTexts = document.getElementById('preview'); 
     const importText = JSON.parse(importedTexts.dataset.texts); 
     const thisIsMyTextList = [];
@@ -1479,7 +1488,6 @@ class EditEntries extends React.Component {
     });
     if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
     console.log(thisIsMyTextList);
-    const modalbody = document.getElementById('modal-body');
     const exportText = JSON.parse(importedTexts.dataset.texts);
     exportText.forEach(function(text) {
       const textdiv = document.createElement('div'); 
@@ -1583,7 +1591,11 @@ class EditEntries extends React.Component {
       }); 
     });
     /**/
-    const blobData = new Blob([JSON.stringify({"items": exportMyItems},null,2)], {type: 'application/json'});
+    const jsonobj = [];
+    exportMyItems.forEach(function(key){
+      jsonobj.push(Object.keys(key).map(k => ({ [key[k][0]]: key[k][1] })));
+    });
+    const blobData = new Blob([JSON.stringify({"items": jsonobj},null,2)], {type: 'application/json'});
     const url = window.URL.createObjectURL(blobData);
     document.getElementById('export_all_items').href = url;
   }
