@@ -121,7 +121,7 @@ While the corresponding segment for a text extracted from a dropped file will lo
     ],
 ```
 
-## Text lists and editing permissions
+## Word lists and user permissions
 
 After importing any normal text, you must create a check out the items that were sorted automatically to sort them manually:
 
@@ -133,5 +133,6 @@ After importing any normal text, you must create a check out the items that were
 | add new word | word | add entry | 
 | add new text | text | add entries |
 | drop a file | text | add entries |
-
+| start a new game | audio files | play each entry |
+| play all the words | audio files | play all entries |
 
