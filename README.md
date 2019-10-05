@@ -40,13 +40,13 @@ The program can handle following file formats in the input:
 
 After importing any normal text, the items are sorted automatically. The app enables you to:
 
-| section of the app | data type | content options | 
-|---|---|---|
-| edit entries | word list | remove entries | 
-| load by date | word list | remove entries | 
-| add new word | word | add entry | 
-| add new text | text | add entries |
-| drop a file | text list | add entries |
-| start a new game | audio files | play each entry |
-| play all the words | audio files | play all entries |
+| Section of the app | Imported data type | Content options | Exported data type | 
+|---|---|---|---|
+| Edit entries | Word list | Remove entries | edited word list | 
+| Load by date | Word list | Remove entries | sorted word list | 
+| Add new word | Word | Add entry | word list | 
+| add new text | text | add entries | new text entry | 
+| drop a file | text list | add entries | new text entry | 
+| start a new game | audio files | play each entry | :x: | 
+| play all the words | audio files | play all entries | :x: | 
 
