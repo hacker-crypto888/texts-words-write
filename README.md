@@ -23,9 +23,9 @@ The program can handle following file formats in the input:
 | HTML       | :x:                | :x:                | URL          | :white_check_mark: |
 
 
+
 Extra features:
 - [ ] to display each audio in a carousel and remove slide of carousel once word is written correctly
-- [ ] when dropping an items.json file, two options can be proposed: start over with the same file or drop a new file
 - [ ] the program modifies the word according to its termination, therefore it can find the word in the database of sounds (in the mp3 file list in all the keys of key value pairs, all the keys are all the words of the database)
 
 ## Database files
