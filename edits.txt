@@ -43,3 +43,5 @@ Start the app
 - Save words matching the specified date of data entry in a JSON file with "id" and "word" columns, then start the app
 
 - remove last word = remove this text
+
+- the database json must be a text list, not a word list
