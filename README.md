@@ -27,7 +27,7 @@ This will extract the words from your source, and make available your word items
 The program can handle following file formats in the input:
 
 | Format     | Supported          | By dropping a file | Input format | 
-|------------|--------------------|--------------------|--------------|
+|:------------|:--------------------:|:--------------------:|--------------:|
 | Plain text | <ul><li>[x] </li></ul> |                 | Plain text   | 
 | TXT        | <ul><li>[x] </li></ul>| <ul><li>[x] </li><ul> | File         |  
 | PDFs       | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | File         |  
