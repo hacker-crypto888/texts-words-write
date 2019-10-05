@@ -23,19 +23,19 @@ The program can handle following file formats in the input:
 
 - [x] plain text
 - [x] TXT
-- [x] PDFs 
+- [x] PDFs
 - [x] DOCX
 - [ ] HTML
 
 # My UI (User Interface)
 
-The user is able: 
+The user is able:
 
 - [x] to work with texts in English
 - [x] to load a file in a dropzone to play the words
 - [x] to play the mp3 audio files from an online file database
 - [x] to play the words continuously on the click of a button
-- [x] to display a spinner during the loading of the audio files 
+- [x] to display a spinner during the loading of the audio files
 - [x] to handle empty date input in the date input field
 - [x] to sort the items by date from a json file
 - [x] not to load any text when textarea is empty
@@ -46,7 +46,7 @@ The user is able:
 - [x] not to reinitialize the lists after edits
 - [x] to play the loaded words after editing the word entries
 - [x] to add a single new word
-- [ ] to manage user sessions 
+- [ ] to manage user sessions
 - [ ] to work with texts in French
 
 Extra features:
@@ -56,7 +56,7 @@ Extra features:
 
 ## Database files
 
-        Words from text of the day 
+        Words from text of the day
 
 - Text -> file
 
@@ -70,10 +70,10 @@ Save the words in DB
 
 Start the app
 
-- Write a simple JSON file with columns "id" and "word" and start the app 
+- Write a simple JSON file with columns "id" and "word" and start the app
 
         Selection of words in the database using date of data entry
 
-- Open big database 
+- Open big database
 
 - Save words matching the specified date of data entry in a JSON file with "id" and "word" columns, then start the app
