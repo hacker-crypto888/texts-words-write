@@ -12,12 +12,12 @@ In the project directory, you can run:
 ### `yarn install --save`
 
 Installs all the dependencies in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.<br>
 
 ### `yarn start`
 
 Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.<br>
 
 The program can handle following file formats in the input:
 
@@ -32,14 +32,14 @@ The program can handle following file formats in the input:
 The user is able:
 
 - [x] to work with texts in English
-- [x] to load a file in a dropzone to play the words
+- [x] to load a file in a dropzone to play the words
 - [x] to play the mp3 audio files from an online file database
 - [x] to play the words continuously on the click of a button
 - [x] to display a spinner during the loading of the audio files
 - [x] to handle empty date input in the date input field
 - [x] to sort the items by date from a json file
-- [x] not to load any text when textarea is empty
-- [x] not to load any text when dropzone is empty
+- [x] not to load any text when textarea is empty
+- [x] not to load any text when dropzone is empty
 - [x] to load a text in a text area
 - [x] to play the words one by one
 - [x] check the writing of the words one by one
@@ -47,7 +47,7 @@ The user is able:
 - [x] to play the loaded words after editing the word entries
 - [x] to add a single new word
 - [ ] to manage user sessions
-- [ ] to work with texts in French
+- [ ] to work with texts in French
 
 Extra features:
 - [ ] to display each audio in a carousel and remove slide of carousel once word is written correctly
