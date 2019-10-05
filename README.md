@@ -123,7 +123,7 @@ While the corresponding segment for a text extracted from a dropped file will lo
 
 ## Word lists and user permissions
 
-After importing any normal text, you must create a check out the items that were sorted automatically to sort them manually:
+After importing any normal text, the items are sorted automatically. The app enables you to:
 
 | section of the app | data type | content options | 
 |---|---|---|
