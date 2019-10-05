@@ -16,11 +16,11 @@ The program can handle following file formats in the input:
 
 | Format | Supported | By dropping a file | Input format | Extracted data | 
 | ------- | ------- | ------- | ------- | ------- | 
-| plain text | :white_check_mark: | :x: | plain text | text | 
-| TXT | :white_check_mark: | :white_check_mark: | file | text | 
-| PDFs | :white_check_mark: | :white_check_mark: | file | text | 
-| DOCX | :white_check_mark: | :white_check_mark: | file | text | 
-| HTML | :x: | :x: | URL | text |
+| Plain text | :white_check_mark: | :x: | Plain text | Text | 
+| TXT | :white_check_mark: | :white_check_mark: | File | Text | 
+| PDFs | :white_check_mark: | :white_check_mark: | File | Text | 
+| DOCX | :white_check_mark: | :white_check_mark: | File | Text | 
+| HTML | :x: | :x: | URL | Text |
 
 
 Extra features:
