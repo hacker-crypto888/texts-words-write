@@ -34,9 +34,13 @@ The program can handle following file formats in the input:
 | DOCX       | :white_check_mark: | :white_check_mark: | File         | 
 | HTML       | :x:                | :x:                | URL          | 
 
-Whatever the input format is, the output resembles something like:
 
-```
+## Use `database.json` in Your Application
+
+The [database.json](database.json) file contains the information about to the text files for all imported words.<br>
+For example, the output of the text lists resembles something like:
+
+```json
     [
       [
         "textId",
