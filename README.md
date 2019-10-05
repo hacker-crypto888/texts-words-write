@@ -4,20 +4,19 @@
 - Registration Forms with Upload File Fields
 - Load your own text
 - Browse your own user writing and spelling sessions
+# Simple example of App To Spell Words.
 
-## Please Use These Two Available Scripts
+## Running
 
-In the project directory, you can run:
+```
+yarn install --save
 
-### `yarn install --save`
+yarn start
+```
 
-Installs all the dependencies in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.<br>
+Browser will be opening at [http://localhost:3000](http://localhost:3000).<br>
 
-### `yarn start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.<br>
+# My UI (User Interface)
 
 The program can handle following file formats in the input:
 
@@ -27,27 +26,7 @@ The program can handle following file formats in the input:
 - [x] DOCX
 - [ ] HTML
 
-# My UI (User Interface)
 
-The user is able:
-
-- [x] to work with texts in English
-- [x] to load a file in a dropzone to play the words
-- [x] to play the mp3 audio files from an online file database
-- [x] to play the words continuously on the click of a button
-- [x] to display a spinner during the loading of the audio files
-- [x] to handle empty date input in the date input field
-- [x] to sort the items by date from a json file
-- [x] not to load any text when textarea is empty
-- [x] not to load any text when dropzone is empty
-- [x] to load a text in a text area
-- [x] to play the words one by one
-- [x] check the writing of the words one by one
-- [x] not to reinitialize the lists after edits
-- [x] to play the loaded words after editing the word entries
-- [x] to add a single new word
-- [ ] to manage user sessions
-- [ ] to work with texts in French
 
 Extra features:
 - [ ] to display each audio in a carousel and remove slide of carousel once word is written correctly
