@@ -20,12 +20,6 @@ Browser will be opening at [http://localhost:3000](http://localhost:3000).<br>
 
 The program can handle following file formats in the input:
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
 
 
 
@@ -38,6 +32,12 @@ The program can handle following file formats in the input:
 | HTML   | :x: | :x: | URL |
 
 
+| Version | Supported          |
+| ------- | ------------------ |
+| 5.1.x   | :white_check_mark: |
+| 5.0.x   | :x:                |
+| 4.0.x   | :white_check_mark: |
+| < 4.0   | :x:                |
 
 
 Extra features:
