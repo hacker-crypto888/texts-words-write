@@ -91,8 +91,11 @@ For example, the output of the text lists resembles something like:
       ]
     ],
 ```
-where the latest entry *word* is added only when exporting the items.<br>
-
+While the corresponding segment for a text extracted from a dropped file will look like:
+```json
+    [
+    ],
+```
 Extra features:
 - [ ] to display each audio in a carousel and remove slide of carousel once word is written correctly
 - [ ] the program modifies the word according to its termination, therefore it can find the word in the database of sounds (in the mp3 file list in all the keys of key value pairs, all the keys are all the words of the database)
