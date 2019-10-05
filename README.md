@@ -19,6 +19,16 @@ Browser will be opening at [http://localhost:3000](http://localhost:3000).<br>
 # My UI (User Interface)
 
 The program can handle following file formats in the input:
+
+| Version | Supported          |
+| ------- | ------------------ |
+| 5.1.x   | :white_check_mark: |
+| 5.0.x   | :x:                |
+| 4.0.x   | :white_check_mark: |
+| < 4.0   | :x:                |
+
+
+
 | Format | Supported          | By dropping a file | Input format |
 | ------- | ------------------ | ---- | ---- |
 | plain text   | :white_check_mark: | :x: |  plain text  |
