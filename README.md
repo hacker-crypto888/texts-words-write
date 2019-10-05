@@ -127,9 +127,9 @@ After importing any normal text, you must create a check out the items that were
 
 | section of the app | data type | content options | 
 |---|---|---|
-| edit entries | word list, info about the text | remove entries | 
-| load by date | word list, info about date only | remove entries | 
-| export my items | word list, info about the text | read only | 
+| edit entries | word list | remove entries | 
+| load by date | word list | remove entries | 
+| export my items | word list | read only | 
 | add new word | word | add entry | 
 | add new text | text | add entries |
 | drop a file | text | add entries |
