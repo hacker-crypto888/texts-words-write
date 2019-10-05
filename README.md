@@ -96,30 +96,3 @@ While the corresponding segment for a text extracted from a dropped file will lo
     [
     ],
 ```
-Extra features:
-- [ ] to display each audio in a carousel and remove slide of carousel once word is written correctly
-- [ ] the program modifies the word according to its termination, therefore it can find the word in the database of sounds (in the mp3 file list in all the keys of key value pairs, all the keys are all the words of the database)
-
-## Database files
-
-        Words from text of the day
-
-- Text -> file
-
-- Open file with text -> split into word list
-
-Save the words in DB
-    
-- Open big database with "id", "word", and "date" columns
-
-- update = Append new words to the database
-
-Start the app
-
-- Write a simple JSON file with columns "id" and "word" and start the app
-
-        Selection of words in the database using date of data entry
-
-- Open big database
-
-- Save words matching the specified date of data entry in a JSON file with "id" and "word" columns, then start the app
