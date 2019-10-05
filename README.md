@@ -22,7 +22,7 @@ Browser will be opening at [http://localhost:3000](http://localhost:3000).<br>
 ## Drop any file
 
 Use the dropzone of the upload form.
-This will extract the words from your source, and make available your word items to the entries editor, by date, or by sorting items yourself.
+This will extract the words from your source, and make available your word items to the entries editors of the app.
 
 The program can handle following file formats in the input:
 
