@@ -14,8 +14,8 @@ Browser will be opening at [http://localhost:3000](http://localhost:3000).<br>
 
 The program can handle following file formats in the input:
 
-| Format | Supported | By dropping a file | Input format | Extracted data | 
-| ------- | ------- | ------- | ------- | ------- | 
+| Format     | Supported | By dropping a file | Input format | Extracted data | 
+| ---------- | --------- | ------------------ | ------------ | -------------- | 
 | Plain text | :white_check_mark: | :x: | Plain text | Text | 
 | TXT | :white_check_mark: | :white_check_mark: | File | Text | 
 | PDFs | :white_check_mark: | :white_check_mark: | File | Text | 
