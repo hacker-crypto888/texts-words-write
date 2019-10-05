@@ -28,11 +28,11 @@ The program can handle following file formats in the input:
 
 | Format     | Supported          | By dropping a file | Input format | 
 |------------|--------------------|--------------------|--------------|
-| Plain text | - [x] |                 | Plain text   | 
-| TXT        | - [x] | :white_check_mark: | File         |  
-| PDFs       | :white_check_mark: | :white_check_mark: | File         |  
-| DOCX       | :white_check_mark: | :white_check_mark: | File         | 
-| HTML       | :x:                | :x:                | URL          | 
+| Plain text | <ul><li>[x]</li></ul> |                 | Plain text   | 
+| TXT        | <ul><li>[x]</li></ul>| <ul><li>[x]</li><ul> | File         |  
+| PDFs       | <ul><li>[x]</li></ul> | <ul><li>[x]</li></ul> | File         |  
+| DOCX       | <ul><li>[x]</li></ul> | <ul><li>[x]</li></ul> | File         | 
+| HTML       |                 |                 | URL          | 
 
 
 
