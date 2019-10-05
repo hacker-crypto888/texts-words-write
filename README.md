@@ -29,35 +29,28 @@ The program can handle following file formats in the input:
 
 # My UI (User Interface)
 
-The user can: 
+The user is able: 
 
-- [ ] manage his or her user session 
-- [x] work with text in english
-- [ ] work with text in french 
-- [x] load a file in a dropzone to play the words
-- [x] use the mp3 words from an online database for which all the links are stored in the json file using fetch github.com.....file.json
-- [x] play the words continuously on the click of a button
-- [x] load a JSON file, then launch the audio files thanks to start game button
-- [x] load a JSON file, then edit the items, then launch the audio files
-- [x] load JSON and-or other files, and launch the audio files
-- [x] wait for the display of the audio files thanks to a spinner 
-- [x] load a text file
-- [x] handle empty date input
-- [x] drop a database json to sort the items by date
+- [x] to work with texts in English
+- [x] to load a file in a dropzone to play the words
+- [x] to play the mp3 audio files from an online file database
+- [x] to play the words continuously on the click of a button
+- [x] to display a spinner during the loading of the audio files 
+- [x] to handle empty date input in the date input field
+- [x] to sort the items by date from a json file
 - [x] not to load any text when textarea is empty
 - [x] not to load any text when dropzone is empty
-- [x] load the words by date
-- [x] load a text in a text area
-- [x] play the words one by one, write them, and have an instant validation
-- [x] play all the words
-
-- [ ] all words have a text id
-- [ ] the lists were reinitiased after edits
-- [ ] the user could play the loaded words after edits
-- [ ] the user could add a single new word
+- [x] to load a text in a text area
+- [x] to play the words one by one
+- [x] check the writing of the words one by one
+- [x] not to reinitialize the lists after edits
+- [x] to play the loaded words after editing the word entries
+- [x] to add a single new word
+- [ ] to manage user sessions 
+- [ ] to work with texts in French
 
 Extra features:
-- [ ] display each audio in a carousel and remove slide of carousel once word is written correctly
+- [ ] to display each audio in a carousel and remove slide of carousel once word is written correctly
 - [ ] when dropping an items.json file, two options can be proposed: start over with the same file or drop a new file
 - [ ] the program modifies the word according to its termination, therefore it can find the word in the database of sounds (in the mp3 file list in all the keys of key value pairs, all the keys are all the words of the database)
 
