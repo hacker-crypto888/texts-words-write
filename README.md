@@ -1,4 +1,13 @@
-# Simple example of App To Spell Words.
+# Simple example of an English Words Pronunciation and Writing App.
+
+
+## Introduction
+
+This is a simple React script to listen to the MP3 pronunciation audio for more than 110000 unique English words/terms. 
+
+The MP3 sources were obtained from the following project: 
+
+[https://github.com/nathanielove/English-words-pronunciation-mp3-audio-download/](https://github.com/nathanielove/English-words-pronunciation-mp3-audio-download/).<br>
 
 ## Running
 
@@ -10,7 +19,10 @@ yarn start
 
 Browser will be opening at [http://localhost:3000](http://localhost:3000).<br>
 
-# My UI (User Interface)
+## Drop any file
+
+Use the dropzone of the upload form.
+This will extract the words from your source, and make available your word items to the entries editor, by date, or by sorting items yourself.
 
 The program can handle following file formats in the input:
 
