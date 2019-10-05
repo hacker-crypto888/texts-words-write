@@ -371,7 +371,20 @@ class FillInTheDateForm extends React.Component {
       myPreviewNode:null,
       myDatabaseJson:null,
       someData:null,
-      dataOutput:null
+      dataOutput:null,
+      importedTexts:null,
+      importText:null,
+      thisIsMyTextList:null,
+      textObject:null,
+      modalbody:null,
+      exportText:null,
+      textdiv:null,
+      idx:null,
+      displayText:null,
+      removeText:null,
+      displayWord:null,
+      removeWord:null, 
+      textelements:null,
     }
   }
   componentDidMount() {
@@ -384,79 +397,118 @@ class FillInTheDateForm extends React.Component {
     //while(myNode.firstChild) {
     //  myNode.removeChild(myNode.firstChild);
     //}
-    const myInputNode = document.getElementById('inputJsonFile');
-    while(myInputNode.firstChild) {
-      myInputNode.removeChild(myInputNode.firstChild);
-    }
+    //const myInputNode = document.getElementById('inputJsonFile');
+    //while(myInputNode.firstChild) {
+    //  myInputNode.removeChild(myInputNode.firstChild);
+    //}
   }
   handleSubmittedDate = (event) => {
 
-    if(document.getElementById("download_items").dataset.databaseJson.length) {
-      const myItems = JSON.parse(document.getElementById("download_items").dataset.databaseJson);
- 
-       
-        //MY DATE PICKER 
-      const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
-      //console.log(myItems);
-      const myItemsByDate = [];
-      console.log(myItems); 
-      myItems.items.forEach(function(item, index, object) {
-        if(item.dates.includes(selectedDate)){
-          myItemsByDate.push(item); 
-          
-        }
+    const modalbody = document.getElementById('modal-bodyloadbydate');
+    modalbody.innerHTML = 'no items found'; 
+    this.loadByDate();
+  }
+  loadByDate = () => {
+    const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
+    const importedTexts = document.getElementById('preview'); 
+    const importText = JSON.parse(importedTexts.dataset.texts); 
+    const thisIsMyTextList = [];
+    importText.forEach(function(mytext) {
+      const textObject = {};
+
+      mytext.forEach(function(myinfo) {
+        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;};
+        textObject[myinfo[0]] = myinfo[1];
       });
-    
-      //  //FROM THERE, THE ARRAY "MY ITEMS BY DATE" IS USED TO OUTPUT THE DOWNLOAD LINk
-
-      if ([...myItemsByDate].length){
-        //INITIALIZE DOWNLOAD LINKS AREA//
-        const myInputNode = document.getElementById('inputJsonFile');
-        while(myInputNode.firstChild) {
-          myInputNode.removeChild(myInputNode.firstChild);
-        }
-
-        //CREATES OUTPUT JSON FILE DOWNLOAD LINK 
-
-        const outputJson = document.getElementById("outputJsonFile");
-        
-        //if(document.getElementById("items_by_date")) {
-        //  document.getElementById("items_by_date").remove();
-        //}
-        const outputLink = document.createElement('a');
-        //console.log(myItemsByDate);
-        //BLOB TYPE: JSON, \\\\\\NO MORE NEEDED (THE APP CAN DIRECTLY LOAD THE WORDS THAT WERE DROPPED IN THE DROPZONE//////
-        outputLink.href = URL.createObjectURL(new Blob([JSON.stringify({"items": [...myItemsByDate]},null,2)], {type: 'application/json'})); //OBJECT TYPE: ARRAY
-        outputLink.innerHTML = "download JSON file (date of data entry: "+selectedDate+ ")";
-        outputLink.download = 'items.json';
-        outputLink.id = 'items_link';
-        outputLink.hidden = false;
-
-        outputJson.hidden = false;
-        outputLink.dataset.databaseJson = JSON.stringify({"items": myItemsByDate}); //LINES: UNKNOWN
-        outputJson.appendChild(outputLink);
-
-      } else {
-        const myInputNode = document.getElementById('inputJsonFile');
-        while(myInputNode.firstChild) {
-          myInputNode.removeChild(myInputNode.firstChild);
-        }
-
-        //OUTPUTS TEXT FOR NO VALID ITEM
-        const outputJson = document.getElementById("outputJsonFile");
-        const someData = document.createElement('a');
-        const outputLink = document.createElement('p');
-        outputLink.textContent = 'no item corresponds to your request.';
-        outputLink.id = 'noitem';
-        outputJson.appendChild(outputLink);
-        outputLink.hidden = false;
-        outputJson.hidden = false;
-      }
-        //=====/=/=/=/=/=/=/=/=/=/=/=/=/
-        //=====/=/=/=/=/=/=/=/=/=/=/=/=/
+      if(textObject === {}) {return;};
+      if(!textObject.mycontent) {return;};
+      if(!textObject.dates.some(x => x === selectedDate)) {return;}; 
+      console.log(textObject.content); 
+      thisIsMyTextList.push(textObject);
       
-    }
+    });
+    if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
+    console.log(thisIsMyTextList);
+    const modalbody = document.getElementById('modal-bodyloadbydate');
+    modalbody.innerHTML = "";
+    const exportText = JSON.parse(importedTexts.dataset.texts);
+    exportText.forEach(function(text) {
+      const textdiv = document.createElement('div'); 
+      console.log('text array of edit entries', text);
+      textdiv.className = text[0][1];
+      modalbody.appendChild(textdiv);
+      const displayText = document.createElement('div');
+      text.forEach(function(info, rangeInfo, ObjectInfo) {
+        if (info[0] === 'mycontent') {
+          info[1].forEach(function(wordItem) {
+            //if (wordItem === "mycontent") {return;}
+            const displayWord = document.createElement('div');
+            displayWord.textContent = wordItem;
+            textdiv.appendChild(displayWord);
+            const removeWord = document.createElement('button');
+            removeWord.classList.add("btn");
+            removeWord.classList.add("btn-secondary");
+            removeWord.type = "button";
+            removeWord.textContent = "Remove this word";
+            removeWord.onclick = (event) => {
 
+              const importedTexts = document.getElementById('preview');
+              importedTexts.dataset.texts = "";
+
+
+              const idx = info.indexOf(wordItem);
+              if (idx !== -1) {
+                info.splice(idx, 1);
+              }
+              console.log("INFO SLICE 1",info); 
+              console.log(exportText);
+              displayWord.remove();
+              removeWord.remove();
+              importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
+              console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
+            }
+            textdiv.appendChild(removeWord);
+          });
+          //info.unshift("mycontent");
+          console.log("INFO", info);
+        } else if (info[0] === 'dates') {
+          info[1].forEach(function(date) {
+            displayText.innerHTML += "text imported on ";
+            displayText.innerHTML += date;
+            displayText.innerHTML += '<br>';
+          });
+        }
+        textdiv.appendChild(displayText);
+      });
+
+      const removeText = document.createElement('button');
+      removeText.classList.add("btn");
+      removeText.classList.add("btn-secondary");
+      removeText.type = "button";
+      removeText.textContent = "Remove this text";
+      removeText.onclick = (event) => {
+
+        const importedTexts = document.getElementById('preview');
+        importedTexts.dataset.texts = "";
+
+        const idx = exportText.indexOf(text);
+        if (idx !== -1) {
+          exportText.splice(idx, 1);
+        }
+        console.log("onclick");
+        removeText.remove();
+        const textelements = document.getElementsByClassName(text[0][1]);
+        while (textelements[0].firstChild) {
+          textelements[0].removeChild(textelements[0].firstChild);
+        }
+
+        importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
+        console.log("importTexts texts on click remove text", JSON.parse(importedTexts.dataset.texts));
+        
+      };
+
+      modalbody.appendChild(removeText);
+    });
   }
   render() {    
     return (    
@@ -470,7 +522,29 @@ class FillInTheDateForm extends React.Component {
         />
       </div>
       <div>
-        <input type="submit" id="submit-date-btn" value="Submit selected date" className='btn btn-success btn-block' />  
+        <button type="submit" /*onClick={this.loadByDate}*/ id="loadbydate" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLongloadbydate">
+          Load by date 
+        </button>
+        
+        <div class="modal fade" id="exampleModalLongloadbydate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Load by date</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div id="modal-bodyloadbydate" class="modal-body">
+                 
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       </form>
     );
@@ -1468,19 +1542,12 @@ class EditEntries extends React.Component {
         }
         console.log("onclick");
         removeText.remove();
-        //if (modalbody.hasChildNodes()) {
-        const textelements = document.getElementsByClassName(text[0][1]);//modalbody.childNodes;
+        const textelements = document.getElementsByClassName(text[0][1]);
         while (textelements[0].firstChild) {
           textelements[0].removeChild(textelements[0].firstChild);
         }
 
-        //exportText.forEach(function(textItem) {
-        //  if (importedTexts.dataset.texts !== (null||undefined)) {
-        //    importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), textItem.map(Object.entries)[0]]);
-        //  } else if (importedTexts.dataset.texts === (null||undefined)) {
         importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
-        //  }
-        //});
         console.log("importTexts texts on click remove text", JSON.parse(importedTexts.dataset.texts));
         
       };
