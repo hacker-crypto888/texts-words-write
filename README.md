@@ -22,8 +22,60 @@ The program can handle following file formats in the input:
 | DOCX       | :white_check_mark: | :white_check_mark: | File         | 
 | HTML       | :x:                | :x:                | URL          | 
 
+Whatever the input format is, the output resembles something like:
 
-
+```
+    [
+      [
+        "textId",
+        78887
+      ],
+      [
+        "dates",
+        [
+          "9/15/2019"
+        ]
+      ],
+      [
+        "lastModified",
+        null
+      ],
+      [
+        "lastModifiedDate",
+        null
+      ],
+      [
+        "name",
+        null
+      ],
+      [
+        "size",
+        null
+      ],
+      [
+        "type",
+        null
+      ],
+      [
+        "webkitRelativePath",
+        null
+      ],
+      [
+        "mycontent",
+        [
+          "word1",
+          "word2",
+          "word3",
+          "word100"
+        ]
+      ],
+      [
+        "word",
+        "word1"
+      ]
+    ],
+```
+where the latest entry *word* is added only on JSON export.
 Extra features:
 - [ ] to display each audio in a carousel and remove slide of carousel once word is written correctly
 - [ ] the program modifies the word according to its termination, therefore it can find the word in the database of sounds (in the mp3 file list in all the keys of key value pairs, all the keys are all the words of the database)
