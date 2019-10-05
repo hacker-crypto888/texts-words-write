@@ -129,10 +129,9 @@ After importing any normal text, the items are sorted automatically. The app ena
 |---|---|---|
 | edit entries | word list | remove entries | 
 | load by date | word list | remove entries | 
-| export my items | word list | read only | 
 | add new word | word | add entry | 
 | add new text | text | add entries |
-| drop a file | text | add entries |
+| drop a file | text list | add entries |
 | start a new game | audio files | play each entry |
 | play all the words | audio files | play all entries |
 
