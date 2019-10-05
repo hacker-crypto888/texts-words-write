@@ -1,9 +1,3 @@
-## My App To Spell And Write Words 
-
-- Fill in a simple form and start using the app
-- Registration Forms with Upload File Fields
-- Load your own text
-- Browse your own user writing and spelling sessions
 # Simple example of App To Spell Words.
 
 ## Running
@@ -20,12 +14,12 @@ Browser will be opening at [http://localhost:3000](http://localhost:3000).<br>
 
 The program can handle following file formats in the input:
 
-| Format | Supported | By dropping a file | Input format | Extracted data |
-| ------- | ------- | ------- | ------- | ------- |
-| plain text | :white_check_mark: | :x: | plain text | text |
-| TXT | :white_check_mark: | :white_check_mark: | file | text |
-| PDFs | :white_check_mark: | :white_check_mark: | file | text |
-| DOCX | :white_check_mark: | :white_check_mark: | file | text |
+| Format | Supported | By dropping a file | Input format | Extracted data | 
+| ------- | ------- | ------- | ------- | ------- | 
+| plain text | :white_check_mark: | :x: | plain text | text | 
+| TXT | :white_check_mark: | :white_check_mark: | file | text | 
+| PDFs | :white_check_mark: | :white_check_mark: | file | text | 
+| DOCX | :white_check_mark: | :white_check_mark: | file | text | 
 | HTML | :x: | :x: | URL | text |
 
 
