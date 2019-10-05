@@ -14,13 +14,13 @@ Browser will be opening at [http://localhost:3000](http://localhost:3000).<br>
 
 The program can handle following file formats in the input:
 
-| Format     | Supported          | By dropping a file | Input format | Text extraction | 
-|------------|--------------------|--------------------|--------------|----------------| 
-| Plain text | :white_check_mark: | :x:                | Plain text   | :white_check_mark: | 
-| TXT        | :white_check_mark: | :white_check_mark: | File         | :white_check_mark: | 
-| PDFs       | :white_check_mark: | :white_check_mark: | File         | :white_check_mark: | 
-| DOCX       | :white_check_mark: | :white_check_mark: | File         | :white_check_mark: | 
-| HTML       | :x:                | :x:                | URL          | :white_check_mark: |
+| Format     | Supported          | By dropping a file | Input format | 
+|------------|--------------------|--------------------|--------------|
+| Plain text | :white_check_mark: | :x:                | Plain text   | 
+| TXT        | :white_check_mark: | :white_check_mark: | File         |  
+| PDFs       | :white_check_mark: | :white_check_mark: | File         |  
+| DOCX       | :white_check_mark: | :white_check_mark: | File         | 
+| HTML       | :x:                | :x:                | URL          | 
 
 
 
