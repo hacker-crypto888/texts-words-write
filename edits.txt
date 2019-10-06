@@ -51,3 +51,4 @@ Start the app
 - the "log in" and "import words from json" (actually import database function) buttons should both remove the texts that were not previously used in the program by the connected user
 - the entries editor should display the text informations in a table not in a single line
 - the words that could not be recognized by the audio displayer should be listed
+- the date and other info (the user list) could be updated only once the user made some modification in the entries editor, so the entries editor could also be only available when the user is connected. (differences between the connected user and guest user)
