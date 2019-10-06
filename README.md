@@ -28,7 +28,7 @@ The program can handle following file formats in the input:
 
 | Format     | Supported          | By dropping a file | Input format | 
 |:------------|:--------------------:|:--------------------:|--------------:|
-| Plain text / TXT | <ul><li>[x] </li></ul> | <ul><li>[ ] /<li>[x] </li></li><ul>| Text field / File | 
+| Plain text / TXT | <ul><li>[x] </li></ul> | <ul><li><li>[ ] </li>/ [x] </li><ul>| Text field / File | 
 | PDFs       | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | File         |  
 | DOCX       | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | File         | 
 | HTML       | <ul><li>[ ] </li><ul> | <ul><li>[ ] </li><ul> | URL          | 
