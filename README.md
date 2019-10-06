@@ -32,7 +32,6 @@ The program can handle following file formats in the input:
 | TXT       | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | File         | 
 | PDFs       | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | File         |  
 | DOCX       | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | File         | 
-| HTML       | <ul><li>[ ] </li><ul> | <ul><li>[ ] </li><ul> | URL          | 
 
 
 
@@ -42,9 +41,9 @@ After importing any normal text, the items are sorted automatically. The app ena
 
 | Section of the app | Imported data type | Content options | Exported data type | 
 |---|---|---|---|
-| Edit entries | Word list | Remove entries | edited word list | 
-| Load by date | Word list | Remove entries | sorted word list | 
-| Add new word | Word | Add entry | word list | 
+| Edit entries | Word list | Remove entries | new word list | 
+| Load by date | Word list | Remove entries | new word list | 
+| Add new word | Word | Add entry | new word list | 
 | add new text | text | add entries | new text entry | 
 | drop a file | text list | add entries | new text entry | 
 | start a new game | audio files | play each entry | none | 
