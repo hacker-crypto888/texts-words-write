@@ -47,3 +47,7 @@ Start the app
 - the database json must be a text list, not a word list
 - if the database json contains only text how not to erase one text that has same id as other text
 - the following meassure can be taken: look for similar words in my content field
+- the "edit entries" window should return a message "no items found" when no items has been loaded
+- the "log in" and "import words from json" (actually import database function) buttons should both remove the texts that were not previously used in the program by the connected user
+- the entries editor should display the text informations in a table not in a single line
+- the words that could not be recognized by the audio displayer should be listed
