@@ -37,7 +37,7 @@ The program can handle following file formats in the input:
 
 ## Differences between the guest user and the connected user
 
-Here is the differences between the scope of actions of the guest user and the connected user can take.
+There are the differences between the scope of actions that the guest user and the connected user can take.
 
 Check out in the table in the first column the scope of actions the user can take, in the second column whether the guest user can take this action, in the third column whether the connected user can take this action, and in the fourth column what the result will be when we will be using our app.
 
