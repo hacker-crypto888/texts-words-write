@@ -45,13 +45,15 @@ After importing any normal text, the items are sorted automatically. This is the
 | Load by date | Word list | Remove entries | 
 | Add new word | Word | Add entry | 
 
-Once your app is configured, this is the info handled by program about the texts, part of which the user can or cannot edit:
+## Word lists and user permissions
 
-| Information about the text | User permissions | 
+The program saves some pieces of information about each text:
+
+| Information about the text | information about this parameter | 
 |---|---|
-| textId | Read only | 
-| dates | Word list | 
-| last modification date | Word | 
+| textId | each text has its own key | 
+| dates | each time the user loads a text, the date is saved | 
+| user | the users who loaded this text | 
 | last modification date | Word | 
 | last modification date | Word | 
 | last modification date | Word | 
