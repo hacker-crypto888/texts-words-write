@@ -37,15 +37,31 @@ The program can handle following file formats in the input:
 
 ## Word lists and user permissions
 
-After importing any normal text, the items are sorted automatically. The app enables you to:
+After importing any normal text, the items are sorted automatically. This is the scope of content options for configuring your app:
 
-| Section of the app | Imported data type | Content options | Exported data type | 
+| Section of the app | Imported data type | Content options | 
+|---|---|---|
+| Edit entries | Word list | Remove entries | 
+| Load by date | Word list | Remove entries | 
+| Add new word | Word | Add entry | 
+
+Once your app is configured, this is the info handled by program about the texts, part of which the user can or cannot edit:
+
+| Information about the text | User permissions | 
+|---|---|---|
+| textId | Read only | 
+| dates | Word list | 
+| last modification date | Word | 
+| last modification date | Word | 
+| last modification date | Word | 
+| last modification date | Word | 
+| last modification date | Word | 
+| last modification date | Word | 
+
+
+
+| Section of the app | Imported data type | Content options | Number of times | 
 |---|---|---|---|
-| Edit entries | Word list | Remove entries | new word list | 
-| Load by date | Word list | Remove entries | new word list | 
-| Add new word | Word | Add entry | new word list | 
-| add new text | text | add entries | new text entry | 
-| drop a file | text list | add entries | new text entry | 
-| start a new game | audio files | play each entry | none | 
-| play all the words | audio files | play all entries | none | 
+| start a new game | audio files | play each entry |  | 
+| play all the words | audio files | play all entries |  | 
 
