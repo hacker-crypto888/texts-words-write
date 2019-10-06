@@ -1,8 +1,0 @@
-- app for word spelling and writing 
-- tests on the output of parsing a text -> punctuation removal => word lists output -> test text in french and english
-- sessions: add a user column? in the database to attach all words to a user?
-- concerning the audio file database: use a json file containing links to the mp3 of audios 
-- display user name in his/her session in the right top corner
-
-- app for job seeker
-- 
