@@ -48,7 +48,7 @@ After importing any normal text, the items are sorted automatically. This is the
 Once your app is configured, this is the info handled by program about the texts, part of which the user can or cannot edit:
 
 | Information about the text | User permissions | 
-|---|---|---|
+|---|---|
 | textId | Read only | 
 | dates | Word list | 
 | last modification date | Word | 
