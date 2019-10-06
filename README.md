@@ -35,35 +35,25 @@ The program can handle following file formats in the input:
 
 
 
-## Word lists and user permissions
+## Differences between the guest user and the connected user
 
-After importing any normal text, the items are sorted automatically. This is the scope of content options for configuring your app:
+This is the differences between the scope of actions of the guest user and the connected user can take.
 
-| Section of the app | Imported data type | Content options | 
-|---|---|---|
-| Edit entries | Word list | Remove entries | 
-| Load by date | Word list | Remove entries | 
-| Add new word | Word | Add entry | 
+Check out in the table in the first column the scope of actions the user can take, in the second column whether the guest user can take this action, in the third column whether the connected user can take this action, and in the fourth column what the result will be when we will be using our app.
 
-## Word lists and user permissions
+| Actions | Guest user | Connected user | In action |
+|---|---|---|---|
+| Save and load text history | <ul><li> [ ]</li></ul> | <ul><li> [x]</li></ul> | Each connected user can load all of his or her texts |
+| Load by date | <ul><li> [ ]</li></ul> | <ul><li> [x]</li></ul> | Each connected user can load by date his or her texts | 
+| Add new word | <ul><li> [x]</li></ul> | <ul><li> [x]</li></ul> | All users without distinction can add a new word | 
 
-The program saves some pieces of information about each text:
+## Functioning of the app in the advanced parameters for all users
+
+The text list constitutes the advanced parameters for the app, because it contains all the information about the text. It is hard to define what each piece of information corresponds to, so here is a more detailed presentation of what they each represent.
 
 | Information about the text | information about this parameter | 
 |---|---|
-| textId | each text has its own key | 
-| dates | each time the user loads a text, the date is saved | 
-| user | the users who loaded this text | 
-| last modification date | Word | 
-| last modification date | Word | 
-| last modification date | Word | 
-| last modification date | Word | 
-| last modification date | Word | 
-
-
-
-| Section of the app | Imported data type | Content options | Number of times | 
-|---|---|---|---|
-| start a new game | audio files | play each entry |  | 
-| play all the words | audio files | play all entries |  | 
+| textId | Each text has its own key | 
+| dates | Each time the user loads a text, the date is saved | 
+| users | Each time the user loads a text, his or her name is saved in the text information | 
 
