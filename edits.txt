@@ -45,3 +45,5 @@ Start the app
 - remove last word = remove this text
 
 - the database json must be a text list, not a word list
+- if the database json contains only text how not to erase one text that has same id as other text
+- the following meassure can be taken: look for similar words in my content field
