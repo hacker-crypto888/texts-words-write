@@ -43,9 +43,9 @@ Check out in the table in the first column the scope of actions the user can tak
 
 | Actions | Guest user | Connected user | In action |
 |---|---|---|---|
-| Save and load text history | <ul><li> [ ]</li></ul> | <ul><li> [x]</li></ul> | Each connected user can load all of his or her texts |
-| Load by date | <ul><li> [ ]</li></ul> | <ul><li> [x]</li></ul> | Each connected user can load by date his or her texts | 
-| Add new word | <ul><li> [x]</li></ul> | <ul><li> [x]</li></ul> | All users without distinction can add a new word | 
+| Save and load text history | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load all of his or her texts |
+| Load by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date his or her texts | 
+| Add new word | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users without distinction can add a new word | 
 
 ## Functioning of the app in the advanced parameters for all users
 
