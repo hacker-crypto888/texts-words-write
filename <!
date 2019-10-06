@@ -65,7 +65,6 @@ class BasicForm extends React.Component {
       thisIsMyTextList:null,
       thisIsMyText:null,
       itemsloaded:null,
-      username:'',
     };
   }
   componentDidMount() {
@@ -76,12 +75,6 @@ class BasicForm extends React.Component {
       itemsloaded:
         'no items loaded'
     });
-    this.setState({
-      username:
-        '' 
-    });
-    document.getElementById('loginbtn').innerHTML = 'log in';
-    document.getElementById('export_all_items').hidden = true;
   }
 
   fieldOnblur = () => {
@@ -245,61 +238,14 @@ class BasicForm extends React.Component {
         ''
     });
   }
-  handleUsernameChange = (event) => {
-    this.setState({
-      username:
-        event.target.username
-    });
-  }
-  loginUser = (event) => {
-    const username = document.getElementById('username').value;
-
-
-    //alert(typeof username);
-    if(document.getElementById('loginbtn').innerHTML === 'log in') {
-      if(username === (null||undefined||'')) {return;};
-      document.getElementById('loginbtn').innerHTML = 'log out';
-      document.getElementById('username').hidden = true;
-      document.getElementById('export_all_items').hidden = false;
-      document.getElementById('welcome').innerHTML = "Hello, "+username;
-      const importedTexts = document.getElementById("preview");
-      importedTexts.dataset.username = username; 
-
-      const importText = JSON.parse(importedTexts.dataset.texts); 
-      importText.forEach(function(myTextItem) {
-        if (!myTextItem.some(x => x[0] === "users")) {
-          myTextItem.push(["users",[username]]);
-        } else if(myTextItem.some(x => x[0] === "users")) { 
-          myTextItem.forEach(function(info) {
-            if(info[0] === "users") {
-              if(info[1].includes(username)) {
-                info[1].push(username);
-              }
-            } 
-          });
-        }
-      });
-      importedTexts.dataset.texts = JSON.stringify(importText);
-    } else if(document.getElementById('loginbtn').innerHTML === 'log out') {
-      document.getElementById('loginbtn').innerHTML = 'log in';
-      document.getElementById('username').hidden = false;
-      document.getElementById('export_all_items').hidden = true;
-      document.getElementById('welcome').innerHTML = "";
-      document.getElementById('username').value = "";
-    }
-    
-  }
+  
   render() { 
     
     return(
       <form onSubmit={this.handleSubmit}>
-       <div className={`login-form`}> 
-         <div id="welcome"></div>
-         <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} /> 
-         <br/><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
-            
-         </button>
-
+       <div className={`form-group`}> 
+         <br /><input onChange={this.handleWordChange} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
+         <button onClick={this.addNewWord} className={`btn btn-success btn-block`}>  
        </div>
        <div>
        <div className={`form-group`}> 
@@ -1055,24 +1001,24 @@ my two mistresses: what a beast am I to slack it!`,*/
         const thisIsMyTextList = [];
 
         console.log("MY ITEMS", myItems);
-        //myItems.forEach(function(f) {
-        //  if (!this[f.textId]) {
-        //    this[f.textId] = { "textId": f.textId, "dates":f.dates, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath, "mycontent":[] }
-        //    thisIsMyTextList.push(this[f.textId]);
-        //  }
-        //  const daysDate = new Date();
-        //  const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-        //  const msTime = Date.now();
-        //  if(this[f.textId].dates instanceof Array && this[f.textId].dates.length === 0) {
-        //    this[f.textId].dates = [today];
-        //  }
-        //  this[f.textId].mycontent.push(f.word);
-        //}, Object.create(null));
-        //console.log("MY TEXT LIST", thisIsMyTextList);
+        myItems.forEach(function(f) {
+          if (!this[f.textId]) {
+            this[f.textId] = { "textId": f.textId, "dates":f.dates, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath, "mycontent":[] }
+            thisIsMyTextList.push(this[f.textId]);
+          }
+          const daysDate = new Date();
+          const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+          const msTime = Date.now();
+          if(this[f.textId].dates instanceof Array && this[f.textId].dates.length === 0) {
+            this[f.textId].dates = [today];
+          }
+          this[f.textId].mycontent.push(f.word);
+        }, Object.create(null));
+        console.log("MY TEXT LIST", thisIsMyTextList);
         if (importedTexts.dataset.texts !== (null||undefined)) {
-          importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myItems.map(Object.entries)[0]]);
+          importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), thisIsMyTextList.map(Object.entries)[0]]);
         } else if (importedTexts.dataset.texts === (null||undefined)) {
-          importedTexts.dataset.texts = [JSON.stringify(myItems.map(Object.entries))];
+          importedTexts.dataset.texts = [JSON.stringify(thisIsMyTextList.map(Object.entries))];
         }
         console.log(JSON.parse(importedTexts.dataset.texts));
       })
@@ -1108,6 +1054,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
         //console.log(resultObject.value)
         //const importedTexts = document.getElementById('preview');
+        //const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":resultObject.value};
         //console.log(newText);
         //const myTextInfo = [];
         //myTextInfo.push(newText);
@@ -1646,49 +1593,32 @@ class EditEntries extends React.Component {
           }
         }
       });
-      //add each word
-      //textInfo.forEach(function(info){
+      textInfo.forEach(function(info){
 
-      //  if(info[0] === "mycontent") {
-      //    //console.log(info[1] instanceof Array);
-      //    //console.log(typeof info[1][0] === 'string' && typeof info[1][1] === 'string');
-      //    info[1].forEach(function(myitem){ 
-      //      console.log("my item is a string",typeof myitem === 'string');
-      //      const testWord = textInfo.some(x => x[0] === "word");
-      //      console.log("there is a word or several in the list", testWord); 
-      //      if (testWord === false) {
-      //        textInfo.push(["word",myitem]);
-      //        exportMyItems.push(textInfo);
-      //      } else if (testWord === true) {
-      //        const textInfoNew = textInfo.filter(x => x[0] !== "word"); 
-      //        textInfoNew.push(["word",myitem]);
-      //        exportMyItems.push(textInfoNew);
-      //      } 
-      //    });
-      //  }
-
-
-      //}); 
-    });
-    //exportMyItems = importText;
-    /**/
-    if (importedTexts.dataset.username !== (null||undefined||'')) {
-      importText.forEach(function(myTextItem) {
-        if (!myTextItem.some(x => x[0] === "users")) {
-          myTextItem.push(["users",[importedTexts.dataset.username]]);
-        } else if(myTextItem.some(x => x[0] === "users")) { 
-          myTextItem.forEach(function(info) {
-            if(info[0] === "users") {
-              if (!info[1].includes(importedTexts.dataset.username)) {
-                info[1].push(importedTexts.dataset.username);
-              }
+        if(info[0] === "mycontent") {
+          //console.log(info[1] instanceof Array);
+          //console.log(typeof info[1][0] === 'string' && typeof info[1][1] === 'string');
+          info[1].forEach(function(myitem){ 
+            console.log("my item is a string",typeof myitem === 'string');
+            const testWord = textInfo.some(x => x[0] === "word");
+            console.log("there is a word or several in the list", testWord); 
+            if (testWord === false) {
+              textInfo.push(["word",myitem]);
+              exportMyItems.push(textInfo);
+            } else if (testWord === true) {
+              const textInfoNew = textInfo.filter(x => x[0] !== "word"); 
+              textInfoNew.push(["word",myitem]);
+              exportMyItems.push(textInfoNew);
             } 
           });
         }
-      });
-    }
+
+
+      }); 
+    });
+    /**/
     const jsonobj = [];
-    importText.forEach(function(key){
+    exportMyItems.forEach(function(key){
       jsonobj.push(Object.keys(key).map(k => ({ [key[k][0]]: key[k][1] })));
     });
     const blobData = new Blob([JSON.stringify({"items": jsonobj},null,2)], {type: 'application/json'});
@@ -1699,7 +1629,6 @@ class EditEntries extends React.Component {
     return (
       <div>
         <a id={`export_all_items`} ref={a => {this.a = a}} onClick={this.exportItems} download={`database.json`} href={``} >Export my items</a>
-        <br/>
         <button type="button" onClick={this.editEntries} id="editentries" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
           Edit entries 
         </button>
