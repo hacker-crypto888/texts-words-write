@@ -1043,15 +1043,12 @@ my two mistresses: what a beast am I to slack it!`,*/
         if (importedTexts.dataset.texts !== (null||undefined)) {
           importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
 
-          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-            document.getElementById('export_all_items').removeAttribute('disabled');
+          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.length > 0) {
+            document.getElementById('export_all_items').download = 'database.json';
           } 
 
         } else if (importedTexts.dataset.texts === (null||undefined)) {
           importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-            document.getElementById('export_all_items').removeAttribute('disabled');
-          } 
         }
       })
   }
@@ -1096,14 +1093,8 @@ my two mistresses: what a beast am I to slack it!`,*/
         //console.log("MY TEXT LIST", thisIsMyTextList);
         if (importedTexts.dataset.texts !== (null||undefined)) {
           importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myItems.map(Object.entries)[0]]);
-          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-            document.getElementById('export_all_items').removeAttribute('disabled');
-          } 
         } else if (importedTexts.dataset.texts === (null||undefined)) {
           importedTexts.dataset.texts = [JSON.stringify(myItems.map(Object.entries))];
-          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-            document.getElementById('export_all_items').removeAttribute('disabled');
-          } 
         }
         console.log(JSON.parse(importedTexts.dataset.texts));
       })
@@ -1132,15 +1123,9 @@ my two mistresses: what a beast am I to slack it!`,*/
         myTextInfo.push(newText);
         if (importedTexts.dataset.texts !== (null||undefined)) {
           importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-            document.getElementById('export_all_items').removeAttribute('disabled');
-          } 
           newText.length = 0;
         } else if (importedTexts.dataset.texts === (null||undefined)) {
           importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-            document.getElementById('export_all_items').removeAttribute('disabled');
-          } 
           newText.length = 0;
         }
         //console.log(resultObject.value)
@@ -1223,15 +1208,9 @@ my two mistresses: what a beast am I to slack it!`,*/
           myTextInfo.push(newText);
           if (importedTexts.dataset.texts !== (null||undefined)) {
             importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-            if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-              document.getElementById('export_all_items').removeAttribute('disabled');
-            } 
             newText.length = 0;
           } else if (importedTexts.dataset.texts === (null||undefined)) {
             importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-            if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-              document.getElementById('export_all_items').removeAttribute('disabled');
-            } 
             newText.length = 0;
           }
         //for(var i = 0;i < pagesText.length;i++){
@@ -1413,6 +1392,10 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
   addNewWord = (event) => {
     const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+    this.setState({
+      valueword:
+        event.target.valueword
+    });
     const valueword = document.getElementById("valueword").value;
     const importedTexts = document.getElementById('preview');
     if (valueword === "") {return;};
@@ -1428,18 +1411,10 @@ my two mistresses: what a beast am I to slack it!`,*/
       const myTextInfo = [];
       myTextInfo.push(newText);
       importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-      if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-        document.getElementById('export_all_items').removeAttribute('disabled');
-      } 
-      document.getElementById("valueword").value = '';
     } else if (importedTexts.dataset.texts === (null||undefined) || importedTexts.dataset.texts.length === 0) {
       const myTextInfo = [];
       myTextInfo.push(newText);
       importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-        document.getElementById('export_all_items').removeAttribute('disabled');
-      } 
-      document.getElementById("valueword").value = '';
     }
   }
   addNewText = (event) => {
@@ -1460,16 +1435,10 @@ my two mistresses: what a beast am I to slack it!`,*/
       const myTextInfo = [];
       myTextInfo.push(newText);
       importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-      if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-        document.getElementById('export_all_items').removeAttribute('disabled');
-      } 
     } else if (importedTexts.dataset.texts === (null||undefined) || importedTexts.dataset.texts.length === 0) {
       const myTextInfo = [];
       myTextInfo.push(newText);
       importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-        document.getElementById('export_all_items').removeAttribute('disabled');
-      } 
     }
    
 
@@ -1577,8 +1546,6 @@ class EditEntries extends React.Component {
     }
   }
   componentDidMount = () => {
-    document.getElementById('export_all_items').disabled = true;
-    document.getElementById('export_all_items_link').hidden = true;
   }
   editEntries = (event) => {
     const modalbody = document.getElementById('modal-body');
@@ -1683,7 +1650,6 @@ class EditEntries extends React.Component {
     const wordsFromText = [];
     const importedTexts = document.getElementById('preview'); 
     const importText = JSON.parse(importedTexts.dataset.texts); 
-    if(importText instanceof Array === false) {return;};
     /**/
     importText.forEach(function(textInfo){
 
@@ -1749,16 +1715,12 @@ class EditEntries extends React.Component {
     //});
     const blobData = new Blob([JSON.stringify({"items": importText},null,2)], {type: 'application/json'});
     const url = window.URL.createObjectURL(blobData);
-    document.getElementById('export_all_items_link').href = url;
-    document.getElementById('export_all_items_link').click();
+    document.getElementById('export_all_items').href = url;
   }
   render() {
     return (
       <div>
-        <button type="button" class="btn btn-primary" id="export_all_items" onClick={this.exportItems}>
-          Export my items
-        </button>
-        <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
+        <a id={`export_all_items`} ref={a => {this.a = a}} onClick={this.exportItems} download={`database.json`} href={``} >Export my items</a>
         <br/>
         <button type="button" onClick={this.editEntries} id="editentries" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
           Edit entries 
