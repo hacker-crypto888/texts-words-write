@@ -270,40 +270,62 @@ class BasicForm extends React.Component {
     });
   }
   loginUser = (event) => {
+    const importedTexts = document.getElementById("preview");
+
+    //if (importText instanceof Array && importText.length === 0) {return;};
+    //if(document.getElementById('export_all_items').disabled && importedTexts.dataset.texts && JSON.parse(importedTexts.dataset.texts) instanceof Array && JSON.parse(importedTexts.dataset.texts).length > 0) {
+    //  document.getElementById('export_all_items').removeAttribute('disabled');
+    //}
     const username = document.getElementById('username').value;
+      
 
 
     //alert(typeof username);
     if(document.getElementById('loginbtn').innerHTML === 'log in') {
-      if(username === (null||undefined||'')) {return;};
+
+      //if(username === (null||undefined||'')) {return;};
       document.getElementById('loginbtn').innerHTML = 'log out';
       document.getElementById('username').hidden = true;
       document.getElementById('export_all_items').hidden = false;
       document.getElementById('welcome').innerHTML = "Hello, "+username;
-      const importedTexts = document.getElementById("preview");
       importedTexts.dataset.username = username; 
+      //if (typeof importedTexts.dataset.databaseJson === 'boolean' && importedTexts.dataset.databaseJson === true) {
+    //const importText = JSON.parse(importedTexts.dataset.texts);
+      //  importText.forEach(function(item){
+      //    if((item.some(x => x[0] === "users" && x[1] instanceof Array && !x[1].includes(importedTexts.dataset.username))) || (!item.some(x => x[0] === "users"))) {
+      //      const idx = importText.indexOf(item);
+      //      if(idx !== -1) {
+      //        importText.splice(idx, 1);
+      //      }
+      //    }    
+      //  });
+      //importedTexts.dataset.texts = JSON.stringify(importText);
+      //} else if (importText.length > 0 && typeof importedTexts.dataset.databaseJson === 'boolean' && importedTexts.dataset.databaseJson === true) {
+      //  importText.forEach(function(myTextItem) {
+      //    if (!myTextItem.some(x => x[0] === "users")) {
+      //      myTextItem.push(["users",[username]]);
+      //    } else if(myTextItem.some(x => x[0] === "users")) { 
+      //      myTextItem.forEach(function(info) {
+      //        if(info[0] === "users") {
+      //          if(info[1].includes(username)) {
+      //            info[1].push(username);
+      //          }
+      //        } 
+      //      });
+      //    }
+      //  });
 
-      const importText = JSON.parse(importedTexts.dataset.texts); 
-      importText.forEach(function(myTextItem) {
-        if (!myTextItem.some(x => x[0] === "users")) {
-          myTextItem.push(["users",[username]]);
-        } else if(myTextItem.some(x => x[0] === "users")) { 
-          myTextItem.forEach(function(info) {
-            if(info[0] === "users") {
-              if(info[1].includes(username)) {
-                info[1].push(username);
-              }
-            } 
-          });
-        }
-      });
-      importedTexts.dataset.texts = JSON.stringify(importText);
+      //importedTexts.dataset.texts = JSON.stringify(importText);
+      //}
+
     } else if(document.getElementById('loginbtn').innerHTML === 'log out') {
       document.getElementById('loginbtn').innerHTML = 'log in';
       document.getElementById('username').hidden = false;
       document.getElementById('export_all_items').hidden = true;
+      document.getElementById('export_all_items').disabled = true;
       document.getElementById('welcome').innerHTML = "";
       document.getElementById('username').value = "";
+
     }
     
   }
@@ -1073,37 +1095,35 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
       .then(thirdres => {
         const myItems = thirdres.map(obj => obj);
+        const thisIsMyTextList = thirdres.map(obj => obj);
         this.setState({myItems});
         const importedTexts = document.getElementById('preview');
-        const littleWordList = [];
-        const thisIsMyWordList = [];
-        const thisIsMyTextList = [];
 
-        console.log("MY ITEMS", myItems);
-        //myItems.forEach(function(f) {
-        //  if (!this[f.textId]) {
-        //    this[f.textId] = { "textId": f.textId, "dates":f.dates, "lastModified": f.lastModified, "lastModifiedDate": f.lastModifiedDate, "name": f.name, "size": f.size, "type": f.type, "webkitRelativePath": f.webkitRelativePath, "mycontent":[] }
-        //    thisIsMyTextList.push(this[f.textId]);
-        //  }
-        //  const daysDate = new Date();
-        //  const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-        //  const msTime = Date.now();
-        //  if(this[f.textId].dates instanceof Array && this[f.textId].dates.length === 0) {
-        //    this[f.textId].dates = [today];
-        //  }
-        //  this[f.textId].mycontent.push(f.word);
-        //}, Object.create(null));
-        //console.log("MY TEXT LIST", thisIsMyTextList);
+        console.log("my items 1",myItems);
+        //if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
+        //  myItems.forEach(function(item){
+        //    if(item.some(x => x[0] === "users" && x[1] instanceof Array && !x[1].includes(importedTexts.dataset.username))||!item.some(x => x[0] === "users")) {
+        //      const idx = myItems.indexOf(item);
+        //      if(idx !== -1) {
+        //        myItems.splice(idx, 1);
+        //      }
+        //    }    
+        //  });
+        //  if(myItems instanceof Array && myItems.length === 0) {return;}
+        //}
+
         if (importedTexts.dataset.texts !== (null||undefined)) {
           importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myItems.map(Object.entries)[0]]);
           if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
             document.getElementById('export_all_items').removeAttribute('disabled');
           } 
+          importedTexts.dataset.databaseJson = 'true';
         } else if (importedTexts.dataset.texts === (null||undefined)) {
           importedTexts.dataset.texts = [JSON.stringify(myItems.map(Object.entries))];
           if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
             document.getElementById('export_all_items').removeAttribute('disabled');
           } 
+          importedTexts.dataset.databaseJson = 'true';
         }
         console.log(JSON.parse(importedTexts.dataset.texts));
       })
