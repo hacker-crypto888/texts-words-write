@@ -70,10 +70,3 @@ The text lists constitute the app's advanced parameters, because it contains all
 ## the cancellation of the modifications option
 
 The user must be able to keep or cancel his or her modifications before exportation of the text lists.
-
-| displaying, removing, adding, <br/> or sorting items | logged in | logged out | texts from previous sessions |
-|---|---|---|---|
-| texts from previous sessions | The connected user can independently edit items from previous sessions, all items including that of current session that were put with that of previous sessions, or only that loaded in current session | The guest user can only import texts and remove word entries from them | Only the connected user can remove text entries, sort previous sessions by date, and add new items | 
-
-
- 
