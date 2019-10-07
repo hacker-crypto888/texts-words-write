@@ -56,7 +56,7 @@ The text list constitutes the advanced parameters for the app, because it contai
 | textId | Each text has its own key | 
 | dates | Each time the user loads a text, the date is saved | 
 | users | Each time the user loads a text, his or her name is saved in the text information | 
-| lastModified | Each time a file is loaded, the program retrieves its modification date in seconds |
+| lastModified | Each time a file is loaded, the program retrieves its modification date (a number that represents the number of milliseconds since the Unix epoch (January 1, 1970 at midnight)) |
 | lastModifiedDate": "2019-09-19T20:46:55.992Z" | 
 | name | Each time a file is loaded, the program retrieves its filename with the extension | 
 | webkitRelativePath | |
