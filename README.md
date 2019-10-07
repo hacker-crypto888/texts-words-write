@@ -72,10 +72,10 @@ The text lists constitute the app's advanced parameters, because it contains all
 
 |  | login / logged in | logout / logged out | texts from previous sessions |
 |---|---|---|---|
-| text display / remove / add / sort | The connected user can edit entries of current sessions, but keep all items of new texts and previous sessions | The guest user can only import texts and remove word entries from them | Only the connected user can remove text entries, sort previous sessions by date, and add new items | 
+| displaying, removing, adding, or sorting items | The connected user can edit entries of current sessions, but keep all items of new texts and previous sessions | The guest user can only import texts and remove word entries from them | Only the connected user can remove text entries, sort previous sessions by date, and add new items | 
 
 |  | connected user | guest user |
 |---|---|---|
-| previous sessions upload | Each connected user can upload his own texts from previous sessions | Only the connected user can upload files from previous sessions |
-| new text upload | Each connected user can upload his files with text for his current session | Each guest user can upload files for his current session | 
+| uploading previous sessions | Each connected user can upload his own texts from previous sessions | Only the connected user can upload files from previous sessions |
+| uploading new text | Each connected user can upload his files with text for his current session | Each guest user can upload files for his current session | 
 
