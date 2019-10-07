@@ -60,3 +60,8 @@ The non-standard File.prototype.lastModifiedDate property, deprecated since Fire
 Update: Microsoft OneDrive is not showing correct file modification dates due to this change.
 
 The user can load a text b4 he or she logs in
+in the first columns find the first event, which followed by the second, can lead to conflicts in sorting lists of items in terms of access the app gives to the word lists to the user. this is to give an account of what each user can see in the entries editor according to his or her login state.
+Let us recall that the aim in editing entries for the user can be twofold:
+- edit entries but for the current sessions only
+- the user must then be able to export for later the text he or she loaded together with the previous sessions
+
