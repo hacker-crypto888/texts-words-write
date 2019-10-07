@@ -70,7 +70,7 @@ The text lists constitute the app's advanced parameters, because it contains all
 ## conflicts that can emerge from two events
 
 
-|  | login / logged in | logout / logged out | texts from previous sessions |
+|  | logged in | logged out | texts from previous sessions |
 |---|---|---|---|
 | displaying, removing, adding, or sorting items | The connected user can edit entries of current sessions, but keep all items of new texts and previous sessions | The guest user can only import texts and remove word entries from them | Only the connected user can remove text entries, sort previous sessions by date, and add new items | 
 
