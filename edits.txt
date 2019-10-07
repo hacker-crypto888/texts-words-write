@@ -52,3 +52,10 @@ Start the app
 - the entries editor should display the text informations in a table not in a single line
 - the words that could not be recognized by the audio displayer should be listed
 - the date and other info (the user list) could be updated only once the user made some modification in the entries editor, so the entries editor could also be only available when the user is connected. (differences between the connected user and guest user)
+
+File.lastModifiedDate has been removed
+Published: May 4, 2018 | Categories: DOM
+Description
+The non-standard File.prototype.lastModifiedDate property, deprecated since Firefox 49, has been removed with Firefox 61. According to Mozilla’s Telemetry, it’s currently used in 0.01% of the pages. Use the standard lastModified property instead.
+Update: Microsoft OneDrive is not showing correct file modification dates due to this change.
+
