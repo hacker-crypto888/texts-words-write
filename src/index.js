@@ -1058,7 +1058,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       .then(function(valueText) {
         console.log(valueText);
         const importedTexts = document.getElementById('preview');
-        const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":valueText};
+        const newText = {"lastModified": file.lastModified, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":valueText};
         console.log(newText);
         const myTextInfo = [];
         myTextInfo.push(newText);
@@ -1146,7 +1146,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function (resultObject) {
         result2.innerHTML = resultObject.value
         const importedTexts = document.getElementById('preview');
-        const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":resultObject.value};
+        const newText = {"lastModified": file.lastModified, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":resultObject.value};
         console.log("newText",newText);
         const myTextInfo = [];
         myTextInfo.push(newText);
@@ -1237,7 +1237,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         // e.g ["Text content page 1", "Text content page 2", "Text content page 3" ... ]
           console.log(pagesText);
           const importedTexts = document.getElementById('preview');
-          const newText = {"lastModified": file.lastModified, "lastModifiedDate":file.lastModifiedDate, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":pagesText.join(' ')};
+          const newText = {"lastModified": file.lastModified, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":pagesText.join(' ')};
           console.log(newText);
           const myTextInfo = [];
           myTextInfo.push(newText);
@@ -1442,7 +1442,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const daysDate = new Date();
     const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
     const msTime = Date.now();
-    const newText = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": ""};
+    const newText = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "name": "", "webkitRelativePath": "", "size": "", "type": ""};
     newText.mycontent = [valueword];
     if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
       const myTextInfo = [];
@@ -1475,7 +1475,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const daysDate = new Date();
     const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
     const msTime = Date.now();
-    const newText = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "lastModifiedDate":this.state.today, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
+    const newText = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
     if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
       const myTextInfo = [];
       myTextInfo.push(newText);
