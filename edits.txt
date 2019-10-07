@@ -59,3 +59,4 @@ Description
 The non-standard File.prototype.lastModifiedDate property, deprecated since Firefox 49, has been removed with Firefox 61. According to Mozilla’s Telemetry, it’s currently used in 0.01% of the pages. Use the standard lastModified property instead.
 Update: Microsoft OneDrive is not showing correct file modification dates due to this change.
 
+The user can load a text b4 he or she logs in

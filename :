@@ -51,22 +51,22 @@ Check out in the table in the first column the scope of actions the user can tak
  
 As opposed to guest users, connected users can import previous sessions, and keep this continuity by adding new texts.
 
-## Functioning of the app in the advanced parameters
+## Functioning of the app in the advanced parameters for all users
 
 The text lists constitute the app's advanced parameters, because it contains all the information about the text. It is hard to define what each piece of information corresponds to, so here is a more detailed presentation of what they each represent.
 
-Only the connected user can access all the information about the text by clicking on the "Export my items" button. The program handles and tranfers all the information about one text each time items are added or removed from the items list of this text.
- 
-The table shows each parameter in the first column, the modification of this paramater in the event of a text upload in the second column, and the modification of this parameter in the event that a user logs in.
-
-| Information about the text | Text upload by the connected user | 
+| Information about the text | information about this parameter | 
 |---|---|
 | textId | Each text has its own key | 
 | dates | Each time the user loads a text, the date is saved | 
-| users | Each time the user connected user loads a text, his or her name is saved in the text information; If the previous sessions are loaded, the connected user can only edit entries of his or her previous sessions | 
-| lastModified | Each time a file is loaded, its modification date is saved (a number that represents the number of milliseconds since the Unix epoch (January 1, 1970 at midnight)) | 
-| name | Each time a file is loaded, its filename is saved with the extension; If a text is loaded from the web application, the text will have no filename | 
-| webkitRelativePath | Each time the user choice a file in an input element, a USVString which specifies the file's path relative to the directory selected by the user is saved | 
+| users | Each time the user loads a text, his or her name is saved in the text information | 
+| lastModified | Each time a file is loaded, its modification date is saved (a number that represents the number of milliseconds since the Unix epoch (January 1, 1970 at midnight)) |
+| name | Each time a file is loaded, its filename is saved with the extension | 
+| webkitRelativePath | Each time the user choice a file in an input element, a USVString which specifies the file's path relative to the directory selected by the user is saved |
 | size | Each time a file is loaded, its size in bytes is saved | 
-| type | Each time a file is loaded, its type is saved | 
-| mycontent | Each time a file is dropped or selected by the user, the program parses its text content, and splits it into a word list before saving it | | 
+| type | Each time a file is loaded, its type is saved |
+| mycontent | Each time a file is dropped or selected by the user, the program parses its text content, and splits it into a word list before saving it |
+
+### Technical details
+
+
