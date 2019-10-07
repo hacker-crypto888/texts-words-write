@@ -67,15 +67,13 @@ The text lists constitute the app's advanced parameters, because it contains all
 | type | Each time a file is loaded, its type is saved | 
 | mycontent | Each time a file is dropped or selected by the user, the program parses its text content, and splits it into a word list before saving it | | 
 
-## conflicts that can emerge from two events
+## the cancellation of the modifications option
 
+The user must be able to keep or cancel his or her modifications before exportation of the text lists.
 
-|  | logged in | logged out | texts from previous sessions |
+| displaying, removing, adding, <br/> or sorting items | logged in | logged out | texts from previous sessions |
 |---|---|---|---|
-| displaying, removing, adding, or sorting items | The connected user can independently edit items from previous sessions, all items including that of current session that were put with that of previous sessions, or only that loaded in current session | The guest user can only import texts and remove word entries from them | Only the connected user can remove text entries, sort previous sessions by date, and add new items | 
+| texts from previous sessions | The connected user can independently edit items from previous sessions, all items including that of current session that were put with that of previous sessions, or only that loaded in current session | The guest user can only import texts and remove word entries from them | Only the connected user can remove text entries, sort previous sessions by date, and add new items | 
 
-|  | connected user | guest user |
-|---|---|---|
-| uploading previous sessions | Each connected user can upload his own texts from previous sessions | Only the connected user can upload files from previous sessions |
-| uploading new text | Each connected user can upload his files with text for his current session | Each guest user can upload files for his current session | 
 
+ 
