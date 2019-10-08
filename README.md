@@ -73,13 +73,6 @@ The text lists constitute the app's advanced parameters, because it contains all
 | type | Each time a file is loaded, its type is saved | 
 | mycontent | Each time a file is dropped or selected by the user, the program parses its text content, and splits it into a word list before saving it | | 
 
-### Tagging system
-
-Each text is tagged according to the modifications it can have with: LOCKED, READ ONLY, and READ AND WRITE are the three tags it can receive.
-LOCKED means you can do nothing with this item, just leave it.
-READ ONLY means you can do nothing with this item.
-READ AND WRITE means you can edit this item.
-
 ## Background tasks
 
 | User actions | Task done by the program | 
