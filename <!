@@ -323,7 +323,6 @@ class BasicForm extends React.Component {
       //}
 
     } else if(document.getElementById('loginbtn').innerHTML === 'log out') {
-      importedTexts.dataset.username = ''; 
       document.getElementById('loginbtn').innerHTML = 'log in';
       document.getElementById('username').hidden = false;
       document.getElementById('export_all_items').hidden = true;
@@ -1661,7 +1660,6 @@ class EditEntries extends React.Component {
       daysDate:null,
       today:null,
       msTime:null,
-      textype:null,
     }
   }
   componentDidMount = () => {
@@ -1703,11 +1701,6 @@ class EditEntries extends React.Component {
       textdiv.className = text[0][1];
       const displayText = document.createElement('div');
       text.forEach(function(info, rangeInfo, ObjectInfo) {
-        if(info[0] === "type") {
-          const texttype = info[1];
-        }
-      }
-      text.forEach(function(info, rangeInfo, ObjectInfo) {
         if (info[0] === 'mycontent') {
           info[1].forEach(function(wordItem) {
             this.displayWord(wordItem);
@@ -1720,28 +1713,21 @@ class EditEntries extends React.Component {
         }
         modalbody.appendChild(displayText);
       });
-      this.displayRemoveTextBtn(text, text[0][1], texttype);
+      this.displayRemoveTextBtn(text, text[0][1]);
 
     });
   }
   checkConnectedUser = () => {
-    //on display of editor
-    //or on click of remove text button
     const importedTexts = document.getElementById('preview');
     if(!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {
       document.getElementById('modallogin').click(); //displays a modal window with bootstrap
     }
-    setTimeout(function() {
-      if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {
-        document.getElementById('loginModal').hide();
-        return;
-      }
-    }, 30000);
-
+    //if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return;}
   }
   editEntries = (event) => {
     const importedTexts = document.getElementById('preview'); 
     this.checkConnectedUser();
+
     const importText = JSON.parse(importedTexts.dataset.texts); 
     const thisIsMyTextList = [];
     this.checkTextContent(thisIsMyTextList, importText);
@@ -1753,8 +1739,7 @@ class EditEntries extends React.Component {
     displayWord.textContent = wordItem;
     modalbody.appendChild(displayWord);
   }
-  displayRemoveTextBtn = (text, textId, texttype) => {
-    //the checkConnectedUser function is already in the editEntries function
+  displayRemoveTextBtn = (text, textId) => {
     const modalbody = document.getElementById('modal-body');
     const removeText = document.createElement('button');
     removeText.classList.add("btn");
@@ -1764,7 +1749,6 @@ class EditEntries extends React.Component {
     removeText.onclick = (event) => {
       const importedTexts = document.getElementById('preview');
       importedTexts.dataset.texts = "";
-      //if(typeof texttype)
 
       const idx = exportText.indexOf(text);
       if (idx !== -1) {
