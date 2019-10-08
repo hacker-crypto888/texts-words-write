@@ -51,7 +51,7 @@ Check out in the table below the scope of actions the user can take in the first
 | Log in and import new texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add import new texts and edit their entries | 
 | Import texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts from the text list | 
 | Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[ ] </li></ul> | Each guest user can remove words from the list | 
-| Edit entries and create new text lists | <ul><li>[x] </li></ul> | <ul><li>[ ] </li></ul> | Each connected user can edit its entries and create new text lists | 
+| Edit entries and create new text lists | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit its entries and create new text lists | 
 | Cancel the edits and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all of his texts with that of other users | 
 | Load texts by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date the texts from his or her previous sessions | 
 
