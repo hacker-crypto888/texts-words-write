@@ -42,9 +42,8 @@ Check out in the table below the scope of actions the user can take in the first
 
 | Actions  | Guest user | Connected user | In action | Functions
 |---|---|---|---|---|
-| Import previous sessions | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can import previous sessions of texts | 
+| Import previous sessions or upload texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can upload texts from previous sessions or upload texts for this session by uploading files or by using the text input field and remove the texts | 
 | Add new texts using the text input field and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new texts using the text input field and remove words | 
-| Remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts from previous sessions or texts uploaded during this session | 
 | Upload files and remove words | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can drop files and remove words from texts the program extracted from them | 
 | Cancel the edits made to the texts using the editor and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all texts including that from other users | cancelTheEdits(entriesList) saveAllTexts()
 | Add new words using the text input field and remove them using the editor | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new words using the text input field and remove them using the editor | 
