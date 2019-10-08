@@ -73,3 +73,10 @@ The text lists constitute the app's advanced parameters, because it contains all
 | size | Each time a file is loaded, its size in bytes is saved | 
 | type | Each time a file is loaded, its type is saved | 
 | mycontent | Each time a file is dropped or selected by the user, the program parses its text content, and splits it into a word list before saving it | | 
+
+## Tasks of the program 
+
+| Actions | Task done by the program | 
+|---|---|
+| Import previous sessions | <ul><li>[x] import each text in a list</li></ul> | 
+| the user dropped a file | <ul><li>[x] text is extracted</li><li>[x] information about this file is saved</li></ul> | 
