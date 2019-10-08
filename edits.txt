@@ -112,3 +112,9 @@ https://www.meziantou.net/how-to-store-a-password-in-a-web-application.htm#-stor
 http://swac-collections.org/listen/fra/l%27accouchement parse SHTOOKA PROJECT and get the mini audio "onclick" contents
 the guest user can only load texts and words using the text input field 
 the connected user can upload files.
+- texts of user currently logged in ---------> importedTexts.dataset.texts
+(way to include or not include the texts from previous sessions in this list, if not to include them in this list, where to put the items from previous sessions from the user currently logged in ------------------> importedTexts.dataset.prev)
+
+- texts of users that are not logged in -----------> importedTexts.dataset.allusers
+
+- texts of all users to export all items ---------------> importedTexts.dataset.alltexts
