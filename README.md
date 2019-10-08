@@ -50,7 +50,7 @@ Check out in the table below the scope of actions the user can take in the first
 | Edit texts extracted from files or the text input fields during this session and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can save his or her new items. They will be automatically saved with other texts loaded from files or text imported using the text input field, or texts from previous sessions or from other users when using the "export my items" button | editEntriesAndSave()
 | Load texts from previous sessions by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date the texts from his or her previous sessions | 
 
-- Editing entries includes: removing words, removing texts, sorting texts by date, adding new words, adding new texts, and importing new texts and words from files. It is possible to use the editor to remove words or texts, or to use the text input field to add new words or texts.
+- Editing entries includes: removing words, removing texts, sorting texts by date, adding new words, adding new texts, and importing new texts and words from files. It is possible to use the editor to remove words or texts, or to use the text input field to add new words and texts.
 - Sorting all texts by user happens at login, whereas if any user is logged in, all texts are saved with the currently logged in user.
 - Saving all texts is exporting all texts. To edit entries and play the words, close the window of the editor.
 - There are two ways users can import texts: the guest user can only load texts and words using the text input field, whereas the connected user can upload files.
