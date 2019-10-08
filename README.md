@@ -76,6 +76,8 @@ The text lists constitute the app's advanced parameters, because it contains all
 
 ## Background tasks
 
+Each task is a function in the program, and is called inside of another function each time the user performs the corresponding "action".
+
 | Actions | Task done by the program | tests on this text |
 |---|---|---|
 | Import previous sessions | <ul><li>[x] import each text in a list</li></ul> | <ul><li>[x] minimal length of the text</li></ul> |
