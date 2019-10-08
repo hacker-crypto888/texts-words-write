@@ -44,7 +44,7 @@ Check out in the table below the scope of actions the user can take in the first
 |---|---|---|---|---|
 | Import previous sessions | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can import previous sessions | 
 | Add new words and play the words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new words and play them | 
-| Edit entries and cancel the edits | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add edit the entries of the texts he or she imported and cancel the modifications | 
+| Edit entries and cancel the edits | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add edit the entries of the texts he or she imported and cancel the modifications | edit entries
 | Import texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts | 
 | Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can remove words from texts they imported | 
 | Cancel the edits and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all texts including that from other users | cancelTheEdits(entriesList) saveAllTexts()
@@ -52,9 +52,8 @@ Check out in the table below the scope of actions the user can take in the first
 | Edit entries and save texts from current session | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save texts from current session. They will be automatically saved with that from previous sessions and from other users | 
 | Load texts by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date the texts from his or her previous sessions | 
 
-- Editing entries includes: removing words, removing texts, and sorting texts by date.
+- Editing entries includes: removing words, removing texts, sorting texts by date, adding new words, adding new texts, and importing new texts and words from files.
 - Sorting all texts by user happens at login, whereas if any user is logged in, all texts are saved with the currently logged in user.
-- Editing lists includes: adding new words, adding new texts, and importing new texts and words from files.
 - Saving all texts is exporting all texts. To edit entries and play the words, close the window of the editor.
 
 ## Functioning of the app in the advanced parameters
