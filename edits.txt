@@ -103,3 +103,9 @@ if(!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset
 }
 if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return;}
 
+-Encrypt the password 
+https://www.meziantou.net/how-to-store-a-password-in-a-web-application.htm#-store-passwords-in
+
+- score for each user
+- creation of user interface with personal data (name, email, scores for each words)
+- find audio files in French, being able to parse French texts
