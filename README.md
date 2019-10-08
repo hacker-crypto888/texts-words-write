@@ -76,7 +76,7 @@ The text lists constitute the app's advanced parameters, because it contains all
 
 ## Background tasks
 
-Each task is a function in the program, and is called inside of another function each time the user performs the corresponding "action".
+Each task is a function in the program, and is called inside of another function each time the user performs the corresponding action.
 
 | Actions | Task done by the program | tests on this text |
 |---|---|---|
