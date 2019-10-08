@@ -42,7 +42,7 @@ Check out in the table below the scope of actions the user can take in the first
 
 | Actions | Guest user | Connected user | In action |
 |---|---|---|---|
-| Import previous sessions | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user import previous sessions |
+| Import previous sessions | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can import previous sessions |
 | Add new words and play the words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new words and play them | 
 | Add new texts and edit entries | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add a new text and edit all of its entries  | 
 | Import previous sessions and edit entries | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add import a new text or texts from previous sessions and edit all of its entries |
