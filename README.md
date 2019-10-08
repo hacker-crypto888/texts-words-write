@@ -74,7 +74,7 @@ The text lists constitute the app's advanced parameters, because it contains all
 | type | Each time a file is loaded, its type is saved | 
 | mycontent | Each time a file is dropped or selected by the user, the program parses its text content, and splits it into a word list before saving it | | 
 
-## update of app content with Background tasks
+## Background tasks that update the app content 
 
 | Actions | Task done by the program | tests on this text |
 |---|---|---|
