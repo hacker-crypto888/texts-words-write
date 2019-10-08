@@ -79,4 +79,4 @@ The text lists constitute the app's advanced parameters, because it contains all
 | Actions | Task done by the program | tests on this text |
 |---|---|---|
 | Import previous sessions | <ul><li>[x] import each text in a list</li></ul> |  |
-| the user dropped a file | <ul><li>[x] text is extracted</li><li>[x] information about this file is saved</li><li>[x] text is put together with other texts</li></ul> | <ul><li>[x] text is extracted</li><li>[x] information about this file is saved</li><li>[x] text is put together with other texts</li></ul> | <ul><li>[x] this text belongs to at least one user</li><li>[x] minimal length of the text</li><li>[x] this text contains more than one word</li></ul> | 
+| the user dropped a file | <ul><li>[x] text is extracted</li><li>[x] information about this file is saved</li><li>[x] text is put together with other texts</li></ul> | <ul><li>[x] this text belongs to at least one user</li><li>[x] minimal length of the text</li><li>[x] this text contains more than one word</li></ul> | 
