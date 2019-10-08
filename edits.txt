@@ -118,3 +118,9 @@ the connected user can upload files.
 - texts of users that are not logged in -----------> importedTexts.dataset.allusers
 
 - texts of all users to export all items ---------------> importedTexts.dataset.alltexts
+- check that the user loaded texts frfom previous sessions 
+
+in function that import the texts, assign to imported TExts dataset prev an  array with the text of previous sessions
+importedTexts.dataset.prev = JSON.parse() or importedTexts.dataset.prev = [...]
+
+importedTexts.dataset.prev instanceof Array && importedTexts.dataset.prev.length > 0
