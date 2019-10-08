@@ -65,3 +65,35 @@ Let us recall that the aim in editing entries for the user can be twofold:
 - edit entries but for the current sessions only
 - the user must then be able to export for later the text he or she loaded together with the previous sessions
 
+Way to check a user is connected
+          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
+...          }
+
+Way to sort the user's texts among all the users'
+        const importText = JSON.parse(importedTexts.dataset.texts);
+
+        importText.forEach(function(item){
+          if((item.some(x => x[0] === "users" && x[1] instanceof Array && !x[1].includes(importedTexts.dataset.username))) || (!item.some(x => x[0] === "users"))) {
+            const idx = importText.indexOf(item);
+            if(idx !== -1) {
+              importText.splice(idx, 1);
+            }
+          }    
+        });
+
+Way to add a new user to a text
+     importText.forEach(function(myTextItem) {
+        if (!myTextItem.some(x => x[0] === "users")) {
+          myTextItem.push(["users",[importedTexts.dataset.username]]);
+        } else if(myTextItem.some(x => x[0] === "users")) { 
+          myTextItem.forEach(function(info) {
+            if(info[0] === "users") {
+              if (!info[1].includes(importedTexts.dataset.username)) {
+                info[1].push(importedTexts.dataset.username);
+              }
+            } 
+          });
+        }
+      });
+      
+      
