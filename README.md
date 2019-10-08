@@ -33,23 +33,31 @@ The program can handle following file formats in the input:
 | PDFs       | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | File         |  
 | DOCX       | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | File         | 
 
-
-
 ## Differences between the guest user and the connected user
 
 There are the differences between the scope of actions that the guest user and the connected user can take.
 
-Check out in the table in the first column the scope of actions the user can take, in the second column whether the guest user can take this action, in the third column whether the connected user can take this action, and in the fourth column what the result will be when we will be using our app.
+Check out in the table below the scope of actions the user can take in the first column, in the second column whether the guest user can take this action, in the third column whether the connected user can take this action, and in the fourth column what the result will be when we will be using our app.
+
 
 | Actions | Guest user | Connected user | In action |
 |---|---|---|---|
-| Import previous sessions and edit entries | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load all of his or her texts |
-| Import previous sessions and login | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load all of his or her texts |
-| Load by date and edit current entries | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date his or her texts and edit his or her entries for the current session | 
+| Import previous sessions and login | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load all of his or her own texts |
+| Import previous sessions as a logged out user | <ul><li>[ ] </li></ul> | <ul><li>[ ] </li></ul> | Only the connected user can import previous sessions | 
 | Add new words and play the words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new words and play them | 
 | Add new texts and edit entries | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add a new text and edit all of its entries  | 
- 
-As opposed to guest users, connected users can import previous sessions, and keep this continuity by adding new texts.
+| Import previous sessions and edit entries | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add import a new text or texts from previous sessions and edit all of its entries |
+| Edit entries and cancel the edits | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add edit the entries of the texts he or she imported and cancel the modifications | 
+| Log in and import new texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add import new texts and edit their entries | 
+| Import texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts from the text list | 
+| Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[ ] </li></ul> | Each guest user can remove words from the list | 
+| Edit entries and create new text lists | <ul><li>[x] </li></ul> | <ul><li>[ ] </li></ul> | Each connected user can edit its entries and create new text lists | 
+| Cancel the edits and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all of his texts with that of other users | 
+| Load texts by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date the texts from his or her previous sessions | 
+
+- Editing entries includes: removing entries, and sorting entries by date.
+- Sorting all texts by user happens at login, whereas if any user is logged in, all texts are saved with the currently logged in user.
+- Editing lists includes: adding new words, adding new texts, and importing new texts and words from files.
 
 ## Functioning of the app in the advanced parameters
 
@@ -66,7 +74,3 @@ The text lists constitute the app's advanced parameters, because it contains all
 | size | Each time a file is loaded, its size in bytes is saved | 
 | type | Each time a file is loaded, its type is saved | 
 | mycontent | Each time a file is dropped or selected by the user, the program parses its text content, and splits it into a word list before saving it | | 
-
-## cancellation of the modifications
-
-The user must be able to keep or cancel his or her modifications before exportation of the text lists.
