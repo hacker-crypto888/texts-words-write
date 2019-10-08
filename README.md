@@ -67,6 +67,6 @@ The text lists constitute the app's advanced parameters, because it contains all
 | type | Each time a file is loaded, its type is saved | 
 | mycontent | Each time a file is dropped or selected by the user, the program parses its text content, and splits it into a word list before saving it | | 
 
-## the cancellation of the modifications option
+## cancellation of the modifications
 
 The user must be able to keep or cancel his or her modifications before exportation of the text lists.
