@@ -109,3 +109,4 @@ https://www.meziantou.net/how-to-store-a-password-in-a-web-application.htm#-stor
 - score for each user
 - creation of user interface with personal data (name, email, scores for each words)
 - find audio files in French, being able to parse French texts
+http://swac-collections.org/listen/fra/l%27accouchement parse SHTOOKA PROJECT and get the mini audio "onclick" contents
