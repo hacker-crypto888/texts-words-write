@@ -78,5 +78,5 @@ The text lists constitute the app's advanced parameters, because it contains all
 | User actions | Task done by the program | 
 |---|---|
 | the user imported previous sessions | <ul><li>[x] import texts from all users</li><li>[x] separate texts from other users from texts from user that is currently logged in</li></ul> | 
-| the user dropped a file | <ul><li>[x] text is extracted</li><li>[x] information about this file is saved</li><li>[x] text is put together with other texts</li></ul> | 
+| the user dropped a file | <ul><li>[x] text is extracted</li><li>[x] information about this file is saved</li><li>[x] text is put together with other texts</li><li>[x] divs are added in the modal body of the editor for entries</li><li>[x] the words and the buttons to remove them are displayed</li></ul> | 
 | logout | <ul><li>[x] all texts are kept in a single list so that an other user can log in</li></ul> |
