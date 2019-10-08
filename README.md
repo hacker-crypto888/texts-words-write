@@ -76,7 +76,7 @@ The text lists constitute the app's advanced parameters, because it contains all
 
 ## Background tasks
 
-| User actions | Task done by the program | tests on this text |
-|---|---|---|
-| the user imported previous sessions | <ul><li>[x] import each text in a list</li></ul> | <ul><li>[x] minimal length of the text</li></ul> |
-| the user dropped a file | <ul><li>[x] text is extracted</li><li>[x] information about this file is saved</li><li>[x] text is put together with other texts</li></ul> | <ul><li>[x] this text belongs to at least one user</li><li>[x] minimal length of the text</li></ul> | 
+| User actions | Task done by the program | 
+|---|---|
+| the user imported previous sessions | <ul><li>[x] import each text in a list</li></ul> | 
+| the user dropped a file | <ul><li>[x] text is extracted</li><li>[x] information about this file is saved</li><li>[x] text is put together with other texts</li></ul> | 
