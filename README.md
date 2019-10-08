@@ -55,6 +55,7 @@ Check out in the table below the scope of actions the user can take in the first
 - Editing entries includes: removing words, removing texts, and sorting texts by date.
 - Sorting all texts by user happens at login, whereas if any user is logged in, all texts are saved with the currently logged in user.
 - Editing lists includes: adding new words, adding new texts, and importing new texts and words from files.
+- Saving all texts is exporting all texts. To edit entries and play the words, close the window of the editor.
 
 ## Functioning of the app in the advanced parameters
 
