@@ -49,12 +49,13 @@ Check out in the table below the scope of actions the user can take in the first
 | Edit entries and cancel the edits | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add edit the entries of the texts he or she imported and cancel the modifications | 
 | Log in and import new texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add import new texts and edit their entries | 
 | Import texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts from the text list | 
-| Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can remove words from the list | 
-| Edit entries and create new text lists | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit its entries and create new text lists | 
+| Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can remove words | 
 | Cancel the edits and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all of his texts with that of other users | 
+| Edit entries and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save all of his texts with that of other users | 
+| Edit entries and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save texts from current session with that of previous sessions and from other users | 
 | Load texts by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date the texts from his or her previous sessions | 
 
-- Editing entries includes: removing entries, and sorting entries by date.
+- Editing entries includes: removing words, removing texts, and sorting texts by date.
 - Sorting all texts by user happens at login, whereas if any user is logged in, all texts are saved with the currently logged in user.
 - Editing lists includes: adding new words, adding new texts, and importing new texts and words from files.
 
