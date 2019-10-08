@@ -65,3 +65,62 @@ Let us recall that the aim in editing entries for the user can be twofold:
 - edit entries but for the current sessions only
 - the user must then be able to export for later the text he or she loaded together with the previous sessions
 
+Way to check a user is connected
+          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
+...          }
+
+Way to sort the user's texts among all the users'
+        const importText = JSON.parse(importedTexts.dataset.texts);
+
+        importText.forEach(function(item){
+          if((item.some(x => x[0] === "users" && x[1] instanceof Array && !x[1].includes(importedTexts.dataset.username))) || (!item.some(x => x[0] === "users"))) {
+            const idx = importText.indexOf(item);
+            if(idx !== -1) {
+              importText.splice(idx, 1);
+            }
+          }    
+        });
+
+Way to add a new user to a text
+     importText.forEach(function(myTextItem) {
+        if (!myTextItem.some(x => x[0] === "users")) {
+          myTextItem.push(["users",[importedTexts.dataset.username]]);
+        } else if(myTextItem.some(x => x[0] === "users")) { 
+          myTextItem.forEach(function(info) {
+            if(info[0] === "users") {
+              if (!info[1].includes(importedTexts.dataset.username)) {
+                info[1].push(importedTexts.dataset.username);
+              }
+            } 
+          });
+        }
+      });
+      
+Way to display login screen for an action that requires login
+
+if(!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {
+  document.getElementById('modallogin').click(); //displays a modal window with bootstrap
+}
+if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return;}
+
+-Encrypt the password 
+https://www.meziantou.net/how-to-store-a-password-in-a-web-application.htm#-store-passwords-in
+
+- score for each user
+- creation of user interface with personal data (name, email, scores for each words)
+- find audio files in French, being able to parse French texts
+http://swac-collections.org/listen/fra/l%27accouchement parse SHTOOKA PROJECT and get the mini audio "onclick" contents
+the guest user can only load texts and words using the text input field 
+the connected user can upload files.
+- texts of user currently logged in ---------> importedTexts.dataset.texts
+(way to include or not include the texts from previous sessions in this list, if not to include them in this list, where to put the items from previous sessions from the user currently logged in ------------------> importedTexts.dataset.prev)
+
+- texts of users that are not logged in -----------> importedTexts.dataset.allusers
+
+- texts of all users to export all items ---------------> importedTexts.dataset.alltexts
+- check that the user loaded texts frfom previous sessions 
+
+in function that import the texts, assign to imported TExts dataset prev an  array with the text of previous sessions
+importedTexts.dataset.prev = JSON.parse() or importedTexts.dataset.prev = [...]
+
+importedTexts.dataset.prev instanceof Array && importedTexts.dataset.prev.length > 0

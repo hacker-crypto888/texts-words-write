@@ -40,23 +40,20 @@ There are the differences between the scope of actions that the guest user and t
 Check out in the table below the scope of actions the user can take in the first column, in the second column whether the guest user can take this action, in the third column whether the connected user can take this action, and in the fourth column what the result will be when we will be using our app.
 
 
-| Actions | Guest user | Connected user | In action |
-|---|---|---|---|
-| Import previous sessions | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user import previous sessions |
-| Add new words and play the words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new words and play them | 
-| Add new texts and edit entries | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add a new text and edit all of its entries  | 
-| Import previous sessions and edit entries | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add import a new text or texts from previous sessions and edit all of its entries |
-| Edit entries and cancel the edits | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add edit the entries of the texts he or she imported and cancel the modifications | 
-| Import texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts | 
-| Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can remove words from texts they imported | 
-| Cancel the edits and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all of his texts with that from other users | 
-| Edit entries and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save all of his texts with that from other users | 
-| Edit entries and save texts from current session | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save texts from current session. They will be automatically saved with that from previous sessions and from other users | 
-| Load texts by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date the texts from his or her previous sessions | 
+| Actions  | Guest user | Connected user | In action | Functions
+|---|---|---|---|---|
+| Import previous sessions or upload texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can upload texts from previous sessions or upload texts for this session by uploading files or by using the text input field and remove the texts | 
+| Add new texts using the text input field and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new texts using the text input field and remove words | 
+| Upload files and remove words | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can drop files and remove words from the texts the program extracted from them | 
+| Cancel the edits made to the texts using the editor and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all texts including that from other users | cancelTheEdits(entriesList) saveAllTexts()
+| Add new words using the text input field and remove them using the editor | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new words using the text input field and remove them using the editor | 
+| Edit texts extracted from files or the text input fields during this session and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can save his or her new items. They will be automatically saved with other texts loaded from files or text imported using the text input field, or texts from previous sessions or from other users when using the "export my items" button | editEntriesAndSave()
+| Load texts from previous sessions by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date the texts from his or her previous sessions | 
 
-- Editing entries includes: removing words, removing texts, and sorting texts by date.
+- Editing entries includes: removing words, removing texts, sorting texts by date, adding new words, adding new texts, and importing new texts and words from files. It is possible to use the editor to remove words or texts, or to use the text input field to add new words and texts.
 - Sorting all texts by user happens at login, whereas if any user is logged in, all texts are saved with the currently logged in user.
-- Editing lists includes: adding new words, adding new texts, and importing new texts and words from files.
+- Saving all texts is exporting all texts. To edit entries and play the words, close the window of the editor.
+- There are two ways users can import texts: the guest user can only load texts and words using the text input field, whereas the connected user can upload files.
 
 ## Functioning of the app in the advanced parameters
 
@@ -73,3 +70,13 @@ The text lists constitute the app's advanced parameters, because it contains all
 | size | Each time a file is loaded, its size in bytes is saved | 
 | type | Each time a file is loaded, its type is saved | 
 | mycontent | Each time a file is dropped or selected by the user, the program parses its text content, and splits it into a word list before saving it | | 
+
+## Background tasks
+
+| User actions | Task done by the program | 
+|---|---|
+| login | <ul><li>[x] the username is displayed at the top of the page</li></ul> |
+| logout | <ul><li>[x] all texts are kept in a single list so that an other user can log in</li></ul> |
+| the user imported previous sessions | <ul><li>[x] import texts from all users</li><li>[x] separate texts from other users from texts from user that is currently logged in</li></ul> | 
+| the user dropped a file | <ul><li>[x] file is converted into a blob (object represents a file-like object of immutable, raw data that can be read as text or binary data)</li><li>[x] filename and icon is displayed under the dropzone</li><li>[x] text in English or French is extracted from the blob</li><li>[x] text from the file and information about the file are put together with other texts</li><li>[x] divs are added in the modal body of the editor to remove the texts and the words</li><li>[x] the words and the buttons to remove them are displayed</li></ul> | 
+| the user started a new game | <ul><li>[x] the audio players are displayed</li></ul> | 
