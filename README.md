@@ -47,12 +47,11 @@ Check out in the table below the scope of actions the user can take in the first
 | Add new texts and edit entries | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add a new text and edit all of its entries  | 
 | Import previous sessions and edit entries | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add import a new text or texts from previous sessions and edit all of its entries |
 | Edit entries and cancel the edits | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add edit the entries of the texts he or she imported and cancel the modifications | 
-| Log in and import new texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add import new texts and edit their entries | 
-| Import texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts from the text list | 
-| Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can remove words | 
-| Cancel the edits and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all of his texts with that of other users | 
-| Edit entries and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save all of his texts with that of other users | 
-| Edit entries and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save texts from current session with that of previous sessions and from other users | 
+| Import texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts | 
+| Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can remove words from texts they imported | 
+| Cancel the edits and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all of his texts with that from other users | 
+| Edit entries and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save all of his texts with that from other users | 
+| Edit entries and save texts from current session | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save texts from current session. They will be automatically saved with that from previous sessions and from other users | 
 | Load texts by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date the texts from his or her previous sessions | 
 
 - Editing entries includes: removing words, removing texts, and sorting texts by date.
