@@ -98,8 +98,8 @@ Way to add a new user to a text
       
 Way to display login screen for an action that requires login
 
-if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-  document.getElementById('...').click(); //displays a modal window with bootstrap
+if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length === 0) {
+  document.getElementById('modallogin').click(); //displays a modal window with bootstrap
 }
-if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {return;}
+if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length === 0) {return;}
 
