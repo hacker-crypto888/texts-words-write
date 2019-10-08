@@ -42,15 +42,14 @@ Check out in the table below the scope of actions the user can take in the first
 
 | Actions | Guest user | Connected user | In action |
 |---|---|---|---|
-| Import previous sessions and login | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load all of his or her own texts |
-| Import previous sessions as a logged out user | <ul><li>[ ] </li></ul> | <ul><li>[ ] </li></ul> | Only the connected user can import previous sessions | 
+| Import previous sessions | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user import previous sessions |
 | Add new words and play the words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new words and play them | 
 | Add new texts and edit entries | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add a new text and edit all of its entries  | 
 | Import previous sessions and edit entries | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add import a new text or texts from previous sessions and edit all of its entries |
 | Edit entries and cancel the edits | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add edit the entries of the texts he or she imported and cancel the modifications | 
 | Log in and import new texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add import new texts and edit their entries | 
 | Import texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts from the text list | 
-| Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[ ] </li></ul> | Each guest user can remove words from the list | 
+| Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can remove words from the list | 
 | Edit entries and create new text lists | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit its entries and create new text lists | 
 | Cancel the edits and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all of his texts with that of other users | 
 | Load texts by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date the texts from his or her previous sessions | 
