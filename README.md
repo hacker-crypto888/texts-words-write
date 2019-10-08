@@ -42,17 +42,18 @@ Check out in the table below the scope of actions the user can take in the first
 
 | Actions  | Guest user | Connected user | In action | Functions
 |---|---|---|---|---|
-| Import previous sessions | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can import previous sessions | 
-| Add new words and play the words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new words and play them | 
-| Edit entries and cancel the edits | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can add edit the entries of the texts he or she imported and cancel the modifications | edit entries
-| Import texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts | 
-| Import texts and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can remove words from texts they imported | 
-| Cancel the edits and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all texts including that from other users | cancelTheEdits(entriesList) saveAllTexts()
+| Import previous sessions | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can import previous sessions of texts | 
+| Add new texts using the text input field and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new texts using the text input field and remove words | 
+| Remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can remove texts from previous sessions or texts uploaded during this session | 
+| Upload files and remove words | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can drop files and remove words from texts the program extracted from them | 
+| Cancel the edits made to the texts using the editor and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel its edits and save all texts including that from other users | cancelTheEdits(entriesList) saveAllTexts()
+| Add new words using the text input field and remove them using the editor | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new words using the text input field and remove them using the editor | 
 | Edit entries and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save all of his texts with that from other users | editEntriesAndSave()
 | Edit entries and save texts from current session | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can edit entries and save texts from current session. They will be automatically saved with that from previous sessions and from other users | 
 | Load texts by date | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can load by date the texts from his or her previous sessions | 
+| Edit entries using the editor from the app and cancel the edits | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | -------Each connected user --------can remove the words from the imported texts and cancel the modifications | edit entries
 
-- Editing entries includes: removing words, removing texts, sorting texts by date, adding new words, adding new texts, and importing new texts and words from files.
+- Editing entries includes: removing words, removing texts, sorting texts by date, adding new words, adding new texts, and importing new texts and words from files. It is possible to use the editor to remove words or texts, or to use the text input field to add new words or texts.
 - Sorting all texts by user happens at login, whereas if any user is logged in, all texts are saved with the currently logged in user.
 - Saving all texts is exporting all texts. To edit entries and play the words, close the window of the editor.
 - There are two ways users can import texts: the guest user can only load texts and words using the text input field, whereas the connected user can upload files.
