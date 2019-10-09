@@ -66,8 +66,6 @@ class BasicForm extends React.Component {
       thisIsMyText:null,
       itemsloaded:null,
       username:'',
-      username_modal:'',
-
       itemlist:null,
       textlist:null,
       myitems:null,
@@ -89,17 +87,7 @@ class BasicForm extends React.Component {
     });
     document.getElementById('loginbtn').innerHTML = 'log in';
     document.getElementById('export_all_items').hidden = true;
-    document.getElementById('modallogin-hidden-btn').hidden = true;
-
-    document.getElementById('loginModal').onshow = (event) => {
-      document.getElementById('loginModal').focus();
-      window.addEventListener("keydown", function(event) {
-        document.getElementById('username_modal').focus();
-          
-      });
-
-
-    };
+    document.getElementById('modallogin').hidden = true;
   }
 
   fieldOnblur = () => {
@@ -281,50 +269,30 @@ class BasicForm extends React.Component {
       username:
         event.target.username
     });
-    this.setState({
-      username_modal:
-        event.target.username_modal
-    });
-  }
-  checkStringLength = (string) => {
-    if(!(typeof string === 'string' && string.length > 0)) {return;};
   }
   loginUser = (event) => {
     const importedTexts = document.getElementById("preview");
+
+    //if (importText instanceof Array && importText.length === 0) {return;};
+    //if(document.getElementById('export_all_items').disabled && importedTexts.dataset.texts && JSON.parse(importedTexts.dataset.texts) instanceof Array && JSON.parse(importedTexts.dataset.texts).length > 0) {
+    //  document.getElementById('export_all_items').removeAttribute('disabled');
+    //}
     const username = document.getElementById('username').value;
-    const username_modal = document.getElementById('username_modal').value;
-
-    if(event.target.id === "loginbtnmodal"||document.getElementById('loginbtn').innerHTML === 'log in') {
-      document.getElementById('loadbydate').removeAttribute('disabled');
-      document.getElementById('editentries').removeAttribute('disabled');
       
-      if (event.target.id === "loginbtnmodal") {
-
-        document.body.focus();
-        document.getElementById('loginModal').hidden = true;
 
 
-        alert(username_modal, "login from modal");
-        //document.getElementById('close-editor').click();
-        document.getElementById('login-form-body').focus();
+    //alert(typeof username);
+    if(document.getElementById('loginbtn').innerHTML === 'log in') {
+
+      //if(username === (null||undefined||'')) {return;};
+      if(event.target.id=== "loginbtnmodal") {
+        document.getElementById('loginModal').hide();
       }
-
-
-
-      this.checkStringLength(username);
-      
       document.getElementById('loginbtn').innerHTML = 'log out';
       document.getElementById('username').hidden = true;
       document.getElementById('export_all_items').hidden = false;
       document.getElementById('welcome').innerHTML = "Hello, "+username;
       importedTexts.dataset.username = username; 
-      if (event.target.id === "loginbtnmodal") {
-        this.checkStringLength(username_modal);
-
-        document.getElementById('welcome').innerHTML = "Hello, "+username_modal;
-        importedTexts.dataset.username = username_modal; 
-      }
-      this.newSession();
       //if (typeof importedTexts.dataset.databaseJson === 'boolean' && importedTexts.dataset.databaseJson === true) {
       //const importText = JSON.parse(importedTexts.dataset.texts);
       //importText.forEach(function(item){
@@ -363,34 +331,21 @@ class BasicForm extends React.Component {
       document.getElementById('welcome').innerHTML = "";
       document.getElementById('username').value = "";
 
-      this.newSession();
-      
-
     }
     
-  }
-  newSession = (event) => {
-    const importedTexts = document.getElementById('preview');
-    document.getElementById('items_by_date').focus();
-    document.getElementById('loadbydate').disabled = true;
-    document.getElementById('editor').focus();
-    document.getElementById('editentries').disabled = true;
-    importedTexts.dataset.texts = '';
-    importedTexts.dataset.prev = '';
-    importedTexts.dataset.allusers = '';
   }
   render() { 
     
     return(
       <form onSubmit={this.handleSubmit}>
-       <div id="login-form-body" className={`login-form`}> 
+       <div className={`login-form`}> 
          <div id="welcome"></div>
          <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} /> 
          <br/><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
             
          </button>
 
-         <button type="button" data-backdrop="false" data-toggle="modal" id="modallogin-hidden-btn" class="btn btn-primary" data-target="#loginModal">
+         <button type="button" id="modallogin" class="btn btn-primary" data-toggle="modal" data-target="#loginModal">
            Launch demo modal
          </button>
          <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -403,15 +358,16 @@ class BasicForm extends React.Component {
                  </button>
                </div>
                <div class="modal-body">
-                 <div className={`login-form-modal`}> 
-                   <input onChange={this.handleUsernameChange} placeholder="Username" id="username_modal" value={this.state.username_modal} /> 
+                 <div className={`login-form`}> 
+                   <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} /> 
                    <br/><button id="loginbtnmodal" onClick={this.loginUser} className={`btn btn-success`}>  
-                     Log in 
+                      
                    </button>
                  </div>
                </div>
                <div class="modal-footer">
                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                 <button type="button" class="btn btn-primary">Save changes</button>
                </div>
              </div>
            </div>
@@ -564,7 +520,6 @@ class FillInTheDateForm extends React.Component {
   componentDidMount() {
     const date = new Date();
     this.setState({date});
-    document.getElementById('loadbydate').disabled = true;
   }
   onChange = (date) => {
     this.setState({ date });
@@ -700,11 +655,11 @@ class FillInTheDateForm extends React.Component {
         />
       </div>
       <div>
-        <button type="submit" /*onClick={this.loadByDate}*/ id="loadbydate" class="btn btn-primary" data-toggle="modal" data-target="#exampleLoadbydate">
+        <button type="submit" /*onClick={this.loadByDate}*/ id="loadbydate" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLongloadbydate">
           Load by date 
         </button>
         
-        <div class="modal fade" id="exampleLoadbydate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal fade" id="exampleModalLongloadbydate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
@@ -713,7 +668,7 @@ class FillInTheDateForm extends React.Component {
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div id="modal-body-loadbydate" class="modal-body">
+              <div id="modal-bodyloadbydate" class="modal-body">
                  
               </div>
               <div class="modal-footer">
@@ -947,7 +902,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
     document.getElementById('noDatabaseFile').addEventListener('checked', this.checkBox);
-
     const importedTexts = document.getElementById('preview');
     importedTexts.dataset.textValue = '';
     const wordList = [];
@@ -1184,6 +1138,13 @@ my two mistresses: what a beast am I to slack it!`,*/
     importedTexts.dataset.alltexts = JSON.stringify([...JSON.parse(importedTexts.dataset.texts), JSON.parse(importedTexts.dataset.allusers)]);
     document.getElementById('export_all_items').click();
 
+  }
+  editEntriesAndSave = (entries) => {
+    const importedTexts = document.getElementById('preview');
+    importedTexts.dataset.alltexts = JSON.parse([...entries, JSON.parse(importedTexts.dataset.allusers)]);
+    document.getElementById('export_all_items').click();
+    
+    
   }
 
   sendFile = (file) => {
@@ -1586,24 +1547,19 @@ my two mistresses: what a beast am I to slack it!`,*/
       const myTextInfo = [];
       myTextInfo.push(newText);
       importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      this.enableEditor();
+      if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
+        document.getElementById('export_all_items').removeAttribute('disabled');
+      } 
     }
    
 
   }
-  enableEditor = () => {
-    document.getElementById('editentries').removeAttribute('disabled');
-  }
-  enableExport = () => {
-    document.getElementById('export_all_items').removeAttribute('disabled');
-  }
   checkConnectedUser = () => {
     const importedTexts = document.getElementById('preview');
     if(!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {
-      
-      document.getElementById('modallogin-hidden-btn').click(); //displays a modal window with bootstrap
-      
+      document.getElementById('modallogin').click(); //displays a modal window with bootstrap
     }
+    if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return;}
   }
   render() {
 
@@ -1706,12 +1662,6 @@ class EditEntries extends React.Component {
       today:null,
       msTime:null,
       textype:null,
-      username:'',
-      wordsToDisplay:null,
-      checkPrev:null,
-      checkCurrent:null,
-      wordsDiv:null,
-      textsDiv:null,
     }
   }
   componentDidMount = () => {
@@ -1721,19 +1671,19 @@ class EditEntries extends React.Component {
     document.getElementById('exampleModalLong').onshow = (event) => {
       this.displaySessions();
     }
-    document.getElementById('editentries').disabled = true;
+    document.getElementById('loginModal').addEventListener('hidden.bs.modal', function (e) {
 
-    //document.getElementById('exampleModalLong').addEventListener('shown.bs.modal', function (e) {
-    //  this.checkConnectedUser();
-    //})
+      if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)){
+        document.getElementById('exampleModalLong').hide();
+      }
+    });
   }
-
   checkTextContent = (thisIsMyTextList, importText) => {
     importText.forEach(function(mytext) {
       const textObject = {};
 
       mytext.forEach(function(myinfo) {
-        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;}
+        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;};
         textObject[myinfo[0]] = myinfo[1];
       });
       if(textObject === {}) {return;};
@@ -1745,139 +1695,84 @@ class EditEntries extends React.Component {
     if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
     console.log(thisIsMyTextList);
   }
-
-  displayWordsAndTexts = (textsToDisplay) => { 
+  textType = (text, texttype) => {
+    text.forEach(function(info, rangeInfo, ObjectInfo) {
+      if(info[0] === "type") {
+        texttype = info[1];
+      }
+    })
+  }
+  displayWordsAndTexts = (exportText, importedTexts) => {
     const modalbody = document.getElementById('modal-body');
     while (modalbody.firstChild) {
       modalbody.removeChild(modalbody.firstChild);
     }
-
-    textsToDisplay.forEach(function(text, rangeText, allTexts) {
-      alert('rangeText is the index of the text'+(rangeText === textsToDisplay.indexOf(text)));
-      //const displayText = document.createElement('div');
-      //modalbody.appendChild(displayText);
+    exportText.forEach(function(text) {
+      const textdiv = document.createElement('div'); 
+      console.log('text array of edit entries', text);
+      textdiv.className = text[0][1];
+      const displayText = document.createElement('div');
       const texttype = '';
+      this.textType(text, texttype);
       text.forEach(function(info, rangeInfo, ObjectInfo) {
-        if(info[0] === "type") {
-          const texttype = info[1];
-        }
-      })
-      text.forEach(function(info, rangeInfo, ObjectInfo) {
-        const wordsToDisplay = [];
         if (info[0] === 'mycontent') {
           info[1].forEach(function(wordItem) {
-            wordsToDisplay.push([wordItem, rangeText, rangeInfo]);
-            //alert("type of word item is a string" + (typeof wordItem === 'string'));
-            //alert('info is an array'+ (info instanceof Array));
-            //alert('info[1]'+info[1]+'////'+'info[1] is an array'+ (info[1] instanceof Array));
+            const texttype = this.state;
+            const displayWord = this.state;
+            this.displayWord(wordItem, displayWord);
+
+            this.displayRemoveWordBtn(wordItem, texttype, info, displayWord, exportText);
           });
           console.log("INFO", info);
         } else if (info[0] !== 'mycontent') {
-          //displayText.textContent += info[0] + ' ' + info[1] + '<br/>';
+          displayText.textContent += info[0] + ' ' + info[1] + '<br/>';
         }
-        wordsToDisplay.forEach(function(word) {
-          //this.checkStringLength(wordItem);
-          //this.checkArrayLength(exportText);
-          const modalbody = document.getElementById('modal-body');
-          const displayWord = document.createElement('div');
-          displayWord.textContent = word[0];
-          modalbody.appendChild(displayWord);
-          //this.dispWord(wordItem, displayWord);
-          alert('export text'+textsToDisplay+(textsToDisplay instanceof Array)+word[0]+'  word  '+(typeof word[0])+'///  rangeText  ///'+ word[1]+'////'+(typeof word[1])+'///   rangeInfo   '+(typeof word[2] )+word[2]+ textsToDisplay);
-
-
-          word.forEach(function(item) {
-            if (item === undefined) {
-              alert('undefined')
-            } else {
-              alert(item+'not undefined')
-            }
-          })
-          if(textsToDisplay !== undefined) {
-            alert(textsToDisplay+'not undefined');
-          }
-          this.displayRemoveWordBtn(word[0], word[1], word[2], textsToDisplay);
-          //alert("worditem"+wordItem+"texttype"+ texttype+ info+ exportText+ displayWord);
-        })
+        modalbody.appendChild(displayText);
       });
-      //this.displayRemoveTextBtn(text, text[0][1], texttype, exportText);
+      this.displayRemoveTextBtn(text, text[0][1], texttype, exportText);
+
     });
   }
-  //dispWord = (wordItem, displayWord) => {
-  displayRemoveWordBtn = (wordItem, rangeText, rangeInfo, textsToDisplay) => {
-    const modalbody = document.getElementById('modal-body');
-    const wordsDiv = document.createElement('div');
-
-    const removeWord = document.createElement('button');
-    removeWord.classList.add("btn");
-    removeWord.classList.add("btn-secondary");
-    removeWord.type = "button";
-    removeWord.textContent = "Remove this word";
-    removeWord.onclick = (event) => {
-      const importedTexts = document.getElementById('preview');
-      importedTexts.dataset.texts = "";
-
-      //textsToDisplay[rangeText][rangeInfo].forEach(function(element) {
-      //  if(element[0] === "mycontent") {
-      //    const idx = element[1].indexOf(wordItem);
-      //    if (idx !== -1) {
-      //      element[1].splice(idx, 1);
-      //    }
-      //  }
-      //});
-      if(removeWord.parentElement) {
-        const idx = removeWord.parentElement.children.indexOf(removeWord);
-        if (idx !== -1) {
-          modalbody.children.splice(idx, 1);
-        }
-      }
-      removeWord.remove();
-      importedTexts.dataset.texts = [JSON.stringify(textsToDisplay.map(Object.values))];
-    }
-      //console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
-    //modalbody.appendChild(wordsDiv);
-    //wordsDiv.appendChild(removeWord);
-  }
-
-
-
-  //}
-
-  checkStringLength = (string) => {
-    if(!(typeof string === 'string' && string.length > 0)) {return;} else {
-      alert("length string ok");
-    };
-  }
-
   checkConnectedUser = () => {
+    //on display of editor
+    //or on click of remove text button
     const importedTexts = document.getElementById('preview');
     if(!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {
-      
-      //document.getElementById('modallogin').click(); //displays a modal window with bootstrap
-      document.getElementById('modallogin-hidden-btn').click();
-      
+      document.getElementById('modallogin').click(); //displays a modal window with bootstrap
     }
-    if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return;}
-  }
+    setTimeout(function() {
+      if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {
+        document.getElementById('loginModal').hide();
+        return;
+      }
+    }, 30000);
 
+  }
   editEntries = (textsToImport) => {
     const importedTexts = document.getElementById('preview'); 
-    this.checkArrayLength(textsToImport); 
-    if(!(textsToImport instanceof Array)) {return;}
-    alert("texts to import is an array"+(textsToImport instanceof Array)+textsToImport);
+    const importText = this.state;
+    this.checkConnectedUser();
+    if(!(importText instanceof Array && importText.length > 0)) {
+      importText = JSON.parse(importedTexts.dataset.texts); 
+      
 
-    alert(textsToImport + 'all is ok');
-
+    }
+    if(!(importText instanceof Array && importText.length > 0)) {return;}
+    if (textsToImport instanceof Array && textToImport.length > 0) {
+      importText = [...importText, textsToImport]; 
+    }
     const thisIsMyTextList = [];
-    this.checkTextContent(thisIsMyTextList, textsToImport);
-    alert('texts to import type is an array' +(textsToImport instanceof Array) +'and the first element is also an array'+(textsToImport[0] instanceof Array))
-    this.displayWordsAndTexts(textsToImport);
+    this.checkTextContent(thisIsMyTextList, importText);
+    this.displayWordsAndTexts(importText, importedTexts);
   }
-
-
+  displayWord = (wordItem, displayWord) => {
+    const modalbody = document.getElementById('modal-body');
+    displayWord = document.createElement('div');
+    displayWord.textContent = wordItem;
+    modalbody.appendChild(displayWord);
+  }
   displayRemoveTextBtn = (text, textId, texttype, exportText, importedTexts) => {
     //the checkConnectedUser function is already in the editEntries function
-    const displayWord = document.createElement('div');
     const importText = JSON.parse(importedTexts.dataset.texts); 
     const modalbody = document.getElementById('modal-body');
     const removeText = document.createElement('button');
@@ -1897,7 +1792,7 @@ class EditEntries extends React.Component {
 
       const idx = exportText.indexOf(text);
       if (idx !== -1) {
-        modalbody.children.splice(idx, 1);
+        exportText.splice(idx, 1);
       }
       importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
       console.log("importTexts texts on click remove text", JSON.parse(importedTexts.dataset.texts));
@@ -1906,15 +1801,42 @@ class EditEntries extends React.Component {
 
     modalbody.appendChild(removeText);
   }
+  displayRemoveWordButton = (wordItem, texttype, info, displayWord, exportText) => {
+    const modalbody = document.getElementById('modal-body');
+    const removeWord = document.createElement('button');
+    removeWord.classList.add("btn");
+    removeWord.classList.add("btn-secondary");
+    removeWord.type = "button";
+    removeWord.textContent = "Remove this word";
+    removeWord.onshow = (event) => {
+      if (typeof texttype === 'string' && texttype.length > 0) { //if the text comes from an uploaded file
+        this.checkConnectedUser();
+      }
+    }
+    removeWord.onclick = (event) => {
 
+      const importedTexts = document.getElementById('preview');
+      importedTexts.dataset.texts = "";
+      const idx = info.indexOf(wordItem);
+      if (idx !== -1) {
+        info.splice(idx, 1);
+      }
+      console.log("INFO SLICE 1",info); 
+      displayWord.remove();
 
+      removeWord.remove();
+      importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
+      console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
+    }
+    modalbody.appendChild(removeWord);
+  }
   exportItems = (event) => {
     const exportMyItems = [];
     const wordsFromText = [];
     const importedTexts = document.getElementById('preview'); 
     //const importText = JSON.parse(importedTexts.dataset.alltexts); 
     const importText = this.state;
-    if(importText instanceof Array === false) {return;}
+    if(importText instanceof Array === false) {return;};
     /**/
     this.addDate(importText);
     this.addInfoUser(importText);
@@ -1927,7 +1849,6 @@ class EditEntries extends React.Component {
     document.getElementById('export_all_items_link').href = url;
     document.getElementById('export_all_items_link').click();
   }
-
   addInfoUser = (importText) => {
     const importedTexts = document.getElementById('preview'); 
     if (typeof importedTexts.dataset.username === "string" && importedTexts.dataset.username.length > 0) {
@@ -1946,13 +1867,15 @@ class EditEntries extends React.Component {
       });
     }
   }
-
   addDate = (importText) => { 
     importText.forEach(function(textInfo){
+
       const daysDate = new Date();
       const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
       const msTime = Date.now();
       if(!textInfo.some(x => x[0] === "dates")) {
+
+
         textInfo.push(['dates',[today]]);
       } 
       textInfo.forEach(function(info) {
@@ -1964,56 +1887,33 @@ class EditEntries extends React.Component {
       });
     });
   }
-
   cancelEdits = (event) => {
-    const importedTexts = document.getElementById('preview');
-    const importText = JSON.parse(importedTexts.dataset.texts);
-    document.getElementById('exampleModalLong').focus();
-    this.checkArrayLength(importText); 
+    const importText = this.state;
+    importText.length = 0;
   }
-  checkArrayLength = (array) => {
-    if(!(array instanceof Array && array.length > 0)) {return;} else {
-      alert('length array ok') 
-    }
-  }
-
   displaySessions = (event) => {
     const importedTexts = document.getElementById('preview');
-    alert('test items current session');
-    this.checkArrayLength(JSON.parse(importedTexts.dataset.texts));
-    const checkPrev = document.getElementById('textsPreviousSessions');
-    const checkCurrent = document.getElementById('textsCurrentSession');
-    
-
-    if (checkPrev.checked) {
-      this.checkArrayLength(JSON.parse(importedTexts.dataset.prev));
+    if (document.getElementById('textsPreviousSessions').checked) {
       this.editEntries([...JSON.parse(importedTexts.dataset.prev)]);
     }
-
-    if (checkCurrent.checked) {
-      alert('current session');
-      this.checkArrayLength(JSON.parse(importedTexts.dataset.texts));
+    if (document.getElementById('textsCurrentSession').checked) {
       this.editEntries([...JSON.parse(importedTexts.dataset.texts)]);
-    }
-
-    if (checkPrev.checked && checkCurrent.checked) {
-      this.checkArrayLength(JSON.parse(importedTexts.dataset.texts));
-      this.checkArrayLength(JSON.parse(importedTexts.dataset.prev));
-      this.editEntries([...JSON.parse(importedTexts.dataset.texts), JSON.parse(importedTexts.dataset.prev)]);
 
     }
-    if (!(checkPrev.checked && checkCurrent.checked)) {return;}
+    if (document.getElementById('textsPreviousSessions').checked && document.getElementById('textsCurrentSession').checked) {
+      this.editEntries([...JSON.parse(importedTexts.dataset.texts)]);
+
+    }
   }
-
   render() {
     return (
-      <div id="editor">
+      <div>
         <button type="button" class="btn btn-primary" id="export_all_items" onClick={this.exportItems}>
           Export my items
         </button>
         <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
         <br/>
-        <button type="button" onClick={this.editEntries} id="editentries" class="btn btn-primary" data-toggle="modal" data-backdrop="false" data-target="#exampleModalLong">
+        <button type="button" onClick={this.editEntries} id="editentries" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
           Edit entries 
         </button>
         
@@ -2028,21 +1928,19 @@ class EditEntries extends React.Component {
               </div>
               <div id="modal-body" class="modal-body">
                 <div>
-                  <input type="checkbox" id="textsCurrentSession" name="sessionsTexts" onChange={this.displaySessions} checked />
-                  <label for="textsCurrentSession">Texts for current session</label>
-                </div>
-                <div>
-                  <input type="checkbox" id="textsPreviousSessions" name="sessionsTexts" onChange={this.displaySessions} /> 
+                  <input type="checkbox" id="textsPreviousSessions" name="sessionsTexts" onChange={this.displaySessions}> 
                   <label for="textsPreviousSessions">Texts from previous sessions</label>
                 </div>
                 
-
+                <div>
+                  <input type="checkbox" id="textsCurrentSession" name="sessionsTexts" onChange={this.displaySessions}>
+                  <label for="textsCurrentSession">Texts for current session</label>
+                </div>
 
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onClick={this.cancelEdits} data-dismiss="modal" id="close-without-saving-changes" data-toggle="modal">Close Without Saving Changes</button>
+                <button type="button" class="btn btn-secondary" onClick={this.cancelEdits} data-dismiss="modal">Close Without Saving Changes</button>
                 <button type="button" class="btn btn-primary">Save changes</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close-editor">Save changes</button>
               </div>
             </div>
           </div>

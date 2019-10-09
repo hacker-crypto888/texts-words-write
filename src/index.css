@@ -66,3 +66,9 @@ padding: 5px;
   margin-left:auto;
   margin-right:0;
 }
+#exampleModalLong {
+  z-index:50;
+}
+#loginModal {
+  z-index:100;
+}
