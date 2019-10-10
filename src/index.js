@@ -1603,6 +1603,10 @@ my two mistresses: what a beast am I to slack it!`,*/
       myTextInfo.push(newText);
       importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
       this.enableEditor();
+      this.handleText();
+      document.getElementById('init-display-on-add').click();
+      
+      //this.displayNewEntries(JSON.parse(importedTexts.dataset.texts));
     }
     importedTexts.dataset.prev=JSON.stringify([]);
    
@@ -1747,9 +1751,9 @@ class EditEntries extends React.Component {
     document.getElementById('textsCurrentSession').checked = true;
     document.getElementById('editor-display').hidden = true;
 
-    //document.getElementById('exampleModalLong').addEventListener('shown.bs.modal', function (e) {
-    //  this.checkConnectedUser();
-    //})
+    document.getElementById('exampleModalLong').onshow = (event) => {
+    };
+    document.getElementById('init-display-on-add').hidden = true;
   }
 
   checkTextContent = (thisIsMyTextList, importText) => {
@@ -1780,11 +1784,15 @@ class EditEntries extends React.Component {
     //this.dispWord('mot');
     //this.displayRemoveWordBtn('mot', 0, 7, textsToDisplay);
     const wordsToDisplay = [];
+    const idx2 = [];
     if (!(textsToDisplay instanceof Array)) {
       textsToDisplay = [];
     }
     textsToDisplay.forEach(function(textItem) {
       textItem.forEach(function(infoItem) {
+        if (infoItem[0] === 'textId' && !idx2.includes(infoItem[1])) {
+          idx2.push(textItem.indexOf(infoItem));
+        } 
 
         if (infoItem[0] === 'mycontent') {
           const idx = textItem.indexOf(infoItem);
@@ -1798,7 +1806,7 @@ class EditEntries extends React.Component {
       });
     });
     //this.dispWords(wordsToDisplay);
-    this.displayWordsBtnsToRmWords(wordsToDisplay);
+    this.displayWordsBtnsToRmWords(wordsToDisplay, idx2);
       
   }
   dispWords = (words) => {
@@ -1809,7 +1817,7 @@ class EditEntries extends React.Component {
       modalbody.appendChild(displayWord);
     });
   }
-  displayWordsBtnsToRmWords = (words) => {
+  displayWordsBtnsToRmWords = (words, textIds) => {
     const modalbody = document.getElementById('modal-body');
     if(words instanceof Array && words.length === 0) {return};
 
@@ -1908,8 +1916,11 @@ class EditEntries extends React.Component {
     }
     if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return;}
   }
-
-  editEntries = (textsToImport) => {
+  initDisplayOnAdd = (event) => {
+    const importedTexts = document.getElementById('preview'); 
+    this.displayNewEntries([...JSON.parse(importedTexts.dataset.texts)]);
+  }
+  displayNewEntries = (textsToImport) => {
     const importedTexts = document.getElementById('preview'); 
     //this.checkArrayLength(textsToImport); 
     //alert("texts to import is an array"+(textsToImport instanceof Array)+textsToImport);
@@ -1924,7 +1935,7 @@ class EditEntries extends React.Component {
 
 
   displayRemoveTextBtn = (text, textId, texttype, exportText, importedTexts) => {
-    //the checkConnectedUser function is already in the editEntries function
+    //the checkConnectedUser function is already in the displayNewEntries function
     const displayWord = document.createElement('div');
     const importText = JSON.parse(importedTexts.dataset.texts); 
     const modalbody = document.getElementById('modal-body');
@@ -2036,18 +2047,18 @@ class EditEntries extends React.Component {
     const checkCurrent = document.getElementById('textsCurrentSession');
 
     if (checkPrev.checked) {
-      this.editEntries([...JSON.parse(importedTexts.dataset.prev)]);
+      this.displayNewEntries([...JSON.parse(importedTexts.dataset.prev)]);
     }
 
     if (checkCurrent.checked) {
-      this.editEntries([...JSON.parse(importedTexts.dataset.texts)]);
+      this.displayNewEntries([...JSON.parse(importedTexts.dataset.texts)]);
     }
 
     if (checkPrev.checked && checkCurrent.checked) {
-      this.editEntries([...JSON.parse(importedTexts.dataset.texts), JSON.parse(importedTexts.dataset.prev)]);
+      this.displayNewEntries([...JSON.parse(importedTexts.dataset.texts), JSON.parse(importedTexts.dataset.prev)]);
     }
     if (!checkPrev.checked && !checkCurrent.checked) {
-      this.editEntries([]);
+      this.displayNewEntries([]);
     }
   }
   displaySettingsModal = (event) => {
@@ -2058,6 +2069,7 @@ class EditEntries extends React.Component {
   render() {
     return (
       <div id="editor">
+        <button type="button" onClick={this.initDisplayOnAdd} id="init-display-on-add" />
         <button type="button" class="btn btn-primary" data-toggle="modal" id="editor-display" data-target="#editor-display-modal">
           Launch demo modal
         </button>
@@ -2098,7 +2110,7 @@ class EditEntries extends React.Component {
         </button>
         <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
         <br/>
-        <button type="button" onClick={this.editEntries} id="editentries" class="btn btn-primary" data-toggle="modal" data-backdrop="false" data-target="#exampleModalLong">
+        <button type="button" id="editentries" class="btn btn-primary" data-toggle="modal" data-backdrop="false" data-target="#exampleModalLong">
           Edit entries 
         </button>
         
