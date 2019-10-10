@@ -289,6 +289,20 @@ class BasicForm extends React.Component {
   checkStringLength = (string) => {
     if(!(typeof string === 'string' && string.length > 0)) {return;};
   }
+  rmItemFromList = (list, item) => {
+    const idx = list.indexOf(item);
+    if (idx !== -1) {
+      list.splice(idx, 1);
+    }
+  }
+  enablePreviousSessions = () => {
+      this.rmItemFromList(document.getElementById('labelTextsPreviousSessions').classList, "text-muted");
+      document.getElementById('textsCurrentSession').removeAttribute('disabled');
+  }
+  preventPreviousSessions = () => {
+      document.getElementById('labelTextsPreviousSessions').classList.add("text-muted");
+      document.getElementById('textsCurrentSession').disabled = true;
+  }
   loginUser = (event) => {
     const importedTexts = document.getElementById("preview");
     const username = document.getElementById('username').value;
@@ -312,7 +326,7 @@ class BasicForm extends React.Component {
 
 
       this.checkStringLength(username);
-      
+      document.getElementById('labelTextsPreviousSessions'). 
       document.getElementById('loginbtn').innerHTML = 'log out';
       document.getElementById('username').hidden = true;
       document.getElementById('export_all_items').hidden = false;
@@ -324,6 +338,9 @@ class BasicForm extends React.Component {
         document.getElementById('welcome').innerHTML = "Hello, "+username_modal;
         importedTexts.dataset.username = username_modal; 
       }
+      this.enablePreviousSessions();
+
+      
       this.newSession();
       //if (typeof importedTexts.dataset.databaseJson === 'boolean' && importedTexts.dataset.databaseJson === true) {
       //const importText = JSON.parse(importedTexts.dataset.texts);
@@ -362,7 +379,7 @@ class BasicForm extends React.Component {
       document.getElementById('export_all_items').disabled = true;
       document.getElementById('welcome').innerHTML = "";
       document.getElementById('username').value = "";
-
+      this.preventPreviousSessions();
       this.newSession();
       
 
@@ -2023,15 +2040,15 @@ class EditEntries extends React.Component {
     }
 
     if (checkCurrent.checked) {
-      //§alert('current session');
       this.editEntries([...JSON.parse(importedTexts.dataset.texts)]);
     }
 
     if (checkPrev.checked && checkCurrent.checked) {
       this.editEntries([...JSON.parse(importedTexts.dataset.texts), JSON.parse(importedTexts.dataset.prev)]);
-
     }
-    //if (!checkPrev.checked && !checkCurrent.checked) {return;}
+    if (!checkPrev.checked && !checkCurrent.checked) {
+      this.editEntries([]);
+    }
   }
   displaySettingsModal = (event) => {
     document.getElementById('editor-display').click();
@@ -2054,21 +2071,20 @@ class EditEntries extends React.Component {
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
+
               <div id="modal-body-display" class="modal-body">
                 <div id="modal-body-display" class="modal-body">
                   <div class="display-sessions" >
                     <input type="checkbox"  value="current" id="textsCurrentSession" name="sessionsTexts"/>
-                    <label for="textsCurrentSession">Texts for current session</label>
+                    <label for="textsCurrentSession" id="labelTextsCurrentSession">Texts for current session</label>
                   </div>
                   <div class="display-sessions">
-                    <input type="checkbox" value="previous" id="textsPreviousSessions" name="sessionsTexts" /> 
-                    <label for="textsPreviousSessions">Texts from previous sessions</label>
+                    <input type="checkbox" value="previous" id="textsPreviousSessions" name="sessionsTexts" disabled /> 
+                    <label for="textsPreviousSessions" class="text-muted" id="labelTextsPreviousSessions">Texts from previous sessions</label>
                   </div>
-                  
-
-
                 </div>
               </div>
+
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onClick={this.displaySessions}>Close and save settings</button>
