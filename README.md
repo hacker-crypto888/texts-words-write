@@ -74,7 +74,7 @@ The text lists constitute the app's advanced parameters, because it contains all
 
 ## Background tasks
 
-All the actions taken by the user graphically happen also in the arrays of the program. For example, the item that is removed in the editor is also removed from the array. Here is the table to display more precisely what happens each time the user takes action.
+All the actions taken by the user graphically happen also in the arrays of the program. For example, the item that is removed in the editor is also removed from the array. Here is the table to display what happens each time the user takes action more precisely.
 
 | User actions | Task done by the program | 
 |---|---|
