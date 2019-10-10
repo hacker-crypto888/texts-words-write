@@ -35,7 +35,7 @@ The program can handle following file formats in the input:
 
 ## Differences between the guest user and the connected user
 
-There are the differences between the scope of actions that the guest user and the connected user can take.
+Here are tackled all the things about labels, buttons, etc. There are the differences between the scope of actions that the guest user and the connected user can take. 
 
 Check out in the table below the scope of actions the user can take in the first column, in the second column whether the guest user can take this action, in the third column whether the connected user can take this action, and in the fourth column what the result will be when we will be using our app.
 
@@ -74,9 +74,11 @@ The text lists constitute the app's advanced parameters, because it contains all
 
 ## Background tasks
 
+All the actions taken by the user graphically happen also in the arrays of the program. For example, the item that is removed in the editor is also removed from the array. Here is the table to display more precisely what happens each time the user takes action.
+
 | User actions | Task done by the program | 
 |---|---|
-| login | <ul><li>[x] the username is displayed at the top of the page</li></ul> |
+| login | <ul><li>[x] the username is displayed at the top of the page</li></ul> | 
 | logout | <ul><li>[x] all texts are kept in a single list so that an other user can log in</li></ul> |
 | the user imported previous sessions | <ul><li>[x] import texts from all users</li><li>[x] separate texts from other users from texts from user that is currently logged in</li></ul> | 
 | the user dropped a file | <ul><li>[x] file is converted into a blob (object represents a file-like object of immutable, raw data that can be read as text or binary data)</li><li>[x] filename and icon is displayed under the dropzone</li><li>[x] text in English or French is extracted from the blob</li><li>[x] text from the file and information about the file are put together with other texts</li><li>[x] divs are added in the modal body of the editor to remove the texts and the words</li><li>[x] the words and the buttons to remove them are displayed</li></ul> | 
