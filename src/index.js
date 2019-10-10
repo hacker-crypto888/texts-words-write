@@ -1732,7 +1732,8 @@ class EditEntries extends React.Component {
       checkPrev:null,
       checkCurrent:null,
       wordsDiv:null,
-      textsDiv:null,
+      textDiv:null,
+      idx3:null,
       info:null,
       displayDiv:null,
       mydisplayoptions:null,
@@ -1790,15 +1791,15 @@ class EditEntries extends React.Component {
     }
     textsToDisplay.forEach(function(textItem) {
       textItem.forEach(function(infoItem) {
-        if (infoItem[0] === 'textId' && !idx2.includes(infoItem[1])) {
-          idx2.push(textItem.indexOf(infoItem));
+        if (infoItem[0] === 'textId') {
+          const idx2 = textItem.indexOf(infoItem);
         } 
 
         if (infoItem[0] === 'mycontent') {
           const idx = textItem.indexOf(infoItem);
           const idx1 = textsToDisplay.indexOf(textItem);
           textItem[idx][1].forEach(function(word) {
-            wordsToDisplay.push([word, idx,idx1]);
+            wordsToDisplay.push([word, idx,idx1,idx2]);
              
           }) // 
         }
@@ -1817,22 +1818,38 @@ class EditEntries extends React.Component {
       modalbody.appendChild(displayWord);
     });
   }
-  displayWordsBtnsToRmWords = (words, textIds) => {
+  displayWordsBtnsToRmWords = (words) => {
     const modalbody = document.getElementById('modal-body');
     if(words instanceof Array && words.length === 0) {return};
+    const textDiv = document.createElement('div');
+    textDiv.classList.add('display-text');
+    modalbody.appendChild(textDiv);
+    
 
     words.forEach(function(item){
       const displayDiv = document.createElement('div');
+
       displayDiv.classList.add('display-div');
+      displayDiv.classList.add(item[3]);
+
       modalbody.appendChild(displayDiv);
       const displayWord = document.createElement('div');
       displayWord.textContent = item[0];
       displayWord.classList.add('label-word');
-
       displayDiv.appendChild(displayWord);
-
       const removeWord = document.createElement('div');
+
       displayDiv.appendChild(removeWord);
+      if(!textDiv.hasChildNodes()){
+        textDiv.appendChild(displayDiv);
+      } else if (textDiv.hasChildNodes() && textDiv.childNodes.some(x => x.classList.contains(item[3]))) {
+        textDiv.appendChild(displayDiv);
+      } else if (textDiv.hasChildNodes() && !textDiv.childNodes.some(x => x.classList.contains(item[3]))) {
+        const textDiv = document.createElement('div');
+        textDiv.classList.add('display-text');
+        modalbody.appendChild(textDiv);
+        textDiv.appendChild(displayDiv);
+      }
       removeWord.classList.add("btn");
       removeWord.classList.add("btn-secondary");
       removeWord.classList.add("btn-word");
@@ -2099,7 +2116,7 @@ class EditEntries extends React.Component {
 
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onClick={this.displaySessions}>Close and save settings</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onClick={this.displaySessions}>Reload your items</button>
               </div>
             </div>
           </div>
