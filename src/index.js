@@ -585,9 +585,9 @@ class FillInTheDateForm extends React.Component {
   }
   loadByDate = () => {
     const modalbody = document.getElementById('modal-bodyloadbydate');
-    while (modalbody.firstChild) {
-      modalbody.removeChild(modalbody.firstChild);
-    }
+    //while (modalbody.firstChild) {
+    //  modalbody.removeChild(modalbody.firstChild);
+    //}
     const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
     const importedTexts = document.getElementById('preview'); 
     const importText = JSON.parse(importedTexts.dataset.texts); 
@@ -1207,7 +1207,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         this.setState({myItems});
         const importedTexts = document.getElementById('preview');
         this.checkConnectedUser();
-        this.textsConnectedUser(myItems);
         this.textsFromOtherUsers(thisIsMyTextList);
         importedTexts.dataset.databaseJson = true;
 
@@ -1588,6 +1587,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
       this.enableEditor();
     }
+    importedTexts.dataset.prev=JSON.stringify([]);
    
 
   }
@@ -1714,16 +1714,21 @@ class EditEntries extends React.Component {
       textsDiv:null,
       info:null,
       displayDiv:null,
+      mydisplayoptions:null,
     }
   }
   componentDidMount = () => {
     document.getElementById('export_all_items').disabled = true;
     document.getElementById('export_all_items_link').hidden = true;
     const importedTexts = document.getElementById('preview');
-    document.getElementById('exampleModalLong').onshow = (event) => {
-      this.displaySessions();
+    document.getElementById('editentries').onclick = (event) => {
+      //document.getElementById('editor-display').click();
+      
+
     }
     document.getElementById('editentries').disabled = true;
+    document.getElementById('textsCurrentSession').checked = true;
+    document.getElementById('editor-display').hidden = true;
 
     //document.getElementById('exampleModalLong').addEventListener('shown.bs.modal', function (e) {
     //  this.checkConnectedUser();
@@ -1758,7 +1763,9 @@ class EditEntries extends React.Component {
     //this.dispWord('mot');
     //this.displayRemoveWordBtn('mot', 0, 7, textsToDisplay);
     const wordsToDisplay = [];
-
+    if (!(textsToDisplay instanceof Array)) {
+      textsToDisplay = [];
+    }
     textsToDisplay.forEach(function(textItem) {
       textItem.forEach(function(infoItem) {
 
@@ -1783,11 +1790,11 @@ class EditEntries extends React.Component {
       const displayWord = document.createElement('div');
       displayWord.textContent = item[0];
       modalbody.appendChild(displayWord);
-    })
+    });
   }
   displayWordsBtnsToRmWords = (words) => {
     const modalbody = document.getElementById('modal-body');
-
+    if(words instanceof Array && words.length === 0) {return};
 
     words.forEach(function(item){
       const displayDiv = document.createElement('div');
@@ -1887,14 +1894,13 @@ class EditEntries extends React.Component {
 
   editEntries = (textsToImport) => {
     const importedTexts = document.getElementById('preview'); 
-    this.checkArrayLength(textsToImport); 
-    if(!(textsToImport instanceof Array)) {return;}
+    //this.checkArrayLength(textsToImport); 
     //alert("texts to import is an array"+(textsToImport instanceof Array)+textsToImport);
 
     //alert(textsToImport + 'all is ok');
 
     const thisIsMyTextList = [];
-    this.checkTextContent(thisIsMyTextList, textsToImport);
+    //this.checkTextContent(thisIsMyTextList, textsToImport);
     //alert('texts to import type is an array' +(textsToImport instanceof Array) +'and the first element is also an array'+(textsToImport[0] instanceof Array))
     this.displayWordsAndTexts(textsToImport);
   }
@@ -1992,9 +1998,7 @@ class EditEntries extends React.Component {
 
   cancelEdits = (event) => {
     const importedTexts = document.getElementById('preview');
-    const importText = JSON.parse(importedTexts.dataset.texts);
-    document.getElementById('exampleModalLong').focus();
-    this.checkArrayLength(importText); 
+    alert('closed without saving');
   }
   checkArrayLength = (array) => {
     if(!(array instanceof Array && array.length > 0)) {return;} else {
@@ -2003,36 +2007,76 @@ class EditEntries extends React.Component {
   }
 
   displaySessions = (event) => {
+    //alert('display Sessions')
+    document.getElementById('editor-display').click();
     const importedTexts = document.getElementById('preview');
     //alert('test items current session');
     this.checkArrayLength(JSON.parse(importedTexts.dataset.texts));
+    const modalbody = document.getElementById('modal-body-display');
+    modalbody.focus();
     const checkPrev = document.getElementById('textsPreviousSessions');
+    //console.log(checkPrev);
     const checkCurrent = document.getElementById('textsCurrentSession');
-    
 
     if (checkPrev.checked) {
-      this.checkArrayLength(JSON.parse(importedTexts.dataset.prev));
       this.editEntries([...JSON.parse(importedTexts.dataset.prev)]);
     }
 
     if (checkCurrent.checked) {
       //§alert('current session');
-      this.checkArrayLength(JSON.parse(importedTexts.dataset.texts));
       this.editEntries([...JSON.parse(importedTexts.dataset.texts)]);
     }
 
     if (checkPrev.checked && checkCurrent.checked) {
-      this.checkArrayLength(JSON.parse(importedTexts.dataset.texts));
-      this.checkArrayLength(JSON.parse(importedTexts.dataset.prev));
       this.editEntries([...JSON.parse(importedTexts.dataset.texts), JSON.parse(importedTexts.dataset.prev)]);
 
     }
-    if (!(checkPrev.checked && checkCurrent.checked)) {return;}
+    //if (!checkPrev.checked && !checkCurrent.checked) {return;}
+  }
+  displaySettingsModal = (event) => {
+    document.getElementById('editor-display').click();
+      
   }
 
   render() {
     return (
       <div id="editor">
+        <button type="button" class="btn btn-primary" data-toggle="modal" id="editor-display" data-target="#editor-display-modal">
+          Launch demo modal
+        </button>
+        
+        <div class="modal fade" id="editor-display-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div id="modal-body-display" class="modal-body">
+                <div id="modal-body-display" class="modal-body">
+                  <div class="display-sessions" >
+                    <input type="checkbox"  value="current" id="textsCurrentSession" name="sessionsTexts"/>
+                    <label for="textsCurrentSession">Texts for current session</label>
+                  </div>
+                  <div class="display-sessions">
+                    <input type="checkbox" value="previous" id="textsPreviousSessions" name="sessionsTexts" /> 
+                    <label for="textsPreviousSessions">Texts from previous sessions</label>
+                  </div>
+                  
+
+
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onClick={this.displaySessions}>Close and save settings</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <button type="button" class="btn btn-primary" id="export_all_items" onClick={this.exportItems}>
           Export my items
         </button>
@@ -2051,23 +2095,12 @@ class EditEntries extends React.Component {
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div id="modal-body" class="modal-body">
-                <div>
-                  <input type="checkbox" id="textsCurrentSession" name="sessionsTexts" onChange={this.displaySessions} checked />
-                  <label for="textsCurrentSession">Texts for current session</label>
-                </div>
-                <div>
-                  <input type="checkbox" id="textsPreviousSessions" name="sessionsTexts" onChange={this.displaySessions} /> 
-                  <label for="textsPreviousSessions">Texts from previous sessions</label>
-                </div>
-                
-
-
+              <div class="modal-body" id="modal-body">
               </div>
+
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onClick={this.cancelEdits} data-dismiss="modal" id="close-without-saving-changes" data-toggle="modal">Close Without Saving Changes</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close-editor">Save changes</button>
+                <button type="button" class="btn btn-primary" onClick={this.displaySettingsModal}>Display settings</button>
               </div>
             </div>
           </div>
