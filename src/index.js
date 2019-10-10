@@ -304,7 +304,7 @@ class BasicForm extends React.Component {
         document.getElementById('loginModal').hidden = true;
 
 
-        alert(username_modal, "login from modal");
+        //alert(username_modal, "login from modal");
         //document.getElementById('close-editor').click();
         document.getElementById('login-form-body').focus();
       }
@@ -1712,6 +1712,8 @@ class EditEntries extends React.Component {
       checkCurrent:null,
       wordsDiv:null,
       textsDiv:null,
+      info:null,
+      displayDiv:null,
     }
   }
   componentDidMount = () => {
@@ -1747,68 +1749,90 @@ class EditEntries extends React.Component {
   }
 
   displayWordsAndTexts = (textsToDisplay) => { 
+    const idx = this.state;
     const modalbody = document.getElementById('modal-body');
+
     while (modalbody.firstChild) {
       modalbody.removeChild(modalbody.firstChild);
     }
+    //this.dispWord('mot');
+    //this.displayRemoveWordBtn('mot', 0, 7, textsToDisplay);
+    const wordsToDisplay = [];
 
-    textsToDisplay.forEach(function(text, rangeText, allTexts) {
-      alert('rangeText is the index of the text'+(rangeText === textsToDisplay.indexOf(text)));
-      //const displayText = document.createElement('div');
-      //modalbody.appendChild(displayText);
-      const texttype = '';
-      text.forEach(function(info, rangeInfo, ObjectInfo) {
-        if(info[0] === "type") {
-          const texttype = info[1];
+    textsToDisplay.forEach(function(textItem) {
+      textItem.forEach(function(infoItem) {
+
+        if (infoItem[0] === 'mycontent') {
+          const idx = textItem.indexOf(infoItem);
+          const idx1 = textsToDisplay.indexOf(textItem);
+          textItem[idx][1].forEach(function(word) {
+            wordsToDisplay.push([word, idx,idx1]);
+             
+          }) // 
         }
-      })
-      text.forEach(function(info, rangeInfo, ObjectInfo) {
-        const wordsToDisplay = [];
-        if (info[0] === 'mycontent') {
-          info[1].forEach(function(wordItem) {
-            wordsToDisplay.push([wordItem, rangeText, rangeInfo]);
-            //alert("type of word item is a string" + (typeof wordItem === 'string'));
-            //alert('info is an array'+ (info instanceof Array));
-            //alert('info[1]'+info[1]+'////'+'info[1] is an array'+ (info[1] instanceof Array));
-          });
-          console.log("INFO", info);
-        } else if (info[0] !== 'mycontent') {
-          //displayText.textContent += info[0] + ' ' + info[1] + '<br/>';
-        }
-        wordsToDisplay.forEach(function(word) {
-          //this.checkStringLength(wordItem);
-          //this.checkArrayLength(exportText);
-          const modalbody = document.getElementById('modal-body');
-          const displayWord = document.createElement('div');
-          displayWord.textContent = word[0];
-          modalbody.appendChild(displayWord);
-          //this.dispWord(wordItem, displayWord);
-          alert('export text'+textsToDisplay+(textsToDisplay instanceof Array)+word[0]+'  word  '+(typeof word[0])+'///  rangeText  ///'+ word[1]+'////'+(typeof word[1])+'///   rangeInfo   '+(typeof word[2] )+word[2]+ textsToDisplay);
-
-
-          word.forEach(function(item) {
-            if (item === undefined) {
-              alert('undefined')
-            } else {
-              alert(item+'not undefined')
-            }
-          })
-          if(textsToDisplay !== undefined) {
-            alert(textsToDisplay+'not undefined');
-          }
-          this.displayRemoveWordBtn(word[0], word[1], word[2], textsToDisplay);
-          //alert("worditem"+wordItem+"texttype"+ texttype+ info+ exportText+ displayWord);
-        })
+        //alert(wordsToDisplay);
       });
-      //this.displayRemoveTextBtn(text, text[0][1], texttype, exportText);
     });
+    //this.dispWords(wordsToDisplay);
+    this.displayWordsBtnsToRmWords(wordsToDisplay);
+      
   }
-  //dispWord = (wordItem, displayWord) => {
-  displayRemoveWordBtn = (wordItem, rangeText, rangeInfo, textsToDisplay) => {
+  dispWords = (words) => {
     const modalbody = document.getElementById('modal-body');
-    const wordsDiv = document.createElement('div');
+    words.forEach(function(item){
+      const displayWord = document.createElement('div');
+      displayWord.textContent = item[0];
+      modalbody.appendChild(displayWord);
+    })
+  }
+  displayWordsBtnsToRmWords = (words) => {
+    const modalbody = document.getElementById('modal-body');
 
-    const removeWord = document.createElement('button');
+
+    words.forEach(function(item){
+      const displayDiv = document.createElement('div');
+      displayDiv.classList.add('display-div');
+      modalbody.appendChild(displayDiv);
+      const displayWord = document.createElement('div');
+      displayWord.textContent = item[0];
+      displayWord.classList.add('label-word');
+
+      displayDiv.appendChild(displayWord);
+
+      const removeWord = document.createElement('div');
+      displayDiv.appendChild(removeWord);
+      removeWord.classList.add("btn");
+      removeWord.classList.add("btn-secondary");
+      removeWord.classList.add("btn-word");
+      removeWord.type = "button";
+      removeWord.textContent = "Remove this word";
+      removeWord.onclick = (event) => {
+        const importedTexts = document.getElementById('preview');
+        importedTexts.dataset.texts = "";
+        if(removeWord.parentElement) {
+          const idx = Array.prototype.indexOf.call(removeWord.parentNode.parentNode.childNodes, removeWord.parentNode);
+          if (idx !== -1) {
+            removeWord.parentNode.parentNode.childNodes[idx].remove();
+          }
+        }
+        removeWord.remove();
+      }
+    });
+      //importedTexts.dataset.texts = [JSON.stringify(textsToDisplay.map(Object.values))];
+      //console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
+
+  }
+  dispWord = (wordItem) => {
+    const modalbody = document.getElementById('modal-body');
+    const displayWord = document.createElement('div');
+    displayWord.textContent = wordItem;
+    modalbody.appendChild(displayWord);
+  }
+  displayRemoveWordBtn = (wordItem) => {
+    const modalbody = document.getElementById('modal-body');
+
+    const removeWord = document.createElement('div');
+    modalbody.appendChild(removeWord);
     removeWord.classList.add("btn");
     removeWord.classList.add("btn-secondary");
     removeWord.type = "button";
@@ -1826,17 +1850,18 @@ class EditEntries extends React.Component {
       //  }
       //});
       if(removeWord.parentElement) {
-        const idx = removeWord.parentElement.children.indexOf(removeWord);
+        //const idx = //removeWord.parentNode.childNodes.indexOf(removeWord);
+        const idx = Array.prototype.indexOf.call(removeWord.parentNode.childNodes, removeWord);
         if (idx !== -1) {
-          modalbody.children.splice(idx, 1);
+          modalbody.childNodes[idx].remove();
+          modalbody.childNodes[idx-1].remove();
         }
       }
       removeWord.remove();
-      importedTexts.dataset.texts = [JSON.stringify(textsToDisplay.map(Object.values))];
+      //importedTexts.dataset.texts = [JSON.stringify(textsToDisplay.map(Object.values))];
     }
       //console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
-    //modalbody.appendChild(wordsDiv);
-    //wordsDiv.appendChild(removeWord);
+
   }
 
 
@@ -1845,7 +1870,7 @@ class EditEntries extends React.Component {
 
   checkStringLength = (string) => {
     if(!(typeof string === 'string' && string.length > 0)) {return;} else {
-      alert("length string ok");
+      //alert("length string ok");
     };
   }
 
@@ -1864,13 +1889,13 @@ class EditEntries extends React.Component {
     const importedTexts = document.getElementById('preview'); 
     this.checkArrayLength(textsToImport); 
     if(!(textsToImport instanceof Array)) {return;}
-    alert("texts to import is an array"+(textsToImport instanceof Array)+textsToImport);
+    //alert("texts to import is an array"+(textsToImport instanceof Array)+textsToImport);
 
-    alert(textsToImport + 'all is ok');
+    //alert(textsToImport + 'all is ok');
 
     const thisIsMyTextList = [];
     this.checkTextContent(thisIsMyTextList, textsToImport);
-    alert('texts to import type is an array' +(textsToImport instanceof Array) +'and the first element is also an array'+(textsToImport[0] instanceof Array))
+    //alert('texts to import type is an array' +(textsToImport instanceof Array) +'and the first element is also an array'+(textsToImport[0] instanceof Array))
     this.displayWordsAndTexts(textsToImport);
   }
 
@@ -1973,13 +1998,13 @@ class EditEntries extends React.Component {
   }
   checkArrayLength = (array) => {
     if(!(array instanceof Array && array.length > 0)) {return;} else {
-      alert('length array ok') 
+      //alert('length array ok') 
     }
   }
 
   displaySessions = (event) => {
     const importedTexts = document.getElementById('preview');
-    alert('test items current session');
+    //alert('test items current session');
     this.checkArrayLength(JSON.parse(importedTexts.dataset.texts));
     const checkPrev = document.getElementById('textsPreviousSessions');
     const checkCurrent = document.getElementById('textsCurrentSession');
@@ -1991,7 +2016,7 @@ class EditEntries extends React.Component {
     }
 
     if (checkCurrent.checked) {
-      alert('current session');
+      //§alert('current session');
       this.checkArrayLength(JSON.parse(importedTexts.dataset.texts));
       this.editEntries([...JSON.parse(importedTexts.dataset.texts)]);
     }

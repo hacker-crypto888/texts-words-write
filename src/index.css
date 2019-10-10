@@ -72,3 +72,16 @@ padding: 5px;
 #loginModal {
   z-index:100;
 }
+.label-word {
+  width:50%;
+  text-align:left;
+}
+.btn-word {
+  width:50%;
+  text-align:center;
+}
+.display-div {
+  width:100%;
+  display:flex;
+  flex-direction:row;
+}
