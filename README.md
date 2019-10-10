@@ -55,7 +55,7 @@ Check out in the table below the scope of actions the user can take in the first
 - Saving all texts is exporting all texts. To edit entries and play the words, close the window of the editor. It must always be possible to save all items.
 - There are two ways users can import texts: the guest user can only load texts and words using the text input field, whereas the connected user can upload files.
 - The texts can be that of previous sessions or that of current session.
-- The removal of the last item of a text must remove also the text. Open a dialog box to confirm deletion.
+- The removal of the last item of a text must remove also the text. Open a dialog box to confirm deletion (only for the connected user)
 
 ## Functioning of the app in the advanced parameters
 
