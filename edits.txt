@@ -132,3 +132,5 @@ this is very important: i should put all input field in Modals and not the curre
 then there is the repeated function to import new texts in current session that must be updated everywhere.
 
 The function to contain texts from previous sessions is to be saved is the previous session as well.
+
+When the connected user adds the database JSON , all texts go to a variable named "prev" in a data set.

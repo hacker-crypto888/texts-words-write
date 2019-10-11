@@ -67,7 +67,7 @@ class BasicForm extends React.Component {
       itemsloaded:null,
       username:'',
       username_modal:'',
-
+      input:null,
       itemlist:null,
       textlist:null,
       myitems:null,
@@ -359,13 +359,18 @@ class BasicForm extends React.Component {
     }
     
   }
+  inputNewText  = (text) => {
+    const input = document.getElementById('add-new-text-current-session');
+    input.dataset.newtext =text;
+    input.value +='h';
+  }
   newSession = (event) => {
     const importedTexts = document.getElementById('preview');
     document.getElementById('items_by_date').focus();
     document.getElementById('loadbydate').disabled = true;
     document.getElementById('editor').focus();
     document.getElementById('editentries').disabled = true;
-    importedTexts.dataset.texts = JSON.stringify([]);
+    this.inputNewText([]);
     importedTexts.dataset.prev = JSON.stringify([]);
     importedTexts.dataset.allusers = JSON.stringify([]);
   }
@@ -558,14 +563,6 @@ class FillInTheDateForm extends React.Component {
   }
   onChange = (date) => {
     this.setState({ date });
-    //const myNode = document.getElementById('outputJsonFile');
-    //while(myNode.firstChild) {
-    //  myNode.removeChild(myNode.firstChild);
-    //}
-    //const myInputNode = document.getElementById('inputJsonFile');
-    //while(myInputNode.firstChild) {
-    //  myInputNode.removeChild(myInputNode.firstChild);
-    //}
   }
   handleSubmittedDate = (event) => {
 
@@ -573,111 +570,7 @@ class FillInTheDateForm extends React.Component {
     modalbody.innerHTML = 'no items found'; 
     this.loadByDate();
   }
-  loadByDate = () => {
-    const modalbody = document.getElementById('modal-bodyloadbydate');
-    //while (modalbody.firstChild) {
-    //  modalbody.removeChild(modalbody.firstChild);
-    //}
-    const selectedDate = (this.state.date.getMonth()+1)+'/'+this.state.date.getDate()+'/'+this.state.date.getFullYear();
-    const importedTexts = document.getElementById('preview'); 
-    const importText = JSON.parse(importedTexts.dataset.texts); 
-    const thisIsMyTextList = [];
-    importText.forEach(function(mytext) {
-      const textObject = {};
 
-      mytext.forEach(function(myinfo) {
-        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;};
-        textObject[myinfo[0]] = myinfo[1];
-      });
-      if(textObject === {}) {return;};
-      if(!textObject.mycontent) {return;};
-      if(!textObject.dates.some(x => x === selectedDate)) {return;}; 
-      console.log(textObject.content); 
-      thisIsMyTextList.push(textObject);
-      
-    });
-    if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
-    console.log(thisIsMyTextList);
-    modalbody.innerHTML = "";
-    const exportText = JSON.parse(importedTexts.dataset.texts);
-    exportText.forEach(function(text) {
-      const textdiv = document.createElement('div'); 
-      console.log('text array of edit entries', text);
-      textdiv.className = text[0][1];
-      modalbody.appendChild(textdiv);
-      const displayText = document.createElement('div');
-      text.forEach(function(info, rangeInfo, ObjectInfo) {
-        if (info[0] === 'mycontent') {
-          info[1].forEach(function(wordItem) {
-            //if (wordItem === "mycontent") {return;}
-            const displayWord = document.createElement('div');
-            displayWord.textContent = wordItem;
-            textdiv.appendChild(displayWord);
-            const removeWord = document.createElement('button');
-            removeWord.classList.add("btn");
-            removeWord.classList.add("btn-secondary");
-            removeWord.type = "button";
-            removeWord.textContent = "Remove this word";
-            removeWord.onclick = (event) => {
-
-              const importedTexts = document.getElementById('preview');
-              importedTexts.dataset.texts = "";
-
-
-              const idx = info.indexOf(wordItem);
-              if (idx !== -1) {
-                info.splice(idx, 1);
-              }
-              console.log("INFO SLICE 1",info); 
-              console.log(exportText);
-              displayWord.remove();
-              removeWord.remove();
-              importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
-              console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
-            }
-            textdiv.appendChild(removeWord);
-          });
-          //info.unshift("mycontent");
-          console.log("INFO", info);
-        } else if (info[0] === 'dates') {
-          info[1].forEach(function(date) {
-            displayText.innerHTML += "text imported on ";
-            displayText.innerHTML += date;
-            displayText.innerHTML += '<br>';
-          });
-        }
-        textdiv.appendChild(displayText);
-      });
-
-      const removeText = document.createElement('button');
-      removeText.classList.add("btn");
-      removeText.classList.add("btn-secondary");
-      removeText.type = "button";
-      removeText.textContent = "Remove this text";
-      removeText.onclick = (event) => {
-
-        const importedTexts = document.getElementById('preview');
-        importedTexts.dataset.texts = "";
-
-        const idx = exportText.indexOf(text);
-        if (idx !== -1) {
-          exportText.splice(idx, 1);
-        }
-        console.log("onclick");
-        removeText.remove();
-        const textelements = document.getElementsByClassName(text[0][1]);
-        while (textelements[0].firstChild) {
-          textelements[0].removeChild(textelements[0].firstChild);
-        }
-
-        importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
-        console.log("importTexts texts on click remove text", JSON.parse(importedTexts.dataset.texts));
-        
-      };
-
-      modalbody.appendChild(removeText);
-    });
-  }
   render() {    
     return (    
       <form onSubmit={this.handleSubmittedDate}>
@@ -982,65 +875,40 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     
   }
+  importNewTexts = (list) => {
+    const input = document.getElementById('add-new-text-current-session');
+    list = JSON.parse(input.dataset.currentsession);
+  }
 
   handleText = (event) => {
     const importedTexts = document.getElementById('preview');
       
-    if(importedTexts.dataset.texts && JSON.parse(importedTexts.dataset.texts).length) {
-      const littleWordList = [];
-      const myTextList = [];
-      //const thisIsMyWordList = [];
-      const thisIsMyTextList = [];
-      const allMyTexts = JSON.parse(importedTexts.dataset.texts); //allMyTexts is a JSON ARRAY THAT CONTAINS ALL THE TEXTS HAVING BEEN INSERTED, DROPPED OR ADDED TO BE HANDLED BY THE PROGRAM
-      console.log("allMyTexts",allMyTexts);
-      allMyTexts.forEach(function(mytext) { //mytext IS A JSON ARRAY THAT CONTAINS INFO ABOUT A TEXT
-        const textObject = {};
-        mytext.forEach(function(info) {
-          textObject[info[0]] = info[1];
-        });
-        if (!textObject.textId) {
-          const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
-          textObject.textId = newTextId; 
-        }
-//handle dates ----> do like for "remove text function " (import and export texts in imported Texts field and remove the items not matching the selected date (on click)
-        const daysDate = new Date();
-        const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-        const msTime = Date.now();
-        if (textObject.dates === (null||undefined||[])) { //addNEw TExt function adds date already /*if this is a json you should add date of today*/
-          textObject.dates = [today];
-        } 
-        ///*but not if you want to sort by date the items you loaded before*/
-        ///*the load by date option is only reserved for the json */
-        ///*export the json file before you load it by date */
-
-        //1-/*export json*/
-        //start from importedTexts.dataset.texts that contains all texts
-        //turn into arra of objects
-        //export word by word without text info
-
-        //2-/*sort by date*/
-        //import json 
-        //remove whole texts with date
-
-        console.log(textObject.mycontent);
-        const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-        if (typeof textObject.mycontent === 'string' && textObject.mycontent === '') {return;};
-        if (textObject.mycontent instanceof Array && textObject.mycontent.length === 1) {
-          textObject.mycontent = [textObject.mycontent[0]];
-        };
-        if(typeof textObject.mycontent === 'string' && textObject.mycontent.length > 0) {
-          const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-            return (element !== (null||undefined||""));
-          });
-          textObject.mycontent = thisIsMyWordList;
-        }
-        thisIsMyTextList.push(textObject);
+    const thisIsMyTextList = [];
+    const allMyTexts = [];
+    this.importNewTexts(allMyTexts);
+    console.log("allMyTexts",allMyTexts);
+    allMyTexts.forEach(function(mytext) { 
+      const textObject = {};
+      mytext.forEach(function(info) {
+        textObject[info[0]] = info[1];
       });
-      importedTexts.dataset.texts = "";
-      importedTexts.dataset.texts = [JSON.stringify(thisIsMyTextList.map(Object.entries))];
-      console.log('handle text function -> allMyTexts importedTexts texts', JSON.parse(importedTexts.dataset.texts));
-    };
+
+      console.log(textObject.mycontent);
+      const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
+      if(typeof textObject.mycontent === 'string' && textObject.mycontent.length > 0) {
+        const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+          return (element !== (null||undefined||""));
+        });
+        textObject.mycontent = thisIsMyWordList;
+      }
+      thisIsMyTextList.push(textObject);
+    });
+    this.inputNewText(this.json(thisIsMyTextList.map(Object.entries)));
+    
   } 
+  json = (list) => {
+    list = JSON.parse(JSON.stringify(list));
+  }
   handleSubmittedText = event => { //handle submitted texts including that in the text input field
     event.preventDefault();
     this.handleText();
@@ -1050,13 +918,6 @@ my two mistresses: what a beast am I to slack it!`,*/
   handleDateChange = date => {
     this.setState({date});
   }
-
-  downloadItems = (event) => {
-    console.log(this.state.wordIdItems);
-    const blobData = new Blob([JSON.stringify({"items": this.state.wordIdItems},null,2)], {type: 'application/json'});
-    const url = window.URL.createObjectURL(blobData);
-    document.getElementById('download_items').href = url;
-  } 
 
   windowdrop = (event) => {
     event.preventDefault();
@@ -1116,14 +977,15 @@ my two mistresses: what a beast am I to slack it!`,*/
       //===END JSON UPLOAD===//
     }
   }
-  createFileObjectToday = (file, textobject, textvalue) => {
-    const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
-    const daysDate = new Date();
-    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-    const msTime = Date.now();
-    textobject = {"textId":newTextId, "dates":[today], "lastModified": file.lastModified, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":textvalue};
-  }
 
+  createNewTextId = (string) => {
+    string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+  }
+  returnDaysDate = (string) => {
+    const daysDate = new Date();
+    string = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+    const msTime = Date.now();
+  }
 
   sendTextFile = (file, list) => {
     const textId = '';
@@ -1159,7 +1021,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       input.click();
     }
 
-    const importedTexts = document.getElementById('preview');
     const fd = new FormData();
     fd.append('myFile', file);
     fetch(URL.createObjectURL(file))
@@ -1167,8 +1028,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         return response.text();
       })
       .then(function(textContent) {
-        const importedTexts = document.getElementById('preview');
-
         const textInfo = [];
         createFileList(textInfo);
         addContent(textInfo, textContent); 
@@ -1209,32 +1068,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   importItems = (myItems) => {
-    const importedTexts = document.getElementById('preview');
-    if (importedTexts.dataset.texts !== (null||undefined)) {
-      importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myItems.map(Object.entries)[0]]);
-      if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-        document.getElementById('export_all_items').removeAttribute('disabled');
-      } 
-    } else if (importedTexts.dataset.texts === (null||undefined)) {
-      importedTexts.dataset.texts = [JSON.stringify(myItems.map(Object.entries))];
-      if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-        document.getElementById('export_all_items').removeAttribute('disabled');
-      } 
-
-    }
-    console.log(JSON.parse(importedTexts.dataset.texts));
-  }
-
-  cancelTheEdits = (entriesList) => {
-    entriesList = "";
-
-  } 
-  saveAllTexts = () => {
-    //checkConnectedUser must be called first
-    const importedTexts = document.getElementById('preview');
-    importedTexts.dataset.alltexts = JSON.stringify([...JSON.parse(importedTexts.dataset.texts), JSON.parse(importedTexts.dataset.allusers)]);
-    document.getElementById('export_all_items').click();
-
+    this.inputNewText(myItems);
   }
 
   sendFile = (file) => {
@@ -1256,12 +1090,17 @@ my two mistresses: what a beast am I to slack it!`,*/
         const myItems = thirdres.map(obj => obj);
         const thisIsMyTextList = thirdres.map(obj => obj);
         this.setState({myItems});
-        const importedTexts = document.getElementById('preview');
+
         this.checkConnectedUser();
         this.textsFromOtherUsers(thisIsMyTextList);
-        importedTexts.dataset.databaseJson = true;
+        this.importedJson();
+
 
       })
+  }
+  importedJson = () => {
+        const importedTexts = document.getElementById('preview');
+        importedTexts.dataset.databaseJson = true;
   }
   textsFromOtherUsers = (myItems) => {
     const importedTexts = document.getElementById('preview');
@@ -1287,7 +1126,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       }    
     });
     if(myItems instanceof Array && myItems.length === 0) {return;}
-    importedTexts.dataset.prev = JSON.stringify(myItems);
+    this.inputNewText(myItems);
   }
   sendDocxFile = (file) => {
     console.time();
@@ -1378,7 +1217,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           console.log(newText);
           const myTextInfo = [];
           myTextInfo.push(newText);
-          importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+          this.inputNewText(JSON.parse(JSON.stringify(myTextInfo)));
           this.enableExport();
           
 
@@ -1537,7 +1376,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     newText.mycontent = [valueword];
     const myTextInfo = [];
     myTextInfo.push(newText);
-    importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+    this.inputNewText(JSON.parse(JSON.stringify(myTextInfo)));
     document.getElementById("valueword").value = '';
     
   }
@@ -1612,7 +1451,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
-        <button onClick={this.addNewTextCurrentSession} id="add-new-text-current-session"></button>
+        <input type="button" onChange={this.addNewTextCurrentSession} value="" id="add-new-text-current-session"/>
 
  
       </form>
