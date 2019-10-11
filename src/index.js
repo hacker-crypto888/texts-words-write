@@ -359,10 +359,156 @@ class BasicForm extends React.Component {
     }
     
   }
-  inputNewText  = (text) => {
+  inputNewText = (text) => {
     const input = document.getElementById('add-new-text-current-session');
     input.dataset.newtext =text;
     input.value +='h';
+    this.addNewTextCurrentSession(text);
+  }
+  addNewTextCurrentSession = (text) => {
+    //to add a new text to the current, do:
+    //input.dataset.newtext =
+    //input.click
+    //
+    const newText = document.getElementById('add-new-text-current-session');
+    //name of the variable that contains the current session of texts = currentSession
+    const currentSession = [...JSON.parse(newText.dataset.currentsession)]; //1031 currentSession
+    console.log(currentSession);
+    this.appendNewText(text, currentSession); 
+    newText.dataset.currentsession = JSON.stringify(currentSession); //save
+    this.displaySessions(currentSession); 
+  }
+  displaySessions = (texts) => {
+    this.displayNewEntries([...texts]);
+    const modalbody = document.getElementById('modal-body-display');
+    const newText = document.getElementById('add-new-text-current-session');
+    modalbody.focus();
+    const checkPrev = document.getElementById('textsPreviousSessions');
+    const checkCurrent = document.getElementById('textsCurrentSession');
+
+    if (checkPrev.checked) {
+      //this.displayNewEntries([...JSON.parse(importedTexts.dataset.prev)]);
+    }
+
+    if (checkCurrent.checked) {
+
+    }
+
+    if (checkPrev.checked && checkCurrent.checked) {
+      //this.displayNewEntries([...texts, JSON.parse(importedTexts.dataset.prev)]);
+    }
+    if (!checkPrev.checked && !checkCurrent.checked) {
+      //this.displayNewEntries([]);
+    }
+  }
+  displayNewEntries = (textsToImport) => {
+    this.displayWordsAndTexts(textsToImport);
+  }
+  displayWordsAndTexts = (textsToDisplay) => { 
+    const idx = this.state;
+    const modalbody = document.getElementById('modal-body');
+
+    while (modalbody.firstChild) {
+      modalbody.removeChild(modalbody.firstChild);
+    }
+    //this.dispWord('mot');
+    //this.displayRemoveWordBtn('mot', 0, 7, textsToDisplay);
+    const wordsToDisplay = [];
+    if (!(textsToDisplay instanceof Array)) {
+      textsToDisplay = [];
+    }
+    textsToDisplay.forEach(function(textItem) {
+      textItem.forEach(function(infoItem) {
+
+        if (infoItem[0] === 'textId') { //1794
+          wordsToDisplay.push(infoItem[1]); 
+        } 
+
+        if (infoItem[0] === 'mycontent') {
+          const idx = textItem.indexOf(infoItem);
+          const idx1 = textsToDisplay.indexOf(textItem);
+          textItem[idx][1].forEach(function(word) {
+            wordsToDisplay.push([word, idx,idx1]); //textsToDisplay[word[2]][word[1]][1]
+             
+          }) // 
+        }
+        //alert(wordsToDisplay);
+      });
+    });
+    //this.dispWords(wordsToDisplay);
+    this.displayWordsBtnsToRmWords(wordsToDisplay, textsToDisplay);
+      
+  }
+
+
+
+  displayWordsBtnsToRmWords = (words, texts) => {
+    function ifUserConnected() {
+      const importedTexts = document.getElementById('preview');
+      if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return false;} else {
+        return true;
+      }
+    }
+    const importedTexts = document.getElementById('preview');
+    const modalbody = document.getElementById('modal-body');
+    if(words instanceof Array && words.length === 0) {return};
+    
+    words.forEach(function(item, rangeitem, allwords){
+      if(typeof item === 'string') { return; }
+
+      const displayDiv = document.createElement('div');
+
+      displayDiv.classList.add('display-div');
+      //alert(item[0]+item[1]+item[2]+words[rangeitem-1]);
+      displayDiv.classList.add(item[3]);
+
+
+      const displayWord = document.createElement('div');
+      displayWord.textContent = item[0];
+      displayWord.classList.add('label-word');
+      displayDiv.appendChild(displayWord);
+      const removeWord = document.createElement('div');
+
+      displayDiv.appendChild(removeWord);
+      if (ifUserConnected() && typeof words[rangeitem-1] === 'string' && item instanceof Array) {
+        const textDiv = document.createElement('div');
+        textDiv.classList.add('display-text');
+        textDiv.id = words[rangeitem-1];
+        importedTexts.dataset.textId = words[rangeitem-1];
+        modalbody.appendChild(textDiv);
+        textDiv.appendChild(displayDiv);
+        //modalbody.removeChild(modalbody.firstChild);
+      } else if (ifUserConnected() && words[rangeitem-1] instanceof Array && item instanceof Array) {
+        document.getElementById(importedTexts.dataset.textId).appendChild(displayDiv);
+      } else {
+        modalbody.appendChild(displayDiv); //1855
+      }
+        
+      removeWord.classList.add("btn");
+      removeWord.classList.add("btn-secondary");
+      removeWord.classList.add("btn-word");
+      removeWord.type = "button";
+      removeWord.textContent = "Remove this word";
+      removeWord.onclick = (event) => {
+        const importedTexts = document.getElementById('preview');
+        if(removeWord.parentElement) {
+          const idx = Array.prototype.indexOf.call(removeWord.parentNode.parentNode.childNodes, removeWord.parentNode);
+          if (idx !== -1) {
+            if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
+              removeWord.parentNode.parentNode.remove();
+              texts.splice([item[2]], 1);
+              console.log(texts);
+
+            } else {
+              removeWord.parentNode.parentNode.childNodes[idx].remove();
+              texts[item[2]][item[1]][1].splice(idx,1);
+              console.log(texts);
+
+            }
+          }
+        }
+      }
+    });
   }
   newSession = (event) => {
     const importedTexts = document.getElementById('preview');
@@ -370,7 +516,6 @@ class BasicForm extends React.Component {
     document.getElementById('loadbydate').disabled = true;
     document.getElementById('editor').focus();
     document.getElementById('editentries').disabled = true;
-    this.inputNewText([]);
     importedTexts.dataset.prev = JSON.stringify([]);
     importedTexts.dataset.allusers = JSON.stringify([]);
   }
@@ -522,18 +667,12 @@ class FillInTheDateForm extends React.Component {
       j:null,
       k:null,
       fd:null,
-      response:null,
       thirdres:null,
-      myBlob:null,
-      myBlub:null,
       databaseIsLoaded:null,
-      myItems:null,    
       noFileType:null,
       importMode:null,    
       saveFile:null,
-      jsonString:null,
       downloadAll:null,
-      downloadLink:null,
       myNode:null,
       myInputNode:null,
       myOutputNode:null,
@@ -822,9 +961,14 @@ my two mistresses: what a beast am I to slack it!`,*/
       textloadedtypes:'',
       textContent:null,
       textId:null,
+      mytextvar:null,
+      mainFunction:null,
+      asynchronousFunction:null,
+      result:null,
+      callback:null,
+
     };
 
-    this.handleSubmittedText = this.handleSubmittedText.bind(this);
   }
 
   componentDidMount() {
@@ -868,53 +1012,10 @@ my two mistresses: what a beast am I to slack it!`,*/
         email.length > 3 ? null : 'Email must be longer than 3 characters' 
     });
   }
-  splitContent = () => {
-    const importedTexts = document.getElementById('preview');
-    //const importText = importedTexts.dataset.splitContent;
 
-
-    
-  }
-  importNewTexts = (list) => {
-    const input = document.getElementById('add-new-text-current-session');
-    list = JSON.parse(input.dataset.currentsession);
-  }
-
-  handleText = (event) => {
-    const importedTexts = document.getElementById('preview');
-      
-    const thisIsMyTextList = [];
-    const allMyTexts = [];
-    this.importNewTexts(allMyTexts);
-    console.log("allMyTexts",allMyTexts);
-    allMyTexts.forEach(function(mytext) { 
-      const textObject = {};
-      mytext.forEach(function(info) {
-        textObject[info[0]] = info[1];
-      });
-
-      console.log(textObject.mycontent);
-      const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-      if(typeof textObject.mycontent === 'string' && textObject.mycontent.length > 0) {
-        const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-          return (element !== (null||undefined||""));
-        });
-        textObject.mycontent = thisIsMyWordList;
-      }
-      thisIsMyTextList.push(textObject);
-    });
-    this.inputNewText(this.json(thisIsMyTextList.map(Object.entries)));
-    
-  } 
   json = (list) => {
     list = JSON.parse(JSON.stringify(list));
   }
-  handleSubmittedText = event => { //handle submitted texts including that in the text input field
-    event.preventDefault();
-    this.handleText();
-
-  }
-
   handleDateChange = date => {
     this.setState({date});
   }
@@ -987,7 +1088,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const msTime = Date.now();
   }
 
-  sendTextFile = (file, list) => {
+  sendTextFile = (file) => {
     const textId = '';
     createNewTextId(textId);
     const today = '';
@@ -1007,52 +1108,77 @@ my two mistresses: what a beast am I to slack it!`,*/
       
     function createFileList(list) {
       list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      return list;
     }
 
     function addContent(fileinfo, textstring) {
       fileinfo.push(["mycontent", textstring]);
     }
-    ///////////////////////
-    //Add current session new text
-    ///////////////////////
-    function inputNewText (text) {
-      const input = document.getElementById('add-new-text-current-session')
-      input.dataset.newtext =text;
-      input.click();
-    }
-
     const fd = new FormData();
     fd.append('myFile', file);
-    fetch(URL.createObjectURL(file))
+
+    const asynchronousFunction = callback => {
+      return fetch(URL.createObjectURL(file))
       .then(function(response) {
         return response.text();
       })
       .then(function(textContent) {
-        const textInfo = [];
-        createFileList(textInfo);
+        const textInfo = createFileList();
+        console.log(textInfo);
         addContent(textInfo, textContent); 
-        inputNewText(textInfo);
-
-
+        console.log(textInfo);
+        return textInfo;
       })
+      .then(function(response) {
+        callback(response)
+      })
+    }
+    const callbackFunction = result => {
+      console.log(result)
+    }
 
+    const mainFunction = callback => {
+      asynchronousFunction(callback)
+    }
+    
+    //call the code
+
+    mainFunction(callbackFunction);
+
+
+    console.log(mainFunction);
     this.initializeWordList();
+  }
+  initializeWordList = () => {
+
+    this.enableExport();
+    this.enableEditor();
+  }
+  inputNewText  = (text) => {
+    const input = document.getElementById('add-new-text-current-session');
+    input.dataset.newtext =text;
+    input.value +='h';
+    input.click();
+  }
+  handleText = (myText) => {
+    const textObject = {};
+    myText.forEach(function(info) {
+      textObject[info[0]] = info[1];
+    });
+
+    console.log(textObject.mycontent);
+    const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
+    if(typeof textObject.mycontent === 'string' && textObject.mycontent.length > 0) {
+      const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+        return (element !== (null||undefined||""));
+      });
+      textObject.mycontent = thisIsMyWordList;
+    }
+    this.inputNewText(this.json(textObject));
+    
+  } 
 
 
-  }
-  addNewTextCurrentSession = (event) => {
-    //to add a new text to the current, do:
-    //input = document.getElementById('add-new-text-current-session')
-    //input.dataset.newtext =
-    //input.click
-    //
-    const newText = document.getElementById('add-new-text-current-session');
-    //name of the variable that contains the current session of texts = currentSession
-    const currentSession = JSON.parse(newText.dataset.currentsession);
-    this.checkNullUndefinedList(currentSession);
-    this.appendNewText(newText.dataset.newtext, currentSession); 
-    newText.dataset.currentsession = JSON.stringify(currentSession);;
-  }
   checkNullUndefinedList = (list) => {
     if (list === (null||undefined)) { list = [];}
   }
@@ -1060,16 +1186,12 @@ my two mistresses: what a beast am I to slack it!`,*/
     list.push(text); 
   }
 
-  initializeWordList = () => {
-
-    this.enableExport();
-    this.enableEditor();
-    this.handleText();
+  displaySettingsModal = (event) => {
+    document.getElementById('editor-display').click();
+      
   }
 
-  importItems = (myItems) => {
-    this.inputNewText(myItems);
-  }
+
 
   sendFile = (file) => {
     const importedTexts = document.getElementById('preview');
@@ -1396,8 +1518,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     if (this.state.value === "") {return;};
     const newText = {};
     this.createTextObjectToday(newText, this.state.value); 
-    this.sendTextFile(new Blob(), newText);
+    this.inputNewText(newText);
   }
+
   enableEditor = () => {
     document.getElementById('editentries').removeAttribute('disabled');
   }
@@ -1420,7 +1543,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     return (
 
-      <form enctype={`multipart/form-data`} onSubmit={this.handleSubmittedText}>
+      <form enctype={`multipart/form-data`}>
         <div>
           <input type="checkbox" id="playAllTheWords" value={this.state.preloadOrAutoplay} onChange={this.checkBox} name="playAllTheWords"/>
           <label for="playAllTheWords">Play all the words</label>
@@ -1451,7 +1574,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
-        <input type="button" onChange={this.addNewTextCurrentSession} value="" id="add-new-text-current-session"/>
+        <input type="button" onClick={this.addNewTextCurrentSession} value="" id="add-new-text-current-session"/>
 
  
       </form>
@@ -1559,41 +1682,7 @@ class EditEntries extends React.Component {
   }
 
 
-  displayWordsAndTexts = (textsToDisplay) => { 
-    const idx = this.state;
-    const modalbody = document.getElementById('modal-body');
 
-    while (modalbody.firstChild) {
-      modalbody.removeChild(modalbody.firstChild);
-    }
-    //this.dispWord('mot');
-    //this.displayRemoveWordBtn('mot', 0, 7, textsToDisplay);
-    const wordsToDisplay = [];
-    if (!(textsToDisplay instanceof Array)) {
-      textsToDisplay = [];
-    }
-    textsToDisplay.forEach(function(textItem) {
-      textItem.forEach(function(infoItem) {
-
-        if (infoItem[0] === 'textId') { //1794
-          wordsToDisplay.push(infoItem[1]); 
-        } 
-
-        if (infoItem[0] === 'mycontent') {
-          const idx = textItem.indexOf(infoItem);
-          const idx1 = textsToDisplay.indexOf(textItem);
-          textItem[idx][1].forEach(function(word) {
-            wordsToDisplay.push([word, idx,idx1]); //textsToDisplay[word[2]][word[1]][1]
-             
-          }) // 
-        }
-        //alert(wordsToDisplay);
-      });
-    });
-    //this.dispWords(wordsToDisplay);
-    this.displayWordsBtnsToRmWords(wordsToDisplay, textsToDisplay);
-      
-  }
   dispWords = (words) => {
     const modalbody = document.getElementById('modal-body');
     words.forEach(function(item){
@@ -1602,81 +1691,7 @@ class EditEntries extends React.Component {
       modalbody.appendChild(displayWord);
     });
   }
-  displayWordsBtnsToRmWords = (words, texts) => {
-    function ifUserConnected() {
-      const importedTexts = document.getElementById('preview');
-      if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return false;} else {
-        return true;
-      }
-    }
-    const importedTexts = document.getElementById('preview');
-    const modalbody = document.getElementById('modal-body');
-    if(words instanceof Array && words.length === 0) {return};
-    
-    words.forEach(function(item, rangeitem, allwords){
-      if(typeof item === 'string') { return; }
 
-      const displayDiv = document.createElement('div');
-
-      displayDiv.classList.add('display-div');
-      //alert(item[0]+item[1]+item[2]+words[rangeitem-1]);
-      displayDiv.classList.add(item[3]);
-
-
-      const displayWord = document.createElement('div');
-      displayWord.textContent = item[0];
-      displayWord.classList.add('label-word');
-      displayDiv.appendChild(displayWord);
-      const removeWord = document.createElement('div');
-
-      displayDiv.appendChild(removeWord);
-      if (ifUserConnected() && typeof words[rangeitem-1] === 'string' && item instanceof Array) {
-        const textDiv = document.createElement('div');
-        textDiv.classList.add('display-text');
-        textDiv.id = words[rangeitem-1];
-        importedTexts.dataset.textId = words[rangeitem-1];
-        modalbody.appendChild(textDiv);
-        textDiv.appendChild(displayDiv);
-        //modalbody.removeChild(modalbody.firstChild);
-      } else if (ifUserConnected() && words[rangeitem-1] instanceof Array && item instanceof Array) {
-        document.getElementById(importedTexts.dataset.textId).appendChild(displayDiv);
-      } else {
-        modalbody.appendChild(displayDiv); //1855
-      }
-        
-      removeWord.classList.add("btn");
-      removeWord.classList.add("btn-secondary");
-      removeWord.classList.add("btn-word");
-      removeWord.type = "button";
-      removeWord.textContent = "Remove this word";
-      removeWord.onclick = (event) => {
-        const importedTexts = document.getElementById('preview');
-        importedTexts.dataset.texts = "";
-        if(removeWord.parentElement) {
-          const idx = Array.prototype.indexOf.call(removeWord.parentNode.parentNode.childNodes, removeWord.parentNode);
-          if (idx !== -1) {
-            if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
-              removeWord.parentNode.parentNode.remove();
-              texts.splice([item[2]], 1);
-              console.log(texts);
-
-            } else {
-              removeWord.parentNode.parentNode.childNodes[idx].remove();
-              texts[item[2]][item[1]][1].splice(idx,1);
-              console.log(texts);
-
-            }
-          }
-        }
-        importedTexts.dataset.prev = JSON.stringify([]);
-        importedTexts.dataset.texts = JSON.stringify(texts);
-        //removeWord.remove();
-      }
-    });
-      //importedTexts.dataset.texts = [JSON.stringify(textsToDisplay.map(Object.values))];
-      //console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
-
-  }
 
   dispWord = (wordItem) => {
     const modalbody = document.getElementById('modal-body');
@@ -1741,22 +1756,7 @@ class EditEntries extends React.Component {
     if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return;}
   }
 
-  initDisplayOnAdd = (event) => {
-    const importedTexts = document.getElementById('preview'); 
-    this.displayNewEntries([...JSON.parse(importedTexts.dataset.texts)]);
-  }
-  displayNewEntries = (textsToImport) => {
-    const importedTexts = document.getElementById('preview'); 
-    //this.checkArrayLength(textsToImport); 
-    //alert("texts to import is an array"+(textsToImport instanceof Array)+textsToImport);
 
-    //alert(textsToImport + 'all is ok');
-
-    const thisIsMyTextList = [];
-    //this.checkTextContent(thisIsMyTextList, textsToImport);
-    //alert('texts to import type is an array' +(textsToImport instanceof Array) +'and the first element is also an array'+(textsToImport[0] instanceof Array))
-    this.displayWordsAndTexts(textsToImport);
-  }
 
 
   displayRemoveTextBtn = (text, textId, texttype, exportText, importedTexts) => {
@@ -1859,42 +1859,12 @@ class EditEntries extends React.Component {
     }
   }
 
-  displaySessions = (event) => {
-    //alert('display Sessions')
-    document.getElementById('editor-display').click();
-    const importedTexts = document.getElementById('preview');
-    //alert('test items current session');
-    this.checkArrayLength(JSON.parse(importedTexts.dataset.texts));
-    const modalbody = document.getElementById('modal-body-display');
-    modalbody.focus();
-    const checkPrev = document.getElementById('textsPreviousSessions');
-    //console.log(checkPrev);
-    const checkCurrent = document.getElementById('textsCurrentSession');
 
-    if (checkPrev.checked) {
-      this.displayNewEntries([...JSON.parse(importedTexts.dataset.prev)]);
-    }
-
-    if (checkCurrent.checked) {
-      this.displayNewEntries([...JSON.parse(importedTexts.dataset.texts)]);
-    }
-
-    if (checkPrev.checked && checkCurrent.checked) {
-      this.displayNewEntries([...JSON.parse(importedTexts.dataset.texts), JSON.parse(importedTexts.dataset.prev)]);
-    }
-    if (!checkPrev.checked && !checkCurrent.checked) {
-      this.displayNewEntries([]);
-    }
-  }
-  displaySettingsModal = (event) => {
-    document.getElementById('editor-display').click();
-      
-  }
 
   render() {
     return (
       <div id="editor">
-        <button type="button" onClick={this.initDisplayOnAdd} id="init-display-on-add" />
+        <button type="button" onClick={this.displaySessions} id="init-display-on-add" />
         <button type="button" class="btn btn-primary" data-toggle="modal" id="editor-display" data-target="#editor-display-modal">
           Launch demo modal
         </button>
@@ -1924,7 +1894,7 @@ class EditEntries extends React.Component {
 
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onClick={this.displaySessions}>Reload your items</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" >Reload your items</button>
               </div>
             </div>
           </div>
