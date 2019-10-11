@@ -55,6 +55,9 @@ Check out in the table below the scope of actions the user can take in the first
 - Saving all texts is exporting all texts. To edit entries and play the words, close the window of the editor. It must always be possible to save all items.
 - There are two ways users can import texts: the guest user can only load texts and words using the text input field, whereas the connected user can upload files.
 - The texts can be that of previous sessions or that of current session.
+- The program should add the date of today to a text when clicking of "start a new game" and or when exporting the text with other texts
+- The way to sort "texts from previous sessions" and "texts from current session" can be: the date of the text, the way to import the text (file / text inputfield vs database)
+- the texts from previous sessions can be considered as such until they are displayed in the editor 
 
 ## Functioning of the app in the advanced parameters
 

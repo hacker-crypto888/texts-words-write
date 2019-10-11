@@ -1868,13 +1868,11 @@ class EditEntries extends React.Component {
           if (idx !== -1) {
             if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
               removeWord.parentNode.parentNode.remove();
-              texts.splice([item[2]], 1);
-              console.log(texts);
+              texts[item[2]][item[1]][1].length = 0;
 
             } else {
               removeWord.parentNode.parentNode.childNodes[idx].remove();
               texts[item[2]][item[1]][1].splice(idx,1);
-              console.log(texts);
 
             }
           }
