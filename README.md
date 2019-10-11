@@ -42,9 +42,9 @@ Check out in the table below the scope of actions the user can take in the first
 
 | Actions  | Guest user | Connected user | In action | Functions
 |---|---|---|---|---|
-| Import previous sessions or upload texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can upload texts from previous sessions or upload texts for this session by uploading files or by using the text input field and remove the texts | <ul><li>[x] Handle texts in the same modal as the words'</li><li>[x] Remove all the words from one text on the click of a button</li><li>[x] Texts from current session</li><li>[x] Texts from previous sessions</li><li>[x] Texts from previous sessions</li></ul>
+| Import previous sessions or upload texts and remove texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can upload texts from previous sessions or upload texts for this session by uploading files or by using the text input field and remove the texts | <ul><li>[x] Handle texts in the same modal as the words'</li><li>[x] Remove all the words from one text on the click of a button</li><li>[x] Texts from current session</li><li>[x] Texts from previous sessions</li><li>[ ] The removal of the last item of a text must also remove the text. Open a dialog box to confirm deletion</li></ul>
 | Add new texts using the text input field and remove words | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new texts using the text input field and remove words | 
-| Upload files and remove words | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can drop files and remove words from the texts the program extracted from them | <ul><li>[ ] For all type of texts, including that from uploaded files and that entered in text input field</li><li>[ ] The removal of the last item of a text must also remove the text. Open a dialog box to confirm deletion</li></ul> 
+| Upload files and remove words | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can drop files and remove words from the texts the program extracted from them | <ul><li>[ ] For all type of texts, including that from uploaded files and that entered in text input field</li></ul> 
 | Cancel the edits made to the texts of current session using the editor and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can cancel his or her edits made to the texts of current session using the editor and save all texts including that from other users |  <ul><li>[ ] </li><li>[ ] I added radio buttons to change the display of items according to whether they are texts from previous sessions or uploaded during this session</li><li>[ ] </li><li>[ ] </li><li>[ ] </li><li>[ ] </li><li>[ ] </li><li>[ ] the name of the value containing the modified item list is: importText</li><li>[ ] On click of the "close without saving changes" button, the value of the constant variable takes the initial value of the list when the items are loaded; the "current session" checkbox is checked, the "previous sessions" checkbox is unchecked;</li><li>The initial value of importedTexts.dataset... texts when the texts are loaded is the lists of texts loaded during this sessions.</li><li>The initial value of importedTexts.dataset... prev is the list of the previous sessions of texts of the logged in user.</li><li>The initial value of importedTexts.dataset... allusers is the list of all other users' texts</li><li>[ ] according to whether the radio button of previous sessions is checked, the program redisplayes the previous sessions of texts or only the current one</li><li>[ ] the currently logged in user's items are displayed</li></ul>  
 | Add new words using the text input field and remove them using the editor | <ul><li>[x] </li></ul> | <ul><li>[x] </li></ul> | All users can add new words using the text input field and remove them using the editor | 
 | Edit texts extracted from files or the text input fields during this session and save all texts | <ul><li>[ ] </li></ul> | <ul><li>[x] </li></ul> | Each connected user can save his or her new items. They will be automatically saved with other texts loaded from files or text imported using the text input field, or texts from previous sessions or from other users when using the "export my items" button | editEntriesAndSave()
@@ -60,16 +60,17 @@ Check out in the table below the scope of actions the user can take in the first
 
 The text lists constitute the app's advanced parameters, because it contains all the information about the text. It is hard to define what each piece of information corresponds to, so here is a more detailed presentation of what they each represent.
 
-| Information about the text | Text upload by the connected user | 
-|---|---|
-| textId | Each text has its own key | 
-| dates | Each time the user loads a text, the date is saved | 
-| users | Each time the user connected user loads a text, his or her name is saved in the text information | 
-| lastModified | Each time a file is loaded, its modification date is saved (a number that represents the number of milliseconds since the Unix epoch (January 1, 1970 at midnight)) | 
+| Information about the text | - | Text enetered in the text input field |
+|---|---|---|
+| textId | Each text has its own key | <ul><li>[x] </li> |
+| dates | Each time the user loads a text, the date is saved | <ul><li>[x] </li> |
+
+| users | Each time the user connected user loads a text, his or her name is saved in the text information | <ul><li>[x] </li> |
+| lastModified | Each time a file is loaded, its modification date is saved (a number that represents the number of milliseconds since the Unix epoch (January 1, 1970 at midnight)) | <ul><li>[x] </li> |
 | name | Each time a file is loaded, its filename is saved with the extension | 
-| webkitRelativePath | Each time the user choice a file in an input element, a USVString which specifies the file's path relative to the directory selected by the user is saved | 
-| size | Each time a file is loaded, its size in bytes is saved | 
-| type | Each time a file is loaded, its type is saved | 
+| webkitRelativePath | Each time the user choice a file in an input element, a USVString which specifies the file's path relative to the directory selected by the user is saved | |
+| size | Each time a file is loaded, its size in bytes is saved | |
+| type | Each time a file is loaded, its type is saved | |
 | mycontent | Each time a file is dropped or selected by the user, the program parses its text content, and splits it into a word list before saving it | | 
 
 ## Background tasks

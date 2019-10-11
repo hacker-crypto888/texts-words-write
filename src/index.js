@@ -296,7 +296,7 @@ class BasicForm extends React.Component {
     }
   }
   enablePreviousSessions = () => {
-      this.rmItemFromList(document.getElementById('labelTextsPreviousSessions').classList, "text-muted");
+      document.getElementById('labelTextsPreviousSessions').classList.remove("text-muted");
       document.getElementById('textsCurrentSession').removeAttribute('disabled');
   }
   preventPreviousSessions = () => {
@@ -313,20 +313,15 @@ class BasicForm extends React.Component {
       document.getElementById('editentries').removeAttribute('disabled');
       
       if (event.target.id === "loginbtnmodal") {
-
         document.body.focus();
         document.getElementById('loginModal').hidden = true;
-
-
         //alert(username_modal, "login from modal");
         //document.getElementById('close-editor').click();
         document.getElementById('login-form-body').focus();
       }
 
-
-
+      this.enablePreviousSessions();
       this.checkStringLength(username);
-      document.getElementById('labelTextsPreviousSessions'). 
       document.getElementById('loginbtn').innerHTML = 'log out';
       document.getElementById('username').hidden = true;
       document.getElementById('export_all_items').hidden = false;
@@ -338,7 +333,6 @@ class BasicForm extends React.Component {
         document.getElementById('welcome').innerHTML = "Hello, "+username_modal;
         importedTexts.dataset.username = username_modal; 
       }
-      this.enablePreviousSessions();
 
       
       this.newSession();
@@ -1775,6 +1769,7 @@ class EditEntries extends React.Component {
     console.log(thisIsMyTextList);
   }
 
+
   displayWordsAndTexts = (textsToDisplay) => { 
     const idx = this.state;
     const modalbody = document.getElementById('modal-body');
@@ -1791,7 +1786,7 @@ class EditEntries extends React.Component {
     textsToDisplay.forEach(function(textItem) {
       textItem.forEach(function(infoItem) {
 
-        if (infoItem[0] === 'textId') {
+        if (infoItem[0] === 'textId') { //1794
           wordsToDisplay.push(infoItem[1]); 
         } 
 
@@ -1819,6 +1814,12 @@ class EditEntries extends React.Component {
     });
   }
   displayWordsBtnsToRmWords = (words) => {
+    function ifUserConnected() {
+      const importedTexts = document.getElementById('preview');
+      if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return false;} else {
+        return true;
+      }
+    }
     const importedTexts = document.getElementById('preview');
     const modalbody = document.getElementById('modal-body');
     if(words instanceof Array && words.length === 0) {return};
@@ -1832,7 +1833,7 @@ class EditEntries extends React.Component {
       //alert(item[0]+item[1]+item[2]+words[rangeitem-1]);
       displayDiv.classList.add(item[3]);
 
-      //modalbody.appendChild(displayDiv);
+
       const displayWord = document.createElement('div');
       displayWord.textContent = item[0];
       displayWord.classList.add('label-word');
@@ -1840,7 +1841,7 @@ class EditEntries extends React.Component {
       const removeWord = document.createElement('div');
 
       displayDiv.appendChild(removeWord);
-      if (typeof words[rangeitem-1] === 'string' && item instanceof Array) {
+      if (ifUserConnected() && typeof words[rangeitem-1] === 'string' && item instanceof Array) {
         const textDiv = document.createElement('div');
         textDiv.classList.add('display-text');
         textDiv.id = words[rangeitem-1];
@@ -1848,8 +1849,10 @@ class EditEntries extends React.Component {
         modalbody.appendChild(textDiv);
         textDiv.appendChild(displayDiv);
         //modalbody.removeChild(modalbody.firstChild);
-      } else if (words[rangeitem-1] instanceof Array && item instanceof Array) {
+      } else if (ifUserConnected() && words[rangeitem-1] instanceof Array && item instanceof Array) {
         document.getElementById(importedTexts.dataset.textId).appendChild(displayDiv);
+      } else {
+        modalbody.appendChild(displayDiv); //1855
       }
         
       removeWord.classList.add("btn");
@@ -1863,16 +1866,21 @@ class EditEntries extends React.Component {
         if(removeWord.parentElement) {
           const idx = Array.prototype.indexOf.call(removeWord.parentNode.parentNode.childNodes, removeWord.parentNode);
           if (idx !== -1) {
-            removeWord.parentNode.parentNode.childNodes[idx].remove();
+            if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
+              removeWord.parentNode.parentNode.remove()
+            } else {
+              removeWord.parentNode.parentNode.childNodes[idx].remove();
+            }
           }
         }
-        removeWord.remove();
+        //removeWord.remove();
       }
     });
       //importedTexts.dataset.texts = [JSON.stringify(textsToDisplay.map(Object.values))];
       //console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
 
   }
+
   dispWord = (wordItem) => {
     const modalbody = document.getElementById('modal-body');
     const displayWord = document.createElement('div');
@@ -1935,6 +1943,7 @@ class EditEntries extends React.Component {
     }
     if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return;}
   }
+
   initDisplayOnAdd = (event) => {
     const importedTexts = document.getElementById('preview'); 
     this.displayNewEntries([...JSON.parse(importedTexts.dataset.texts)]);
