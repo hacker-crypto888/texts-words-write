@@ -124,3 +124,11 @@ in function that import the texts, assign to imported TExts dataset prev an  arr
 importedTexts.dataset.prev = JSON.parse() or importedTexts.dataset.prev = [...]
 
 importedTexts.dataset.prev instanceof Array && importedTexts.dataset.prev.length > 0
+
+the function for the DATABASE .JSON is broken because the function textsCOnnecter is not well configured.
+
+this is very important: i should put all input field in Modals and not the current display. perhaps i will change that.
+
+then there is the repeated function to import new texts in current session that must be updated everywhere.
+
+The function to contain texts from previous sessions is to be saved is the previous session as well.

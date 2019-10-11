@@ -297,11 +297,17 @@ class BasicForm extends React.Component {
   }
   enablePreviousSessions = () => {
       document.getElementById('labelTextsPreviousSessions').classList.remove("text-muted");
-      document.getElementById('textsCurrentSession').removeAttribute('disabled');
+      document.getElementById('textsPreviousSessions').removeAttribute('disabled');
   }
   preventPreviousSessions = () => {
       document.getElementById('labelTextsPreviousSessions').classList.add("text-muted");
-      document.getElementById('textsCurrentSession').disabled = true;
+      document.getElementById('textsPreviousSessions').disabled = true;
+  }
+  showDropzone = () => {
+    document.getElementById('dropzone').hidden = false;
+  }
+  hideDropzone = () => {
+    document.getElementById('dropzone').hidden = false;
   }
   loginUser = (event) => {
     const importedTexts = document.getElementById("preview");
@@ -321,6 +327,7 @@ class BasicForm extends React.Component {
       }
 
       this.enablePreviousSessions();
+      this.showDropzone();
       this.checkStringLength(username);
       document.getElementById('loginbtn').innerHTML = 'log out';
       document.getElementById('username').hidden = true;
@@ -336,34 +343,6 @@ class BasicForm extends React.Component {
 
       
       this.newSession();
-      //if (typeof importedTexts.dataset.databaseJson === 'boolean' && importedTexts.dataset.databaseJson === true) {
-      //const importText = JSON.parse(importedTexts.dataset.texts);
-      //importText.forEach(function(item){
-      //  if((item.some(x => x[0] === "users" && x[1] instanceof Array && !x[1].includes(importedTexts.dataset.username))) || (!item.some(x => x[0] === "users"))) {
-      //    const idx = importText.indexOf(item);
-      //    if(idx !== -1) {
-      //      importText.splice(idx, 1);
-      //    }
-      //  }    
-      //});
-      //importedTexts.dataset.texts = JSON.stringify(importText);
-      //} else if (importText.length > 0 && typeof importedTexts.dataset.databaseJson === 'boolean' && importedTexts.dataset.databaseJson === true) {
-      //  importText.forEach(function(myTextItem) {
-      //    if (!myTextItem.some(x => x[0] === "users")) {
-      //      myTextItem.push(["users",[username]]);
-      //    } else if(myTextItem.some(x => x[0] === "users")) { 
-      //      myTextItem.forEach(function(info) {
-      //        if(info[0] === "users") {
-      //          if(info[1].includes(username)) {
-      //            info[1].push(username);
-      //          }
-      //        } 
-      //      });
-      //    }
-      //  });
-
-      //importedTexts.dataset.texts = JSON.stringify(importText);
-      //}
 
     } else if(document.getElementById('loginbtn').innerHTML === 'log out') {
       importedTexts.dataset.username = ''; 
@@ -375,7 +354,7 @@ class BasicForm extends React.Component {
       document.getElementById('username').value = "";
       this.preventPreviousSessions();
       this.newSession();
-      
+      this.hideDropzone(); 
 
     }
     
@@ -386,9 +365,9 @@ class BasicForm extends React.Component {
     document.getElementById('loadbydate').disabled = true;
     document.getElementById('editor').focus();
     document.getElementById('editentries').disabled = true;
-    importedTexts.dataset.texts = '';
-    importedTexts.dataset.prev = '';
-    importedTexts.dataset.allusers = '';
+    importedTexts.dataset.texts = JSON.stringify([]);
+    importedTexts.dataset.prev = JSON.stringify([]);
+    importedTexts.dataset.allusers = JSON.stringify([]);
   }
   render() { 
     
@@ -948,6 +927,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       valueword:'',
       displaytype:null,
       textloadedtypes:'',
+      textContent:null,
+      textId:null,
     };
 
     this.handleSubmittedText = this.handleSubmittedText.bind(this);
@@ -957,8 +938,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
-    document.getElementById('noDatabaseFile').addEventListener('checked', this.checkBox);
-
+    document.getElementById('dropzone').hidden = true;
     const importedTexts = document.getElementById('preview');
     importedTexts.dataset.textValue = '';
     const wordList = [];
@@ -1136,8 +1116,49 @@ my two mistresses: what a beast am I to slack it!`,*/
       //===END JSON UPLOAD===//
     }
   }
-  sendTextFile = (file) => {
-    this.checkConnectedUser();
+  createFileObjectToday = (file, textobject, textvalue) => {
+    const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+    const daysDate = new Date();
+    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+    const msTime = Date.now();
+    textobject = {"textId":newTextId, "dates":[today], "lastModified": file.lastModified, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":textvalue};
+  }
+
+
+  sendTextFile = (file, list) => {
+    const textId = '';
+    createNewTextId(textId);
+    const today = '';
+    daysDate(today);
+
+    function createNewTextId(string) {
+      string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+      return string;
+    }
+
+    function daysDate(string) {
+      const daysDate = new Date();
+      string += (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      return string;
+    }
+      
+    function createFileList(list) {
+      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+    }
+
+    function addContent(fileinfo, textstring) {
+      fileinfo.push(["mycontent", textstring]);
+    }
+    ///////////////////////
+    //Add current session new text
+    ///////////////////////
+    function inputNewText (text) {
+      const input = document.getElementById('add-new-text-current-session')
+      input.dataset.newtext =text;
+      input.click();
+    }
+
     const importedTexts = document.getElementById('preview');
     const fd = new FormData();
     fd.append('myFile', file);
@@ -1145,27 +1166,46 @@ my two mistresses: what a beast am I to slack it!`,*/
       .then(function(response) {
         return response.text();
       })
-      .then(function(valueText) {
-        console.log(valueText);
+      .then(function(textContent) {
         const importedTexts = document.getElementById('preview');
-        const newText = {"lastModified": file.lastModified, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":valueText};
-        console.log(newText);
-        const myTextInfo = [];
-        myTextInfo.push(newText);
-        if (importedTexts.dataset.texts !== (null||undefined)) {
-          importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
 
-          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-            document.getElementById('export_all_items').removeAttribute('disabled');
-          } 
+        const textInfo = [];
+        createFileList(textInfo);
+        addContent(textInfo, textContent); 
+        inputNewText(textInfo);
 
-        } else if (importedTexts.dataset.texts === (null||undefined)) {
-          importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-          if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-            document.getElementById('export_all_items').removeAttribute('disabled');
-          } 
-        }
+
       })
+
+    this.initializeWordList();
+
+
+  }
+  addNewTextCurrentSession = (event) => {
+    //to add a new text to the current, do:
+    //input = document.getElementById('add-new-text-current-session')
+    //input.dataset.newtext =
+    //input.click
+    //
+    const newText = document.getElementById('add-new-text-current-session');
+    //name of the variable that contains the current session of texts = currentSession
+    const currentSession = JSON.parse(newText.dataset.currentsession);
+    this.checkNullUndefinedList(currentSession);
+    this.appendNewText(newText.dataset.newtext, currentSession); 
+    newText.dataset.currentsession = JSON.stringify(currentSession);;
+  }
+  checkNullUndefinedList = (list) => {
+    if (list === (null||undefined)) { list = [];}
+  }
+  appendNewText = (text, list) => {
+    list.push(text); 
+  }
+
+  initializeWordList = () => {
+
+    this.enableExport();
+    this.enableEditor();
+    this.handleText();
   }
 
   importItems = (myItems) => {
@@ -1272,18 +1312,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         const myTextInfo = [];
         myTextInfo.push(newText);
         this.importItems(myTextInfo);
-        //console.log(resultObject.value)
-        //const importedTexts = document.getElementById('preview');
-        //console.log(newText);
-        //const myTextInfo = [];
-        //myTextInfo.push(newText);
-        //if (importedTexts.dataset.texts !== (null||undefined)) {
-        //  importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-        //  newText.length = 0;
-        //} else if (importedTexts.dataset.texts === (null||undefined)) {
-        //  importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-        //  newText.length = 0;
-        //}
       })
     };
     reader.readAsArrayBuffer(file);
@@ -1350,22 +1378,9 @@ my two mistresses: what a beast am I to slack it!`,*/
           console.log(newText);
           const myTextInfo = [];
           myTextInfo.push(newText);
-          if (importedTexts.dataset.texts !== (null||undefined)) {
-            importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-            if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-              document.getElementById('export_all_items').removeAttribute('disabled');
-            } 
-            newText.length = 0;
-          } else if (importedTexts.dataset.texts === (null||undefined)) {
-            importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-            if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-              document.getElementById('export_all_items').removeAttribute('disabled');
-            } 
-            newText.length = 0;
-          }
-        //for(var i = 0;i < pagesText.length;i++){
-        //	document.getElementById("pdf-text").append("<div><h3>Page "+ (i + 1) +"</h3><p>"+pagesText[i]+"</p><br></div>");
-        //}
+          importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+          this.enableExport();
+          
 
         });
 
@@ -1497,39 +1512,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       }
     }
 
-    if (document.getElementById('noDatabaseFile').checked) {
-      console.log("checkbox");
-      
-      if (this.state.databaseIsLoaded === true && window.confirm("the database is to be removed. To remove the database anyway, press ok. Press cancel to keep your database loaded in the dropzone.")) {
-        this.setState({
-          databaseIsLoaded:
-            false
-        });
-        this.setState({
-          myItems:
-            []
-        });
-        const droppedFiles = document.getElementById('preview');
-        while (droppedFiles.hasChildNodes()) {
-          droppedFiles.removeChild(droppedFiles.firstChild);  
-        }
-      }
-    }
-
-    if (!document.getElementById('noDatabaseFile').checked && this.state.jsonSecondConfirm === true) {
-      this.setState({
-        jsonSecondConfirm: 
-          false
-      });
-      document.getElementById('dropzone').hidden = false;
-    } else if (document.getElementById('noDatabaseFile').checked) {
-      this.setState({
-        jsonSecondConfirm: 
-          true 
-      });
-      document.getElementById('dropzone').hidden = true;
-      //document.getElementById('noDatabaseFile').checked = true;
-    } 
   }
   autoplay = (event) => {
     //const allAudioElements = this.state;
@@ -1553,58 +1535,29 @@ my two mistresses: what a beast am I to slack it!`,*/
     const msTime = Date.now();
     const newText = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "name": "", "webkitRelativePath": "", "size": "", "type": ""};
     newText.mycontent = [valueword];
-    if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
-      const myTextInfo = [];
-      myTextInfo.push(newText);
-      importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-      if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-        document.getElementById('export_all_items').removeAttribute('disabled');
-      } 
-      document.getElementById("valueword").value = '';
-    } else if (importedTexts.dataset.texts === (null||undefined) || importedTexts.dataset.texts.length === 0) {
-      const myTextInfo = [];
-      myTextInfo.push(newText);
-      importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-        document.getElementById('export_all_items').removeAttribute('disabled');
-      } 
-      document.getElementById("valueword").value = '';
-    }
+    const myTextInfo = [];
+    myTextInfo.push(newText);
+    importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
+    document.getElementById("valueword").value = '';
+    
   }
-  addNewText = (event) => {
+  createTextObjectToday = (textobject, textvalue) => {
     const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+    const daysDate = new Date();
+    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+    const msTime = Date.now();
+    textobject = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":textvalue};
+  }
+  useTextInputField = (event) => {
     this.setState({
       value:
         event.target.value
     });
     const importedTexts = document.getElementById('preview');
     if (this.state.value === "") {return;};
-    importedTexts.dataset.textValue = "";
-    importedTexts.dataset.textValue += this.state.value;
-    const daysDate = new Date();
-    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-    const msTime = Date.now();
-    const newText = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":importedTexts.dataset.textValue};
-    if (importedTexts.dataset.texts && importedTexts.dataset.texts.length > 0) {
-      const myTextInfo = [];
-      myTextInfo.push(newText);
-      importedTexts.dataset.texts=JSON.stringify([...JSON.parse(importedTexts.dataset.texts), myTextInfo.map(Object.entries)[0]]);
-      if(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0) {
-        document.getElementById('export_all_items').removeAttribute('disabled');
-      } 
-    } else if (importedTexts.dataset.texts === (null||undefined) || importedTexts.dataset.texts.length === 0) {
-      const myTextInfo = [];
-      myTextInfo.push(newText);
-      importedTexts.dataset.texts = [JSON.stringify(myTextInfo.map(Object.entries))];
-      this.enableEditor();
-      this.handleText();
-      document.getElementById('init-display-on-add').click();
-      
-      //this.displayNewEntries(JSON.parse(importedTexts.dataset.texts));
-    }
-    importedTexts.dataset.prev=JSON.stringify([]);
-   
-
+    const newText = {};
+    this.createTextObjectToday(newText, this.state.value); 
+    this.sendTextFile(new Blob(), newText);
   }
   enableEditor = () => {
     document.getElementById('editentries').removeAttribute('disabled');
@@ -1612,6 +1565,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   enableExport = () => {
     document.getElementById('export_all_items').removeAttribute('disabled');
   }
+
   checkConnectedUser = () => {
     const importedTexts = document.getElementById('preview');
     if(!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {
@@ -1632,21 +1586,16 @@ my two mistresses: what a beast am I to slack it!`,*/
           <input type="checkbox" id="playAllTheWords" value={this.state.preloadOrAutoplay} onChange={this.checkBox} name="playAllTheWords"/>
           <label for="playAllTheWords">Play all the words</label>
         </div>
-        <div>
-          <input type="checkbox" id={`noDatabaseFile`} value={this.state.noDatabaseFile} onChange={this.checkBox} />
-          <label for="subscribeNews">I have no database.json</label>
-        </div>
 
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
-        <iframe id={`input`} type={`application/pdf`} />
         <input type={`submit`} value={`Import all texts and words`} id={`import_texts_words`} className={`btn btn-success btn-block`} />  
         <label id={`labelText`}>
           Your Text:
 
           <br /><textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
         </label>
-        <button id="add-new-text-btn" onClick={this.addNewText} className={`btn btn-success btn-block`}>  
+        <button id="add-new-text-btn" onClick={this.useTextInputField} className={`btn btn-success btn-block`}>  
           Add a new text
         </button>
         <label id={`labelWord`}>
@@ -1663,6 +1612,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
+        <button onClick={this.addNewTextCurrentSession} id="add-new-text-current-session"></button>
 
  
       </form>
@@ -1879,6 +1829,8 @@ class EditEntries extends React.Component {
             }
           }
         }
+        importedTexts.dataset.prev = JSON.stringify([]);
+        importedTexts.dataset.texts = JSON.stringify(texts);
         //removeWord.remove();
       }
     });
