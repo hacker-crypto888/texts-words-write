@@ -1785,21 +1785,21 @@ class EditEntries extends React.Component {
     //this.dispWord('mot');
     //this.displayRemoveWordBtn('mot', 0, 7, textsToDisplay);
     const wordsToDisplay = [];
-    const idx2 = [];
     if (!(textsToDisplay instanceof Array)) {
       textsToDisplay = [];
     }
     textsToDisplay.forEach(function(textItem) {
       textItem.forEach(function(infoItem) {
+
         if (infoItem[0] === 'textId') {
-          const idx2 = textItem.indexOf(infoItem);
+          wordsToDisplay.push(infoItem[1]); 
         } 
 
         if (infoItem[0] === 'mycontent') {
           const idx = textItem.indexOf(infoItem);
           const idx1 = textsToDisplay.indexOf(textItem);
           textItem[idx][1].forEach(function(word) {
-            wordsToDisplay.push([word, idx,idx1,idx2]);
+            wordsToDisplay.push([word, idx,idx1]);
              
           }) // 
         }
@@ -1807,7 +1807,7 @@ class EditEntries extends React.Component {
       });
     });
     //this.dispWords(wordsToDisplay);
-    this.displayWordsBtnsToRmWords(wordsToDisplay, idx2);
+    this.displayWordsBtnsToRmWords(wordsToDisplay);
       
   }
   dispWords = (words) => {
@@ -1819,20 +1819,20 @@ class EditEntries extends React.Component {
     });
   }
   displayWordsBtnsToRmWords = (words) => {
+    const importedTexts = document.getElementById('preview');
     const modalbody = document.getElementById('modal-body');
     if(words instanceof Array && words.length === 0) {return};
-    const textDiv = document.createElement('div');
-    textDiv.classList.add('display-text');
-    modalbody.appendChild(textDiv);
     
+    words.forEach(function(item, rangeitem, allwords){
+      if(typeof item === 'string') { return; }
 
-    words.forEach(function(item){
       const displayDiv = document.createElement('div');
 
       displayDiv.classList.add('display-div');
+      //alert(item[0]+item[1]+item[2]+words[rangeitem-1]);
       displayDiv.classList.add(item[3]);
 
-      modalbody.appendChild(displayDiv);
+      //modalbody.appendChild(displayDiv);
       const displayWord = document.createElement('div');
       displayWord.textContent = item[0];
       displayWord.classList.add('label-word');
@@ -1840,16 +1840,18 @@ class EditEntries extends React.Component {
       const removeWord = document.createElement('div');
 
       displayDiv.appendChild(removeWord);
-      if(!textDiv.hasChildNodes()){
-        textDiv.appendChild(displayDiv);
-      } else if (textDiv.hasChildNodes() && textDiv.childNodes.some(x => x.classList.contains(item[3]))) {
-        textDiv.appendChild(displayDiv);
-      } else if (textDiv.hasChildNodes() && !textDiv.childNodes.some(x => x.classList.contains(item[3]))) {
+      if (typeof words[rangeitem-1] === 'string' && item instanceof Array) {
         const textDiv = document.createElement('div');
         textDiv.classList.add('display-text');
+        textDiv.id = words[rangeitem-1];
+        importedTexts.dataset.textId = words[rangeitem-1];
         modalbody.appendChild(textDiv);
         textDiv.appendChild(displayDiv);
+        //modalbody.removeChild(modalbody.firstChild);
+      } else if (words[rangeitem-1] instanceof Array && item instanceof Array) {
+        document.getElementById(importedTexts.dataset.textId).appendChild(displayDiv);
       }
+        
       removeWord.classList.add("btn");
       removeWord.classList.add("btn-secondary");
       removeWord.classList.add("btn-word");
