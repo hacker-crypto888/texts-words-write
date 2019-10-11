@@ -134,3 +134,7 @@ then there is the repeated function to import new texts in current session that 
 The function to contain texts from previous sessions is to be saved is the previous session as well.
 
 When the connected user adds the database JSON , all texts go to a variable named "prev" in a data set.
+
+so the checkboxes must be checked accordingly to display the right texts at the right moment.
+
+
