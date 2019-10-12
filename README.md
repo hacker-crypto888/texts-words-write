@@ -105,3 +105,5 @@ When I added texts to the next lists, I display the texts in the editor. I use s
 |  | <ul><li></li></ul> | <ul><li></li><li></li></ul> | 
 
 - If I establish a new way of adding new texts, and that all the needed information is added to the list containing all the information about the text at its import, the program is almost completely repaired.
+
+The function that extracts text from a new file works with an internal function and calls an external function.
