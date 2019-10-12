@@ -1102,23 +1102,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     input.value +='h';
     input.click();
   }
-  handleText = (myText) => {
-    const textObject = {};
-    myText.forEach(function(info) {
-      textObject[info[0]] = info[1];
-    });
 
-    console.log(textObject.mycontent);
-    const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-    if(typeof textObject.mycontent === 'string' && textObject.mycontent.length > 0) {
-      const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-        return (element !== (null||undefined||""));
-      });
-      textObject.mycontent = thisIsMyWordList;
-    }
-    this.inputNewText(this.json(textObject));
-    
-  } 
 
 
   checkNullUndefinedList = (list) => {
@@ -1386,7 +1370,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         // e.g ["Text content page 1", "Text content page 2", "Text content page 3" ... ]
           console.log(pagesText);
           const newText = createFileList();
-          addContent(newText, pagesText.joint(' '));
+          addContent(newText, pagesText.join(' '));
           const importedTexts = document.getElementById('preview');
           importedTexts.dataset.texts = newText;
           document.getElementById('text-add').click();
@@ -1533,41 +1517,84 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   }
   addNewWord = (event) => {
-    const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
-    const valueword = document.getElementById("valueword").value;
-    const importedTexts = document.getElementById('preview');
-    if (valueword === "") {return;};
-    importedTexts.dataset.textValue = "";
-    importedTexts.dataset.textValue += valueword;
+    const textId = '';
+    createNewTextId(textId);
+    const today = '';
+    daysDate(today);
 
-    const daysDate = new Date();
-    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-    const msTime = Date.now();
-    const newText = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "name": "", "webkitRelativePath": "", "size": "", "type": ""};
-    newText.mycontent = [valueword];
-    const myTextInfo = [];
-    myTextInfo.push(newText);
-    this.inputNewText(JSON.parse(JSON.stringify(myTextInfo)));
+    function createNewTextId(string) {
+      string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+      return string;
+    }
+
+    function daysDate(string) {
+      const daysDate = new Date();
+      string += (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      return string;
+    }
+      
+    function createList(list) {
+      list = [["textId",textId], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      return list;
+    }
+
+    function addContent(fileinfo, textstring) {
+      fileinfo.push(["mycontent", textstring]);
+    }
+    this.setState({
+      value:
+        event.target.value
+    });
+    const valueword = document.getElementById("valueword").value;
+    if (valueword === "") {return;};
+
+    const importedTexts = document.getElementById('preview');
+    const newText = createList();
+    addContent(newText, valueword);
+    importedTexts.dataset.texts = newText;
+    document.getElementById('text-add').click();
+
     document.getElementById("valueword").value = '';
-    
   }
-  createTextObjectToday = (textobject, textvalue) => {
-    const newTextId = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
-    const daysDate = new Date();
-    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-    const msTime = Date.now();
-    textobject = {"textId":newTextId, "dates":[today], "lastModified": this.state.msTime, "name": "", "webkitRelativePath": "", "size": "", "type": "", "mycontent":textvalue};
-  }
+
   useTextInputField = (event) => {
+    const textId = '';
+    createNewTextId(textId);
+    const today = '';
+    daysDate(today);
+
+    function createNewTextId(string) {
+      string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+      return string;
+    }
+
+    function daysDate(string) {
+      const daysDate = new Date();
+      string += (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      return string;
+    }
+      
+    function createList(list) {
+      list = [["textId",textId], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      return list;
+    }
+
+    function addContent(fileinfo, textstring) {
+      fileinfo.push(["mycontent", textstring]);
+    }
     this.setState({
       value:
         event.target.value
     });
     const importedTexts = document.getElementById('preview');
     if (this.state.value === "") {return;};
-    const newText = {};
-    this.createTextObjectToday(newText, this.state.value); 
-    this.inputNewText(newText);
+    const newText = createList();
+    addContent(newText, this.state.value);
+    const importedTexts = document.getElementById('preview');
+    importedTexts.dataset.texts = newText;
+    document.getElementById('text-add').click();
   }
 
   enableEditor = () => {
@@ -1587,6 +1614,17 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
   textAdd = (event) => {
     const addedTexts = document.getElementById('preview');
+    function handleText(mytext) {
+      mytext.forEach(element => { 
+        if (element[0] === "mycontent") {
+          if(typeof element[1] === 'string' && element[1].length > 0) {
+            element[1].split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+              return (element !== (null||undefined||""));
+            });
+          }
+        }
+      }
+    } 
      
     function textInputField(list) {
       list.push(['input','text input field']);
@@ -1606,7 +1644,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     function pushItem(item) {
       addedTexts.dataset.alltexts = [...addedTexts.dataset.alltexts, item];
     }
-    const newlist = isDroppedFile(addedTexts.dataset.texts);
+    const newlist = handleText(isDroppedFile(addedTexts.dataset.texts));
     pushItem(newlist);
   }
   render() {
