@@ -1213,6 +1213,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     function addContent(fileinfo, textstring) {
       fileinfo.push(["mycontent", textstring]);
     }
+ 
+    function createTextList(text) {
+    }
     const fd = new FormData();
     fd.append('myFile', file);
 
@@ -1237,7 +1240,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       const importedTexts = document.getElementById('preview');
       importedTexts.dataset.texts = result;
       document.getElementById('text-add').click();
-      
     }
 
     const mainFunction = callback => {
@@ -1254,6 +1256,32 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendDocxFile = (file) => {
+    const textId = '';
+    createNewTextId(textId);
+    const today = '';
+    daysDate(today);
+
+    function createNewTextId(string) {
+      string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+      return string;
+    }
+
+    function daysDate(string) {
+      const daysDate = new Date();
+      string += (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      return string;
+    }
+      
+    function createFileList(list) {
+      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      return list;
+    }
+
+    function addContent(fileinfo, textstring) {
+      fileinfo.push(["mycontent", textstring]);
+    }
+ 
     console.time();
     const reader = new FileReader();
     reader.onloadend = function(event) {
@@ -1270,23 +1298,43 @@ my two mistresses: what a beast am I to slack it!`,*/
 
       mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function (resultObject) {
         result2.innerHTML = resultObject.value
+        const newText = createFileList();
+        addContent(newText, resultObject.value);
         const importedTexts = document.getElementById('preview');
-        const newText = {"lastModified": file.lastModified, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":resultObject.value};
-        console.log("newText",newText);
-        const myTextInfo = [];
-        myTextInfo.push(newText);
-        this.importItems(myTextInfo);
+        importedTexts.dataset.texts = newText;
+        document.getElementById('text-add').click();
       })
     };
     reader.readAsArrayBuffer(file);
-    const importedTexts = document.getElementById('preview');
 
   }
 
-  sendOdsFile = (file) => {
-
-  }
   sendPdfFile = (file) => { 
+    const textId = '';
+    createNewTextId(textId);
+    const today = '';
+    daysDate(today);
+
+    function createNewTextId(string) {
+      string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+      return string;
+    }
+
+    function daysDate(string) {
+      const daysDate = new Date();
+      string += (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      return string;
+    }
+      
+    function createFileList(list) {
+      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      return list;
+    }
+
+    function addContent(fileinfo, textstring) {
+      fileinfo.push(["mycontent", textstring]);
+    }
     const reader = new FileReader();
     reader.onload = () => {
       function convertDataURIToBinary(dataURI) {
@@ -1337,13 +1385,11 @@ my two mistresses: what a beast am I to slack it!`,*/
         // Display text of all the pages in the console
         // e.g ["Text content page 1", "Text content page 2", "Text content page 3" ... ]
           console.log(pagesText);
+          const newText = createFileList();
+          addContent(newText, pagesText.joint(' '));
           const importedTexts = document.getElementById('preview');
-          const newText = {"lastModified": file.lastModified, "name": file.name, "webkitRelativePath": file.webkitRelativePath, "size": file.size, "type": file.type, "mycontent":pagesText.join(' ')};
-          console.log(newText);
-          const myTextInfo = [];
-          myTextInfo.push(newText);
-          this.inputNewText(JSON.parse(JSON.stringify(myTextInfo)));
-          this.enableExport();
+          importedTexts.dataset.texts = newText;
+          document.getElementById('text-add').click();
           
 
         });
