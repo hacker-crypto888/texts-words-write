@@ -917,6 +917,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       callback:null,
       addedTexts:null,
       newlist:null,
+      textLength:null,
 
     };
 
@@ -1158,9 +1159,9 @@ my two mistresses: what a beast am I to slack it!`,*/
         return response.text();
       })
       .then(function(textContent) {
-        const textInfo = createFileList();
+        const textInfo = createFileList(); // USE FUNCTION
         console.log(textInfo);
-        addContent(textInfo, textContent); 
+        addContent(textInfo, textContent);  // USE FUNCTION
         console.log(textInfo);
         return textInfo;
       })
@@ -1169,9 +1170,10 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
     }
     const callbackFunction = result => {
-      console.log(result)
+      console.log(result);
       const importedTexts = document.getElementById('preview');
-      importedTexts.dataset.texts = result;
+      importedTexts.dataset.texts = JSON.stringify(result);
+      
       document.getElementById('text-add').click();
     }
 
@@ -1232,9 +1234,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function (resultObject) {
         result2.innerHTML = resultObject.value
         const newText = createFileList();
-        addContent(newText, resultObject.value);
+
         const importedTexts = document.getElementById('preview');
-        importedTexts.dataset.texts = newText;
+        importedTexts.dataset.texts = addContent(newText, resultObject.value);
         document.getElementById('text-add').click();
       })
     };
@@ -1319,9 +1321,9 @@ my two mistresses: what a beast am I to slack it!`,*/
         // e.g ["Text content page 1", "Text content page 2", "Text content page 3" ... ]
           console.log(pagesText);
           const newText = createFileList();
-          addContent(newText, pagesText.join(' '));
+
           const importedTexts = document.getElementById('preview');
-          importedTexts.dataset.texts = newText;
+          importedTexts.dataset.texts = addContent(newText, pagesText.join(' '));
           document.getElementById('text-add').click();
           
 
@@ -1366,41 +1368,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     reader.readAsDataURL(file); 
   }
 
-  textAdd = (event) => {
-    const addedTexts = document.getElementById('preview');
-    function handleText(mytext) {
-      mytext.forEach(element => {  
-        if (element[0] === "mycontent") {
-          if(typeof element[1] === 'string' && element[1].length > 0) {
-            element[1].split(/[\s.?:;!,]+/).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-              return (element !== (null||undefined||""));
-            });
-          }
-        }
-      });
-    } 
-     
-    function textInputField(list) {
-      list.push(['input','text input field']);
-    }
-    function fileIsDropped(list) {
-      list.push(['input','dropzone']);
-    }
-    function isDroppedFile(list){
-      list.forEach(item => {
-        if (item[0] === 'type' && item[1].length === 0) {
-          textInputField(list); 
-        } else if (item[0] === 'type' && item[1].length > 0) {
-          fileIsDropped(list);
-        }
-      });
-    }
-    function pushItem(item) {
-      addedTexts.dataset.alltexts = [...addedTexts.dataset.alltexts, item];
-    }
-    const newlist = handleText(isDroppedFile(addedTexts.dataset.texts));
-    pushItem(newlist);
-  }
 
   dropbox = (files) => {
 		for (let i = 0; i < files.length; i++) {
@@ -1442,7 +1409,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       mytext.forEach(element => {  
         if (element[0] === "mycontent") {
           if(typeof element[1] === 'string' && element[1].length > 0) {
-            element[1].split(/[\s.?:;!,]+/).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+            element[1] = element[1].split(/[\s.?:;!,]+/).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
               return (element !== (null||undefined||""));
             });
           }
@@ -1466,10 +1433,34 @@ my two mistresses: what a beast am I to slack it!`,*/
       });
     }
     function pushItem(item) {
-      addedTexts.dataset.alltexts = [...addedTexts.dataset.alltexts, item];
+      if(addedTexts.dataset.alltexts === undefined) {
+        addedTexts.dataset.alltexts = [];
+      }
+      addedTexts.dataset.alltexts = JSON.stringify([...addedTexts.dataset.alltexts, item]);
     }
-    const newlist = handleText(isDroppedFile(addedTexts.dataset.texts));
+
+    const newlist = JSON.parse(addedTexts.dataset.texts);
+    isDroppedFile(newlist);
+    function addTextSize(size, text) {
+      //const VAR_NAME = 
+      text.forEach(item => {
+        if(item[0] === "size" && item[1].length === 0) {
+          item.splice(1,1);
+          item.push(size);
+        }
+      });
+    }
+    function getTextSize(callback) {
+      newlist.forEach(item => {
+        if(item[0] === "mycontent" && item[1].length > 0) {
+          callback(item[1].length, newlist);
+        }
+      });
+    }
+    getTextSize(addTextSize);
+    handleText(newlist); 
     pushItem(newlist);
+    console.log(JSON.parse(addedTexts.dataset.alltexts));
   }
 
   previewFile = (file) => {
@@ -1606,13 +1597,13 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     this.setState({
       value:
-        event.target.value
+        this.state.value
     });
     const importedTexts = document.getElementById('preview');
-    if (this.state.value === "") {return;};
+    if (this.state.value === "") {return;}
     const newText = createList();
     addContent(newText, this.state.value);
-    importedTexts.dataset.texts = newText;
+    importedTexts.dataset.texts = JSON.stringify(newText);
     document.getElementById('text-add').click();
   }
 
