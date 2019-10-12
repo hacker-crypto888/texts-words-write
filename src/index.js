@@ -95,11 +95,9 @@ class BasicForm extends React.Component {
       document.getElementById('loginModal').focus();
       window.addEventListener("keydown", function(event) {
         document.getElementById('username_modal').focus();
-          
       });
-
-
     };
+    this.logout();
   }
 
   fieldOnblur = () => {
@@ -324,7 +322,6 @@ class BasicForm extends React.Component {
         document.getElementById('login-form-body').focus();
       }
 
-      this.enablePreviousSessions();
       this.showDropzone();
       this.checkStringLength(username);
       document.getElementById('loginbtn').innerHTML = 'log out';
@@ -340,7 +337,6 @@ class BasicForm extends React.Component {
       }
 
       
-      this.newSession();
 
     } else if(document.getElementById('loginbtn').innerHTML === 'log out') {
       importedTexts.dataset.username = ''; 
@@ -350,8 +346,7 @@ class BasicForm extends React.Component {
       document.getElementById('export_all_items').disabled = true;
       document.getElementById('welcome').innerHTML = "";
       document.getElementById('username').value = "";
-      this.preventPreviousSessions();
-      this.newSession();
+      this.logout();
       this.hideDropzone(); 
 
     }
@@ -459,14 +454,12 @@ class BasicForm extends React.Component {
       }
     });
   }
-  newSession = (event) => {
+  logout = (event) => {
     const importedTexts = document.getElementById('preview');
     document.getElementById('items_by_date').focus();
     document.getElementById('loadbydate').disabled = true;
     document.getElementById('editor').focus();
     document.getElementById('editentries').disabled = true;
-    importedTexts.dataset.prev = JSON.stringify([]);
-    importedTexts.dataset.allusers = JSON.stringify([]);
   }
   render() { 
     
@@ -542,26 +535,79 @@ class BasicForm extends React.Component {
        <div>{this.state.checkTarget}</div>
        <div>{this.state.variableErrors}</div>
        <div id={`myAudioFiles`}></div>
-       <div>
-        <p>
-         <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#mysettings" aria-expanded="false" aria-controls="collapseExample">
-                 {`\u2699`} Settings
-         </button>
-        </p>
+       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#RegistrationForm">
+         Launch demo modal
+       </button>
+       
+       <div class="modal fade" id="RegistrationForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 
-        <div className="collapse" id="mysettings">
-         <div className="card card-body">
-           <div>
-             <RegistrationForm />
+         <div class="modal-dialog" role="document">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body">
+               <RegistrationForm />
+             </div>
+             <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <button type="button" class="btn btn-primary">Save changes</button>
+             </div>
            </div>
-           <div id={`myFillInTheDateForm`}>
-             <FillInTheDateForm />
-           </div>
-           <div>
-             <EditEntries />
-           </div>  
          </div>
-        </div>
+       </div>
+       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#FillInTheDateForm">
+         Fill in the date 
+       </button>
+       
+       <div class="modal fade" id="FillInTheDateForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+         <div class="modal-dialog" role="document">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body">
+               <div id={`myFillInTheDateForm`}>
+                 <FillInTheDateForm />
+               </div>
+
+             </div>
+             <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <button type="button" class="btn btn-primary">Save changes</button>
+             </div>
+           </div>
+         </div>
+       </div>
+       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#EditEntries">
+         Edit Entries 
+       </button>
+       
+       <div class="modal fade" id="EditEntries" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body">
+               <EditEntries/>
+             </div>
+             <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <button type="button" class="btn btn-primary">Save changes</button>
+             </div>
+           </div>
+         </div>
        </div>
        </div>
       </form>
@@ -1236,7 +1282,8 @@ my two mistresses: what a beast am I to slack it!`,*/
         const newText = createFileList();
 
         const importedTexts = document.getElementById('preview');
-        importedTexts.dataset.texts = addContent(newText, resultObject.value);
+        addContent(newText, resultObject.value);
+        importedTexts.dataset.texts = JSON.stringify(newText);
         document.getElementById('text-add').click();
       })
     };
@@ -1323,7 +1370,8 @@ my two mistresses: what a beast am I to slack it!`,*/
           const newText = createFileList();
 
           const importedTexts = document.getElementById('preview');
-          importedTexts.dataset.texts = addContent(newText, pagesText.join(' '));
+          addContent(newText, pagesText.join(' '));
+          importedTexts.dataset.texts = JSON.stringify(newText);
           document.getElementById('text-add').click();
           
 
@@ -1417,26 +1465,23 @@ my two mistresses: what a beast am I to slack it!`,*/
       });
     } 
      
-    function textInputField(list) {
-      list.push(['input','text input field']);
-    }
+
     function fileIsDropped(list) {
       list.push(['input','dropzone']);
     }
     function isDroppedFile(list){
       list.forEach(item => {
-        if (item[0] === 'type' && item[1].length === 0) {
-          textInputField(list); 
-        } else if (item[0] === 'type' && item[1].length > 0) {
+        if (item[0] === 'type' && item[1].length > 0) {
           fileIsDropped(list);
         }
       });
     }
+
     function pushItem(item) {
       if(addedTexts.dataset.alltexts === undefined) {
-        addedTexts.dataset.alltexts = [];
+        addedTexts.dataset.alltexts = JSON.stringify([]);
       }
-      addedTexts.dataset.alltexts = JSON.stringify([...addedTexts.dataset.alltexts, item]);
+      addedTexts.dataset.alltexts = JSON.stringify([...JSON.parse(addedTexts.dataset.alltexts), item]);
     }
 
     const newlist = JSON.parse(addedTexts.dataset.texts);
@@ -1474,7 +1519,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         event.target.value
     });
   }
-  handleWordChange = (event) => {
+  handleWordItem = (event) => {
     this.setState({
       valueword:
         event.target.valueword
@@ -1527,7 +1572,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
 
   }
-  addNewWord = (event) => {
+  useWordItemInputField = (event) => {
     const textId = '';
     createNewTextId(textId);
     const today = '';
@@ -1536,6 +1581,10 @@ my two mistresses: what a beast am I to slack it!`,*/
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
       return string;
+    }
+
+    function wordItemInputField(list) {
+      list.push(['input','word item']);
     }
 
     function daysDate(string) {
@@ -1553,20 +1602,16 @@ my two mistresses: what a beast am I to slack it!`,*/
     function addContent(fileinfo, textstring) {
       fileinfo.push(["mycontent", textstring]);
     }
-    this.setState({
-      value:
-        event.target.value
-    });
-    const valueword = document.getElementById("valueword").value;
+    const valueword = document.getElementById('valueword').value;
     if (valueword === "") {return;};
-
+    
     const importedTexts = document.getElementById('preview');
     const newText = createList();
+    wordItemInputField(newText);
     addContent(newText, valueword);
-    importedTexts.dataset.texts = newText;
+    importedTexts.dataset.texts = JSON.stringify(newText);
     document.getElementById('text-add').click();
 
-    document.getElementById("valueword").value = '';
   }
 
   useTextInputField = (event) => {
@@ -1578,6 +1623,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
       return string;
+    }
+    function textInputField(list) {
+      list.push(['input','text input field']);
     }
 
     function daysDate(string) {
@@ -1603,6 +1651,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     if (this.state.value === "") {return;}
     const newText = createList();
     addContent(newText, this.state.value);
+    textInputField(newText);
     importedTexts.dataset.texts = JSON.stringify(newText);
     document.getElementById('text-add').click();
   }
@@ -1652,8 +1701,8 @@ my two mistresses: what a beast am I to slack it!`,*/
 
 
         </label>
-        <br /><input onChange={this.handleWordChange} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
-        <button onClick={this.addNewWord} className={`btn btn-success`}>  
+        <br /><input type="text" onChange={this.handleWordItem} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
+        <button onClick={this.useWordItemInputField} className={`btn btn-success`}>  
           Add a new word 
         </button>
 
@@ -1743,7 +1792,6 @@ class EditEntries extends React.Component {
     }
     document.getElementById('editentries').disabled = true;
     document.getElementById('textsCurrentSession').checked = true;
-    document.getElementById('editor-display').hidden = true;
 
     document.getElementById('exampleModalLong').onshow = (event) => {
     };
@@ -1950,22 +1998,6 @@ class EditEntries extends React.Component {
   render() {
     return (
       <div id="editor">
-        <button type="button" class="btn btn-primary" data-toggle="modal" id="editor-display" data-target="#editor-display-modal">
-          Launch demo modal
-        </button>
-        
-        <div class="modal fade" id="editor-display-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-
-              <div id="modal-body-display" class="modal-body">
-                <div id="modal-body-display" class="modal-body">
                   <div class="display-sessions" >
                     <input type="checkbox"  value="current" id="textsCurrentSession" name="sessionsTexts"/>
                     <label for="textsCurrentSession" id="labelTextsCurrentSession">Texts for current session</label>
@@ -1974,16 +2006,6 @@ class EditEntries extends React.Component {
                     <input type="checkbox" value="previous" id="textsPreviousSessions" name="sessionsTexts" disabled /> 
                     <label for="textsPreviousSessions" class="text-muted" id="labelTextsPreviousSessions">Texts from previous sessions</label>
                   </div>
-                </div>
-              </div>
-
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" >Reload your items</button>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <button type="button" class="btn btn-primary" id="export_all_items" onClick={this.exportItems}>
           Export my items
