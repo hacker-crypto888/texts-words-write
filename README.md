@@ -87,3 +87,10 @@ All the actions taken by the user graphically happen also in the arrays of the p
 | the user imported previous sessions | <ul><li>[x] import texts from all users</li><li>[x] separate texts from other users from texts from user that is currently logged in</li></ul> | 
 | the user dropped a file | <ul><li>[x] file is converted into a blob (object represents a file-like object of immutable, raw data that can be read as text or binary data)</li><li>[x] filename and icon is displayed under the dropzone</li><li>[x] text in English or French is extracted from the blob</li><li>[x] text from the file and information about the file are put together with other texts</li><li>[x] divs are added in the modal body of the editor to remove the texts and the words</li><li>[x] the words and the buttons to remove them are displayed</li></ul> | 
 | the user started a new game | <ul><li>[x] the audio players are displayed</li></ul> | 
+
+## What works and what doesn't
+
+I extract the text from files from the inside of the functions, by putting a fetch, or/and a promise or a callback.
+
+I did not implement any flag system. Perhaps I should do so, because that would prevent me from using different text lists, that would be faster to extract the right words from the right texts at the right moment in parts of my application that require to distinguish between previous and current sessions of texts.
+
