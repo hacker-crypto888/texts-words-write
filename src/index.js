@@ -1090,6 +1090,103 @@ my two mistresses: what a beast am I to slack it!`,*/
     const msTime = Date.now();
   }
 
+
+  initializeWordList = () => {
+
+    this.enableExport();
+    this.enableEditor();
+  }
+  inputNewText  = (text) => {
+    const input = document.getElementById('add-new-text-current-session');
+    input.dataset.newtext =text;
+    input.value +='h';
+    input.click();
+  }
+  handleText = (myText) => {
+    const textObject = {};
+    myText.forEach(function(info) {
+      textObject[info[0]] = info[1];
+    });
+
+    console.log(textObject.mycontent);
+    const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
+    if(typeof textObject.mycontent === 'string' && textObject.mycontent.length > 0) {
+      const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+        return (element !== (null||undefined||""));
+      });
+      textObject.mycontent = thisIsMyWordList;
+    }
+    this.inputNewText(this.json(textObject));
+    
+  } 
+
+
+  checkNullUndefinedList = (list) => {
+    if (list === (null||undefined)) { list = [];}
+  }
+  appendNewText = (text, list) => {
+    list.push(text); 
+  }
+
+  displaySettingsModal = (event) => {
+    document.getElementById('editor-display').click();
+      
+  }
+
+
+
+  sendFile = (file) => {
+    const textId = '';
+    createNewTextId(textId);
+    const today = '';
+    daysDate(today);
+
+    function createNewTextId(string) {
+      string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+      return string;
+    }
+
+    function daysDate(string) {
+      const daysDate = new Date();
+      string += (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      return string;
+    }
+      
+    function createFileList(list) {
+      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      return list;
+    }
+
+    function addContent(fileinfo, textstring) {
+      fileinfo.push(["mycontent", textstring]);
+    }
+    const importedTexts = document.getElementById('preview');
+    const fd = new FormData();
+    fd.append('myFile', file);
+    fetch(URL.createObjectURL(file))
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myBlub) {
+        console.log(myBlub); //database.json
+        const myBlob = [...Object.values(myBlub.items)];
+        console.log(myBlob); //database.json
+        console.log(file.name);
+        return myBlob;
+      })
+      .then(thirdres => {
+        const myItems = thirdres.map(obj => obj);
+        const thisIsMyTextList = thirdres.map(obj => obj);
+        this.setState({myItems});
+
+        this.checkConnectedUser();
+        this.textsFromOtherUsers(thisIsMyTextList);
+
+
+      })
+  }
+
   sendTextFile = (file) => {
     const textId = '';
     createNewTextId(textId);
@@ -1155,107 +1252,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     console.log(mainFunction);
     this.initializeWordList();
   }
-  initializeWordList = () => {
 
-    this.enableExport();
-    this.enableEditor();
-  }
-  inputNewText  = (text) => {
-    const input = document.getElementById('add-new-text-current-session');
-    input.dataset.newtext =text;
-    input.value +='h';
-    input.click();
-  }
-  handleText = (myText) => {
-    const textObject = {};
-    myText.forEach(function(info) {
-      textObject[info[0]] = info[1];
-    });
-
-    console.log(textObject.mycontent);
-    const x = (list) => list.filter((v,i) => list.indexOf(v) === i);
-    if(typeof textObject.mycontent === 'string' && textObject.mycontent.length > 0) {
-      const thisIsMyWordList = x(textObject.mycontent.split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-        return (element !== (null||undefined||""));
-      });
-      textObject.mycontent = thisIsMyWordList;
-    }
-    this.inputNewText(this.json(textObject));
-    
-  } 
-
-
-  checkNullUndefinedList = (list) => {
-    if (list === (null||undefined)) { list = [];}
-  }
-  appendNewText = (text, list) => {
-    list.push(text); 
-  }
-
-  displaySettingsModal = (event) => {
-    document.getElementById('editor-display').click();
-      
-  }
-
-
-
-  sendFile = (file) => {
-    const importedTexts = document.getElementById('preview');
-    const fd = new FormData();
-    fd.append('myFile', file);
-    fetch(URL.createObjectURL(file))
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(myBlub) {
-        console.log(myBlub); //database.json
-        const myBlob = [...Object.values(myBlub.items)];
-        console.log(myBlob); //database.json
-        console.log(file.name);
-        return myBlob;
-      })
-      .then(thirdres => {
-        const myItems = thirdres.map(obj => obj);
-        const thisIsMyTextList = thirdres.map(obj => obj);
-        this.setState({myItems});
-
-        this.checkConnectedUser();
-        this.textsFromOtherUsers(thisIsMyTextList);
-        this.importedJson();
-
-
-      })
-  }
-  importedJson = () => {
-        const importedTexts = document.getElementById('preview');
-        importedTexts.dataset.databaseJson = true;
-  }
-  textsFromOtherUsers = (myItems) => {
-    const importedTexts = document.getElementById('preview');
-    myItems.forEach(function(item){
-      if(item.some(x => x[0] === "users" && x[1] instanceof Array && x[1].includes(importedTexts.dataset.username))) {
-        const idx = myItems.indexOf(item);
-        if(idx !== -1) {
-          myItems.splice(idx, 1);
-        }
-      }    
-    });
-    if(myItems instanceof Array && myItems.length === 0) {return;}
-    importedTexts.dataset.allusers = JSON.stringify(myItems);
-  }
-  textsConnectedUser = (myItems) => {
-    const importedTexts = document.getElementById('preview');
-    myItems.forEach(function(item){
-      if(item.some(x => x[0] === "users" && x[1] instanceof Array && !x[1].includes(importedTexts.dataset.username))||!item.some(x => x[0] === "users")) {
-        const idx = myItems.indexOf(item);
-        if(idx !== -1) {
-          myItems.splice(idx, 1);
-        }
-      }    
-    });
-    if(myItems instanceof Array && myItems.length === 0) {return;}
-    this.inputNewText(myItems);
-  }
   sendDocxFile = (file) => {
     console.time();
     const reader = new FileReader();
@@ -1560,13 +1557,10 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
       });
     }
-    function pushItemToList(item, list) {
-      list.push(item);
-    }
     function pushItem(item) {
       addedTexts.dataset.alltexts = [...addedTexts.dataset.alltexts, item];
     }
-    const newlist = pushItemToList(isDroppedFile(addedTexts.dataset.texts), []);
+    const newlist = isDroppedFile(addedTexts.dataset.texts);
     pushItem(newlist);
   }
   render() {
