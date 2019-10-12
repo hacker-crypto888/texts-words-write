@@ -321,8 +321,6 @@ class BasicForm extends React.Component {
       if (event.target.id === "loginbtnmodal") {
         document.body.focus();
         document.getElementById('loginModal').hidden = true;
-        //alert(username_modal, "login from modal");
-        //document.getElementById('close-editor').click();
         document.getElementById('login-form-body').focus();
       }
 
@@ -359,52 +357,7 @@ class BasicForm extends React.Component {
     }
     
   }
-  inputNewText = (text) => {
-    const input = document.getElementById('add-new-text-current-session');
-    input.dataset.newtext =text;
-    input.value +='h';
-    this.addNewTextCurrentSession(text);
-  }
-  addNewTextCurrentSession = (text) => {
-    //to add a new text to the current, do:
-    //input.dataset.newtext =
-    //input.click
-    //
-    const newText = document.getElementById('add-new-text-current-session');
-    //name of the variable that contains the current session of texts = currentSession
-    const currentSession = [...JSON.parse(newText.dataset.currentsession)]; //1031 currentSession
-    console.log(currentSession);
-    this.appendNewText(text, currentSession); 
-    newText.dataset.currentsession = JSON.stringify(currentSession); //save
-    this.displaySessions(currentSession); 
-  }
-  displaySessions = (texts) => {
-    this.displayNewEntries([...texts]);
-    const modalbody = document.getElementById('modal-body-display');
-    const newText = document.getElementById('add-new-text-current-session');
-    modalbody.focus();
-    const checkPrev = document.getElementById('textsPreviousSessions');
-    const checkCurrent = document.getElementById('textsCurrentSession');
-
-    if (checkPrev.checked) {
-      //this.displayNewEntries([...JSON.parse(importedTexts.dataset.prev)]);
-    }
-
-    if (checkCurrent.checked) {
-
-    }
-
-    if (checkPrev.checked && checkCurrent.checked) {
-      //this.displayNewEntries([...texts, JSON.parse(importedTexts.dataset.prev)]);
-    }
-    if (!checkPrev.checked && !checkCurrent.checked) {
-      //this.displayNewEntries([]);
-    }
-  }
-  displayNewEntries = (textsToImport) => {
-    this.displayWordsAndTexts(textsToImport);
-  }
-  displayWordsAndTexts = (textsToDisplay) => { 
+  displayNewEntries = (textsToDisplay) => { 
     const idx = this.state;
     const modalbody = document.getElementById('modal-body');
 
@@ -429,15 +382,11 @@ class BasicForm extends React.Component {
           const idx1 = textsToDisplay.indexOf(textItem);
           textItem[idx][1].forEach(function(word) {
             wordsToDisplay.push([word, idx,idx1]); //textsToDisplay[word[2]][word[1]][1]
-             
           }) // 
         }
-        //alert(wordsToDisplay);
       });
     });
-    //this.dispWords(wordsToDisplay);
     this.displayWordsBtnsToRmWords(wordsToDisplay, textsToDisplay);
-      
   }
 
 
@@ -1417,6 +1366,42 @@ my two mistresses: what a beast am I to slack it!`,*/
     reader.readAsDataURL(file); 
   }
 
+  textAdd = (event) => {
+    const addedTexts = document.getElementById('preview');
+    function handleText(mytext) {
+      mytext.forEach(element => {  
+        if (element[0] === "mycontent") {
+          if(typeof element[1] === 'string' && element[1].length > 0) {
+            element[1].split(/[\s.?:;!,]+/).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+              return (element !== (null||undefined||""));
+            });
+          }
+        }
+      });
+    } 
+     
+    function textInputField(list) {
+      list.push(['input','text input field']);
+    }
+    function fileIsDropped(list) {
+      list.push(['input','dropzone']);
+    }
+    function isDroppedFile(list){
+      list.forEach(item => {
+        if (item[0] === 'type' && item[1].length === 0) {
+          textInputField(list); 
+        } else if (item[0] === 'type' && item[1].length > 0) {
+          fileIsDropped(list);
+        }
+      });
+    }
+    function pushItem(item) {
+      addedTexts.dataset.alltexts = [...addedTexts.dataset.alltexts, item];
+    }
+    const newlist = handleText(isDroppedFile(addedTexts.dataset.texts));
+    pushItem(newlist);
+  }
+
   dropbox = (files) => {
 		for (let i = 0; i < files.length; i++) {
 			const file = files[i];
@@ -1450,6 +1435,41 @@ my two mistresses: what a beast am I to slack it!`,*/
 			reader.readAsDataURL(file);
 
 		}
+  }
+  textAdd = (event) => {
+    const addedTexts = document.getElementById('preview');
+    function handleText(mytext) {
+      mytext.forEach(element => {  
+        if (element[0] === "mycontent") {
+          if(typeof element[1] === 'string' && element[1].length > 0) {
+            element[1].split(/[\s.?:;!,]+/).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
+              return (element !== (null||undefined||""));
+            });
+          }
+        }
+      });
+    } 
+     
+    function textInputField(list) {
+      list.push(['input','text input field']);
+    }
+    function fileIsDropped(list) {
+      list.push(['input','dropzone']);
+    }
+    function isDroppedFile(list){
+      list.forEach(item => {
+        if (item[0] === 'type' && item[1].length === 0) {
+          textInputField(list); 
+        } else if (item[0] === 'type' && item[1].length > 0) {
+          fileIsDropped(list);
+        }
+      });
+    }
+    function pushItem(item) {
+      addedTexts.dataset.alltexts = [...addedTexts.dataset.alltexts, item];
+    }
+    const newlist = handleText(isDroppedFile(addedTexts.dataset.texts));
+    pushItem(newlist);
   }
 
   previewFile = (file) => {
@@ -1592,7 +1612,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     if (this.state.value === "") {return;};
     const newText = createList();
     addContent(newText, this.state.value);
-    const importedTexts = document.getElementById('preview');
     importedTexts.dataset.texts = newText;
     document.getElementById('text-add').click();
   }
@@ -1612,41 +1631,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       
     }
   }
-  textAdd = (event) => {
-    const addedTexts = document.getElementById('preview');
-    function handleText(mytext) {
-      mytext.forEach(element => { 
-        if (element[0] === "mycontent") {
-          if(typeof element[1] === 'string' && element[1].length > 0) {
-            element[1].split(/[\s.?:;!,]+/)).map(function(y){ return y.replace(/[\W_]+/g," ") }).map(function(x){ return x.toLowerCase() }).filter(function( element ) {
-              return (element !== (null||undefined||""));
-            });
-          }
-        }
-      }
-    } 
-     
-    function textInputField(list) {
-      list.push(['input','text input field']);
-    }
-    function fileIsDropped(list) {
-      list.push(['input','dropzone']);
-    }
-    function isDroppedFile(list){
-      list.forEach(item => {
-        if (item[0] === 'type' && item[1].length === 0) {
-          textInputField(list); 
-        } else if (item[0] === 'type' && item[1].length > 0) {
-          fileIsDropped(list);
-        }
-      });
-    }
-    function pushItem(item) {
-      addedTexts.dataset.alltexts = [...addedTexts.dataset.alltexts, item];
-    }
-    const newlist = handleText(isDroppedFile(addedTexts.dataset.texts));
-    pushItem(newlist);
-  }
+
   render() {
 
 
@@ -1662,13 +1647,13 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
         <div id={`preview`}></div>
-        <input type={`submit`} value={`Import all texts and words`} id={`import_texts_words`} className={`btn btn-success btn-block`} />  
+        <input type={`submit`} value={`Import all texts and words`} id={`import_texts_words`} className={`btn btn-success`} />  
         <label id={`labelText`}>
           Your Text:
 
           <br /><textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
         </label>
-        <button id="add-new-text-btn" onClick={this.useTextInputField} className={`btn btn-success btn-block`}>  
+        <button id="add-new-text-btn" onClick={this.useTextInputField} className={`btn btn-success`}>  
           Add a new text
         </button>
         <label id={`labelWord`}>
@@ -1677,7 +1662,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
         </label>
         <br /><input onChange={this.handleWordChange} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
-        <button onClick={this.addNewWord} className={`btn btn-success btn-block`}>  
+        <button onClick={this.addNewWord} className={`btn btn-success`}>  
           Add a new word 
         </button>
 
@@ -1771,7 +1756,6 @@ class EditEntries extends React.Component {
 
     document.getElementById('exampleModalLong').onshow = (event) => {
     };
-    document.getElementById('init-display-on-add').hidden = true;
   }
 
   checkTextContent = (thisIsMyTextList, importText) => {
@@ -1975,7 +1959,6 @@ class EditEntries extends React.Component {
   render() {
     return (
       <div id="editor">
-        <button type="button" onClick={this.displaySessions} id="init-display-on-add" />
         <button type="button" class="btn btn-primary" data-toggle="modal" id="editor-display" data-target="#editor-display-modal">
           Launch demo modal
         </button>

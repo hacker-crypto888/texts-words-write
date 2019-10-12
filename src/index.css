@@ -44,7 +44,7 @@ padding: 5px;
 border: solid #4086FE 2px;
 margin-top: 1em;
 padding: 5px;
-
+width:70%;
 }
 #dropzoneJson {
   width: 250px;
@@ -87,4 +87,7 @@ padding: 5px;
 }
 .display-text {
   border:1px black solid;
+}
+textarea {
+  width:60%;
 }
