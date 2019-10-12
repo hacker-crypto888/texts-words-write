@@ -78,21 +78,37 @@ The text lists constitute the app's advanced parameters, because it contains all
 
 ## Background tasks
 
-All the actions taken by the user graphically happen also in the arrays of the program. For example, the item that is removed in the editor is also removed from the array. Here is the table to display what happens each time the user takes action more precisely.
+All the actions taken by the user graphically happen also in the arrays of the program. For example, the item that is removed in the editor is also removed from the array. Here is the table to display what happens each time the user takes action more precisely. 
+The table gives information about what event calls what function, what function calls what function. Which function uses a callback or a promise and which function. 
 
-| User actions | Task done by the program | 
+| Graphical events (user actions) | Program response | 
 |---|---|
 | login | <ul><li>[x] the username is displayed at the top of the page</li></ul> | 
 | logout | <ul><li>[x] all texts are kept in a single list so that an other user can log in</li></ul> |
-| the user imported previous sessions | <ul><li>[x] import texts from all users</li><li>[x] separate texts from other users from texts from user that is currently logged in</li></ul> | 
+| the user imported previous sessions | <ul><li>the function to handle dropped files is called, and calls the function to handle JSON</li><li>[x] the function to handle JSON calls the function to parse a list containing information about a text</li><li>the function that parses a list calls a lto of function that add as much as information about this list so that it is handled by the program in the best way (information about the buttons that will be created, number of buttons, everything is in the list)</li></ul> | 
 | the user dropped a file | <ul><li>[x] file is converted into a blob (object represents a file-like object of immutable, raw data that can be read as text or binary data)</li><li>[x] filename and icon is displayed under the dropzone</li><li>[x] text in English or French is extracted from the blob</li><li>[x] text from the file and information about the file are put together with other texts</li><li>[x] divs are added in the modal body of the editor to remove the texts and the words</li><li>[x] the words and the buttons to remove them are displayed</li></ul> | 
 | the user started a new game | <ul><li>[x] the audio players are displayed</li></ul> | 
+| the user clicks on the "Edit entries" and the editor modal opens | |
 
 ## What works and what doesn't
 
-I extract the text from files from the inside of the functions, by putting a fetch, or/and a promise or a callback. That works.
+I did not implement any flag system with my text lists. Perhaps I should do so, because that would be faster to display the right words from the right texts from current and previous sessions of texts in the editor.
 
-My text list system is currently broken. 
+I extract text from PDF, DOC, and TXT the same way, although I use different callbacks or promises for each.
 
-I did not implement any flag system with my text lists. Perhaps I should do so, because that would be faster to extract the right words from the right texts at the right moment in parts of my application that require to distinguish between previous and current sessions of texts.
+From the moment the text was extract text from the file (or text from the text input field), I add the text to the text lists.
+I use several functions.
 
+| column 1 | type and number of objects I create ("const") | type of the item I add to the list ("push") (a[1] = "") | 
+|---|---|---|
+| new text | <ul><li>1 List</li><li>JSON Array that I parse</li></ul> |  | 
+| new information about that text | <ul><li>1 key value pair</li></ul> | <ul><li>1 key value pair</li><li>string or array</li></ul> | 
+
+When I added texts to the next lists, I display the texts in the editor. I use several functions.
+
+| column 1 | type and number of objects I create ("const") | type of the item I add to the list ("push") (a[1] = "") | 
+|---|---|---|
+| new text | <ul><li></li><li></li></ul> |  | 
+|  | <ul><li></li></ul> | <ul><li></li><li></li></ul> | 
+
+- If I establish a new way of adding new texts, and that all the needed information is added to the list containing all the information about the text at its import, the program is almost completely repaired.
