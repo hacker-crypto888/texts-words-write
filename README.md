@@ -92,5 +92,5 @@ All the actions taken by the user graphically happen also in the arrays of the p
 
 I extract the text from files from the inside of the functions, by putting a fetch, or/and a promise or a callback.
 
-I did not implement any flag system. Perhaps I should do so, because that would prevent me from using different text lists, that would be faster to extract the right words from the right texts at the right moment in parts of my application that require to distinguish between previous and current sessions of texts.
+I did not implement any flag system. Perhaps I should do so, because that would be faster to extract the right words from the right texts at the right moment in parts of my application that require to distinguish between previous and current sessions of texts.
 
