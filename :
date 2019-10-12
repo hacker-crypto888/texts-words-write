@@ -356,8 +356,6 @@ class BasicForm extends React.Component {
     document.getElementById('items_by_date').focus();
     document.getElementById('loadbydate').disabled = true;
     document.getElementById('editor').focus();
-
-
   }
   render() { 
     
@@ -497,12 +495,12 @@ class BasicForm extends React.Component {
                  <span aria-hidden="true">&times;</span>
                </button>
              </div>
-             <div id="body-edit-entries" class="modal-body">
+             <div class="modal-body">
                <EditEntries/>
              </div>
-             <div id="footer-edit-entries" class="modal-footer">
+             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-primary" id="edit-entries-save-changes">Save changes</button>
+               <button type="button" class="btn btn-primary">Save changes</button>
              </div>
            </div>
          </div>
@@ -915,7 +913,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       info:null,
       displayDiv:null,
       mydisplayoptions:null,
-      
+
     };
 
   }
@@ -932,7 +930,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     const thisIsMyWordList = [];
     const thisIsMyTextList = [];
     const allMyTexts = []; 
-
   }
 
   handleNameChange = event => {
@@ -1482,8 +1479,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   displayWordsBtnsToRmWords = (words, texts) => {
-
-
+    console.log(texts);
     const importedTexts = document.getElementById('preview');
     function ifUserConnected() {
 
@@ -1523,7 +1519,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         modalbody.appendChild(displayDiv); //1855
       }
 
-
  
       removeWord.classList.add("btn");
       removeWord.classList.add("btn-secondary");
@@ -1532,55 +1527,53 @@ my two mistresses: what a beast am I to slack it!`,*/
       removeWord.textContent = "Remove this word";
       removeWord.onclick = (event) => {
         const importedTexts = document.getElementById('preview');
-        importedTexts.dataset.newtexts = JSON.parse(importedTexts.dataset.alltexts);
+        function findRange(callback) {
+          texts.forEach(textitem => {
+            textitem.forEach(item => {
+              if(item === "textId"){
+                if (item[1] === importedTexts.dataset.textId) {
+                  const idx = texts.indexOf(textitem);
+                  if (idx !== -1) {
+                    callback(idx);
+                  }
+                }
+              }
+            });
+          });
+        }
+        //save text
+        function saveText(idx) {
+          importedTexts.dataset.newtext = JSON.stringify(texts);
+        }
+        findRange(saveText);
+        function textlist() {
+          return importedTexts.dataset.newtext;
+        } 
+        function removeText(idx) {
+          texts.splice(idx, 1);
+        }
+        function removeItem(idx) {
+          texts[idx][item[1]][1].splice(idx,1);
+
+        } 
+
         if(removeWord.parentElement) {
           const idx = Array.prototype.indexOf.call(removeWord.parentNode.parentNode.childNodes, removeWord.parentNode);
           if (idx !== -1) {
-            function removeText(idx, texts) {
-              texts.splice(idx, 1);
-            }
-
-            function removeItem(idx, texts) {
-              texts[idx][item[1]][1].splice(idx,1);
-            } 
-
-            function findRange(callback) {
-              texts.forEach(textitem => {
-                textitem.forEach(item => {
-                  if(item === "textId"){
-                    if (item[1] === importedTexts.dataset.textId) {
-                      const idx = texts.indexOf(textitem);
-                      if (idx !== -1) {
-                        callback(idx, texts);
-                      }
-                    }
-                  }
-                });
-              });
-            }
-
-
-
-
-
             if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
               removeWord.parentNode.parentNode.remove();
-
               findRange(removeText);
+
+
+
             } else {
               removeWord.parentNode.parentNode.childNodes[idx].remove();
-
+              //find range of the text that has this id
               findRange(removeItem);
+
             }
           }
         }
-        document.getElementById('edit-entries-save-changes').onclick = (event) => {
-          document.getElementById('footer-edit-entries').focus();
-          const importedTexts = document.getElementById('preview');
-          console.log(texts);
-        }
-
-
       }
     });
   }
