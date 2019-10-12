@@ -1536,12 +1536,19 @@ my two mistresses: what a beast am I to slack it!`,*/
         if(removeWord.parentElement) {
           const idx = Array.prototype.indexOf.call(removeWord.parentNode.parentNode.childNodes, removeWord.parentNode);
           if (idx !== -1) {
-            function removeText(idx, texts) {
-              texts.splice(idx, 1);
+            function removeText(idx1, texts) {
+              texts.splice(idx1, 1);
+              return texts;
             }
 
-            function removeItem(idx, texts) {
-              texts[idx][item[1]][1].splice(idx,1);
+            function removeItem(idx1, texts) {
+              texts[idx].forEach(item => {
+                if(item === "mycontent"){
+                  texts[idx1][texts.indexOf(item)].splice(idx, 1);
+                }
+              });
+              return texts;
+
             } 
 
             function findRange(callback) {
@@ -1552,9 +1559,12 @@ my two mistresses: what a beast am I to slack it!`,*/
                       const idx = texts.indexOf(textitem);
                       if (idx !== -1) {
                         callback(idx, texts);
+
                       }
                     }
                   }
+
+
                 });
               });
             }
@@ -1566,18 +1576,17 @@ my two mistresses: what a beast am I to slack it!`,*/
             if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
               removeWord.parentNode.parentNode.remove();
 
-              findRange(removeText);
+              console.log(findRange(removeText));
             } else {
               removeWord.parentNode.parentNode.childNodes[idx].remove();
 
-              findRange(removeItem);
+              console.log(findRange(removeItem));
             }
           }
         }
         document.getElementById('edit-entries-save-changes').onclick = (event) => {
           document.getElementById('footer-edit-entries').focus();
           const importedTexts = document.getElementById('preview');
-          console.log(texts);
         }
 
 
@@ -1694,7 +1703,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const today = daysDate();
 
     function createNewTextId(string) {
-      string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+      string = Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
       return string;
     }
     function textInputField(list) {
@@ -1703,7 +1712,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     function daysDate(string) {
       const daysDate = new Date();
-      string += (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      string = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
       const msTime = Date.now();
       return string;
     }
