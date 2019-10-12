@@ -966,6 +966,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       asynchronousFunction:null,
       result:null,
       callback:null,
+      addedTexts:null,
+      newlist:null,
 
     };
 
@@ -1135,6 +1137,10 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     const callbackFunction = result => {
       console.log(result)
+      const importedTexts = document.getElementById('preview');
+      importedTexts.dataset.texts = result;
+      document.getElementById('text-add').click();
+      
     }
 
     const mainFunction = callback => {
@@ -1536,6 +1542,33 @@ my two mistresses: what a beast am I to slack it!`,*/
       
     }
   }
+  textAdd = (event) => {
+    const addedTexts = document.getElementById('preview');
+     
+    function textInputField(list) {
+      list.push(['input','text input field']);
+    }
+    function fileIsDropped(list) {
+      list.push(['input','dropzone']);
+    }
+    function isDroppedFile(list){
+      list.forEach(item => {
+        if (item[0] === 'type' && item[1].length === 0) {
+          textInputField(list); 
+        } else if (item[0] === 'type' && item[1].length > 0) {
+          fileIsDropped(list);
+        }
+      });
+    }
+    function pushItemToList(item, list) {
+      list.push(item);
+    }
+    function pushItem(item) {
+      addedTexts.dataset.alltexts = [...addedTexts.dataset.alltexts, item];
+    }
+    const newlist = pushItemToList(isDroppedFile(addedTexts.dataset.texts), []);
+    pushItem(newlist);
+  }
   render() {
 
 
@@ -1574,7 +1607,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
-        <input type="button" onClick={this.addNewTextCurrentSession} value="" id="add-new-text-current-session"/>
+        <input type="button" onClick={this.textAdd} hidden value="" id="text-add"/>
 
  
       </form>
