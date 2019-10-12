@@ -83,27 +83,3 @@ The table gives information about what event calls what function, what function 
 | the user started a new game | <ul><li>[x] the audio players are displayed</li></ul> | 
 | the user clicks on the "Edit entries" and the editor modal opens | - |
 
-## What works and what doesn't
-
-I did not implement any flag system with my text lists. Perhaps I should do so, because that would be faster to display the right words from the right texts from current and previous sessions of texts in the editor.
-
-I extract text from PDF, DOC, and TXT the same way, although I use different callbacks or promises for each.
-
-From the moment the text was extract text from the file (or text from the text input field), I add the text to the text lists.
-I use several functions.
-
-| column 1 | type and number of objects I create | type of the item I add to the list | 
-|---|---|---|
-| new text | <ul><li>1 List</li><li>JSON Array that I parse</li></ul> |  | 
-| new information about that text | <ul><li>1 key value pair</li></ul> | <ul><li>1 key value pair</li><li>string or array</li></ul> | 
-
-When I added texts to the next lists, I display the texts in the editor. I use several functions.
-
-| column 1 | type and number of objects I create | type of the item I add to the list | 
-|---|---|---|
-| new text | <ul><li></li><li></li></ul> |  | 
-|  | <ul><li></li></ul> | <ul><li></li><li></li></ul> | 
-
-- If I establish a new way of adding new texts, and that all the needed information is added to the list containing all the information about the text at its import, the program is almost completely repaired.
-
-The function that extracts text from a new file works with an internal function and calls an external function.
