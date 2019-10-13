@@ -90,12 +90,12 @@ The name of a user must be added to the text item when exporting the JSON file.
 The user can only use the app if connected.
 
 ### Outline of the variables
-__PREVIOUS SESSIONS__
-(JSON) ALL USERS' TEXT ITEMS
+__PREVIOUS SESSIONS__  
+(JSON) ALL USERS' TEXT ITEMS  
 
-(JSON) CONNECTED USER TEXT ITEMS
-__CURRENT SESSION__
-(INPUT TEXT FIELD/DROP ZONE) CONNECTED USER TEXT ITEMS
+(JSON) CONNECTED USER TEXT ITEMS  
+__CURRENT SESSION__  
+(INPUT TEXT FIELD/DROP ZONE) CONNECTED USER TEXT ITEMS  
 
 ### Outline of the functions
 In each function that extracts text
@@ -121,8 +121,8 @@ If the user is working with both previous sessions of texts and texts added in t
 
 At JSON export
 - group all items
-- TEST FUNCTION :  if the text item has no "users" property, it must be added, and its value must be filled in with the currently connected user's name
-- TEST FUNCTION :  if the text item has no "session of text" property, it must be added, and its value must be filled in with "previous"
+- TEST FUNCTION:  if the text item has no "users" property, it must be added, and its value must be filled in with the currently connected user's name
+- TEST FUNCTION:  if the text item has no "session of text" property, it must be added, and its value must be filled in with "previous"
  
-Note : it would be nice to be able to login/logout normally (there were problems once)
+Note: it would be nice to be able to login/logout normally (there were problems once)
 that's all
