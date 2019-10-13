@@ -83,32 +83,21 @@ The table gives information about what event calls what function, what function 
 | the user started a new game | <ul><li>[x] the audio players are displayed</li></ul> | 
 | the user clicks on the "Edit entries" and the editor modal opens | - |
 
-## What would be nice 
+## Outline of the functions to import and export text items 
 
 Now that the function to save changes works, I will now focus my efforts in handling the export and import and export of my text items correctly.
 The name of a user must be added to the text item when exporting the JSON file. 
 The user can only use the app if connected.
 
-### The current and previous sessions of texts
-
-------------------------------------------
-PREVIOUS SESSIONS
---------
+### Outline of the variables
+__PREVIOUS SESSIONS__
 (JSON) ALL USERS' TEXT ITEMS
---------
 
---------       
 (JSON) CONNECTED USER TEXT ITEMS
---------
-------------------------------------------
-CURRENT SESSION                        ---
---------                               ---
+__CURRENT SESSION__
 (INPUT TEXT FIELD/DROP ZONE) CONNECTED USER TEXT ITEMS
---------
-------------------------------------------
 
-#### The important functions of the current and previous sessions of texts
-
+### Outline of the functions
 In each function that extracts text
 - add a "users" property to the text item, and add the user's name 
 
@@ -135,6 +124,5 @@ At JSON export
 - TEST FUNCTION :  if the text item has no "users" property, it must be added, and its value must be filled in with the currently connected user's name
 - TEST FUNCTION :  if the text item has no "session of text" property, it must be added, and its value must be filled in with "previous"
  
-
-(to be able to login/logout normally (there were problems once))
+Note : it would be nice to be able to login/logout normally (there were problems once)
 that's all
