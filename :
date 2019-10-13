@@ -1578,15 +1578,12 @@ my two mistresses: what a beast am I to slack it!`,*/
 
 
             if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
-              importedTexts.dataset.textId = removeWord.parentNode.parentNode.id; 
               removeWord.parentNode.parentNode.remove();
 
               findRange(removeText);
 
             } else {
-              importedTexts.dataset.textId = removeWord.parentNode.parentNode.id; 
               removeWord.parentNode.parentNode.childNodes[idx].remove();
-
 
               findRange(removeItem);
 
