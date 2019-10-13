@@ -123,6 +123,10 @@ At JSON export
 - group all items
 - TEST FUNCTION:  if the text item has no "users" property, it must be added, and its value must be filled in with the currently connected user's name
 - TEST FUNCTION:  if the text item has no "session of text" property, it must be added, and its value must be filled in with "previous"
+- TEST FUNCTION:  if the text item has no "dates" property, it must be added, and its value must be filled in with the day's date
  
 Note: it would be nice to be able to login/logout normally (there were problems once)
-that's all
+
+- choose when to add the day's date to a text item from a previous session
+- repair display of audio files: repair the variable it takes in entry, repair the function to display audio word items
+- it is possible to make the date picker work in two ways: to display the right audio word items, and to sort the right items for export, but, for practical reasons, I eventually choosed that the date picker only sorts items to display the right audio word items for the current session, whereas the editor can be used to export the right items as well as to only sort the items for the current session. I will also create a modal to remove whole texts.

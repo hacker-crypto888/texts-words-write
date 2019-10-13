@@ -915,6 +915,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       info:null,
       displayDiv:null,
       mydisplayoptions:null,
+      blobData:null, 
+      url:null,
+      textitemlist:null,
       
     };
 
@@ -932,7 +935,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const thisIsMyWordList = [];
     const thisIsMyTextList = [];
     const allMyTexts = []; 
-
+    document.getElementById('export_all_items_link').hidden = true;
   }
 
   handleNameChange = event => {
@@ -1593,16 +1596,85 @@ my two mistresses: what a beast am I to slack it!`,*/
             }
           }
         }
+        function testAddUser(importText){
+          const importedTexts = document.getElementById('preview'); 
+          if (typeof importedTexts.dataset.username === "string" && importedTexts.dataset.username.length > 0) {
+            importText.forEach(function(myTextItem, index, jsonfile) {
+              if (!myTextItem.some(x => x[0] === "users")) {
+                myTextItem.push(["users",[importedTexts.dataset.username]]);
+                return jsonfile;
+              } else if(myTextItem.some(x => x[0] === "users")) { 
+                myTextItem.forEach(function(info) {
+                  if(info[0] === "users") {
+                    if (!info[1].includes(importedTexts.dataset.username)) {
+                      info[1].push(importedTexts.dataset.username);
+                      return jsonfile;
+                    }
+                  } 
+                });
+              }
+            });
+          }
+        }
+        function testAddSession(importText){
+          const importedTexts = document.getElementById('preview'); 
+          importText.forEach(function(myTextItem, index, jsonfile) {
+            if (!myTextItem.some(x => x[0] === "session_of_texts")) {
+              myTextItem.push(["session_of_texts","previous"]);
+              return jsonfile;
+            } else if(myTextItem.some(x => x[0] === "session_of_texts")) { 
+              myTextItem.forEach(function(info) {
+                if(info[0] === "session_of_texts") {
+                  if (!info[1] === "previous") {
+                    info[1] = "previous";
+                    return jsonfile;
+                  }
+                } 
+              });
+            }
+          });
+        }
+        function testAddDate(importText) {
+          const daysDate = new Date();
+          const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+          const msTime = Date.now();
+          const importedTexts = document.getElementById('preview'); 
+          importText.forEach(function(myTextItem, index, jsonfile) {
+            if (!myTextItem.some(x => x[0] === "dates")) {
+              myTextItem.push(["dates",[today]]);
+              return jsonfile;
+            } else if(myTextItem.some(x => x[0] === "dates")) { 
+              myTextItem.forEach(function(info) {
+                if(info[0] === "dates") {
+                  if (!info[1].includes(today)) {
+                    info[1].push(today);
+                    return jsonfile;
+                  }
+                } 
+              });
+            }
+          });
+        }
         document.getElementById('edit-entries-save-changes').onclick = (event) => {
           document.getElementById('footer-edit-entries').focus();
           const importedTexts = document.getElementById('preview');
+          testAddUser(JSON.parse(importedTexts.dataset.alltexts));
+          testAddSession(JSON.parse(importedTexts.dataset.alltexts));
+          testAddDate(JSON.parse(importedTexts.dataset.alltexts));
           console.log(JSON.parse(importedTexts.dataset.alltexts));
+          //const textitemlist = JSON.parse(importedTexts.dataset.alltexts);
+          const blobData = new Blob([JSON.stringify({"items": JSON.parse(importedTexts.dataset.alltexts)},null,2)], {type: 'application/json'});
+          const url = window.URL.createObjectURL(blobData);
+          document.getElementById('export_all_items_link').href = url;
+          document.getElementById('export_all_items_link').click();
+          
         }
 
 
       }
     });
   }
+
 
   previewFile = (file) => {
     
@@ -1800,6 +1872,8 @@ my two mistresses: what a beast am I to slack it!`,*/
 
 
         <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
+        <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
+        <br/>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
         <input type="button" onClick={this.textAdd} hidden value="" id="text-add"/>
@@ -1818,7 +1892,7 @@ class EditEntries extends React.Component {
   }
   componentDidMount = () => {
     document.getElementById('export_all_items').disabled = true;
-    document.getElementById('export_all_items_link').hidden = true;
+
     document.getElementById('textsCurrentSession').checked = true;
 
   }
@@ -1972,24 +2046,7 @@ class EditEntries extends React.Component {
     document.getElementById('export_all_items_link').click();
   }
 
-  addInfoUser = (importText) => {
-    const importedTexts = document.getElementById('preview'); 
-    if (typeof importedTexts.dataset.username === "string" && importedTexts.dataset.username.length > 0) {
-      importText.forEach(function(myTextItem) {
-        if (!myTextItem.some(x => x[0] === "users")) {
-          myTextItem.push(["users",[importedTexts.dataset.username]]);
-        } else if(myTextItem.some(x => x[0] === "users")) { 
-          myTextItem.forEach(function(info) {
-            if(info[0] === "users") {
-              if (!info[1].includes(importedTexts.dataset.username)) {
-                info[1].push(importedTexts.dataset.username);
-              }
-            } 
-          });
-        }
-      });
-    }
-  }
+
 
 
 
@@ -2009,8 +2066,7 @@ class EditEntries extends React.Component {
         <button type="button" class="btn btn-primary" id="export_all_items" onClick={this.exportItems}>
           Export my items
         </button>
-        <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
-        <br/>
+
       </div>
     )
   }
