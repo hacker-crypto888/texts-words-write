@@ -85,8 +85,56 @@ The table gives information about what event calls what function, what function 
 
 ## What would be nice 
 
-- to be able save changes
-- to be able to export json (and to check i am able to import json)
+Now that the function to save changes works, I will now focus my efforts in handling the export and import and export of my text items correctly.
+The name of a user must be added to the text item when exporting the JSON file. 
+The user can only use the app if connected.
+
+### The current and previous sessions of texts
+
+------------------------------------------
+PREVIOUS SESSIONS
+--------
+(JSON) ALL USERS' TEXT ITEMS
+--------
+
+--------       
+(JSON) CONNECTED USER TEXT ITEMS
+--------
+------------------------------------------
+CURRENT SESSION                        ---
+--------                               ---
+(INPUT TEXT FIELD/DROP ZONE) CONNECTED USER TEXT ITEMS
+--------
+------------------------------------------
+
+#### The important functions of the current and previous sessions of texts
+
+In each function that extracts text
+- add a "users" property to the text item, and add the user's name 
+
+- add a "session of text" property to the text item, and fill in its value with "current" 
+- add the text item to the bigger list
+
+At JSON import
+- sort the text items into two groups: that of the connected user, and that from other users
+- look for the "session of text" property to each user's text item, and fill in its value with "previous"
+- add each user's text item to the bigger list
+
+If the user only imported previous sessions of texts
+- display edits settings, and only check the "previous sessions" checkbox, disable other checkbox
+
+If the user only imported texts during the current session 
+- display edits settings, and only check the "current session" checkbox, disable other checkbox
+
+If the user is working with both previous sessions of texts and texts added in the text input field or dropped texts
+- enable and check two checkboxes
+
+
+At JSON export
+- group all items
+- TEST FUNCTION :  if the text item has no "users" property, it must be added, and its value must be filled in with the currently connected user's name
+- TEST FUNCTION :  if the text item has no "session of text" property, it must be added, and its value must be filled in with "previous"
+ 
 
 (to be able to login/logout normally (there were problems once))
 that's all
