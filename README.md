@@ -83,3 +83,10 @@ The table gives information about what event calls what function, what function 
 | the user started a new game | <ul><li>[x] the audio players are displayed</li></ul> | 
 | the user clicks on the "Edit entries" and the editor modal opens | - |
 
+## What would be nice 
+
+- to be able save changes
+- to be able to export json (and to check i am able to import json)
+
+(to be able to login/logout normally (there were problems once))
+that's all
