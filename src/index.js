@@ -1593,16 +1593,43 @@ my two mistresses: what a beast am I to slack it!`,*/
             }
           }
         }
+        function testAddUser(importText){
+          const importedTexts = document.getElementById('preview'); 
+          if (typeof importedTexts.dataset.username === "string" && importedTexts.dataset.username.length > 0) {
+            JSON.parse(importText).forEach(function(myTextItem, index, jsonfile) {
+              if (!myTextItem.some(x => x[0] === "users")) {
+                myTextItem.push(["users",[importedTexts.dataset.username]]);
+                return jsonfile;
+              } else if(myTextItem.some(x => x[0] === "users")) { 
+                myTextItem.forEach(function(info) {
+                  if(info[0] === "users") {
+                    if (!info[1].includes(importedTexts.dataset.username)) {
+                      info[1].push(importedTexts.dataset.username);
+                      return jsonfile;
+                    }
+                  } 
+                });
+              }
+            });
+          }
+        }
         document.getElementById('edit-entries-save-changes').onclick = (event) => {
           document.getElementById('footer-edit-entries').focus();
           const importedTexts = document.getElementById('preview');
-          console.log(JSON.parse(importedTexts.dataset.alltexts));
+          console.log(testAddUser(JSON.parse(importedTexts.dataset.alltexts)));
+          const textvar = testAddUser(importedTexts.dataset.alltexts);
+          const blobData = new Blob([JSON.stringify({"items": textvar},null,2)], {type: 'application/json'});
+          const url = window.URL.createObjectURL(blobData);
+          document.getElementById('export_all_items_link').href = url;
+          document.getElementById('export_all_items_link').click();
+          
         }
 
 
       }
     });
   }
+
 
   previewFile = (file) => {
     
@@ -1972,24 +1999,7 @@ class EditEntries extends React.Component {
     document.getElementById('export_all_items_link').click();
   }
 
-  addInfoUser = (importText) => {
-    const importedTexts = document.getElementById('preview'); 
-    if (typeof importedTexts.dataset.username === "string" && importedTexts.dataset.username.length > 0) {
-      importText.forEach(function(myTextItem) {
-        if (!myTextItem.some(x => x[0] === "users")) {
-          myTextItem.push(["users",[importedTexts.dataset.username]]);
-        } else if(myTextItem.some(x => x[0] === "users")) { 
-          myTextItem.forEach(function(info) {
-            if(info[0] === "users") {
-              if (!info[1].includes(importedTexts.dataset.username)) {
-                info[1].push(importedTexts.dataset.username);
-              }
-            } 
-          });
-        }
-      });
-    }
-  }
+
 
 
 
