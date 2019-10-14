@@ -109,15 +109,7 @@ At JSON import
 - look for the "session of text" property to each user's text item, and fill in its value with "previous"
 - add each user's text item to the bigger list
 
-~~iF the user only imported previous sessions of texts
-- display edits settings, and only check the "previous sessions" checkbox, disable other checkbox
-
-If the user only imported texts during the current session 
-- display edits settings, and only check the "current session" checkbox, disable other checkbox
-
-If the user is working with both previous sessions of texts and texts added in the text input field or dropped texts
-- enable and check two checkboxes~~
-- Display Number of items of each sort instead
+- Display Number of items of each sort 
 
 
 At JSON export

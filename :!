@@ -357,16 +357,10 @@ class BasicForm extends React.Component {
     document.getElementById('items_by_date').focus();
     document.getElementById('loadbydate').disabled = true;
     document.getElementById('editor').focus();
-    while(document.getElementById('editor').firstChild) {
-      document.getElementById('editor').removeChild(document.getElementById('editor').firstChild);
-    }
     importedTexts.dataset.alltexts = JSON.stringify([]);
     importedTexts.dataset.texts = JSON.stringify([]);
     importedTexts.dataset.allusers = JSON.stringify([]);
     importedTexts.dataset.previous_sessions = JSON.stringify([]);
-    document.getElementById('previous-items').innerHTML = Number('');
-    document.getElementById('current-items').innerHTML = Number('');
-    
 
 
   }
@@ -932,7 +926,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       previous_sessions:null,
       textRanges:null,
       output:null,
-      textlist:null,
       
     };
 
@@ -1176,7 +1169,20 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
       });
     }
-
+    function sortTextItem(textvar) {
+      textvar.forEach(text => {
+        text.forEach(prop => {
+          console.log(prop);
+          if(prop[0] === "users" && !prop[1].includes(importedTexts.dataset.username)) {
+            importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textvar]);
+             //other users' texts from previous sessions
+          } else if(prop[0] === "users" && prop[1].includes(importedTexts.dataset.username)) {
+            //importedTexts.dataset.alltexts = JSON.stringify([...JSON.parse(importedTexts.dataset.alltexts), textvar]); //user's texts from previous sessions
+            return textvar;
+          }
+        })
+      });
+    }
     const fd = new FormData();
     fd.append('myFile', file);
     fetch(URL.createObjectURL(file))
@@ -1195,32 +1201,16 @@ my two mistresses: what a beast am I to slack it!`,*/
         console.log(myItems);
 
         //testAddSession(myItems);
-        function usersItem(textvar) {
-          return textvar.some(x => x[0] === "users" && x[1].includes(importedTexts.dataset.username)); 
-          //textvar.forEach((prop, index, texts) => {
-          //  if(prop[0] === "users") {
-          //    prop[1].forEach(element => {
-          //      if(element === importedTexts.dataset.username) {
-          //        return arguments[0];
-          //      }
-          //    });
-          //  } 
-          //})
-          //importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textvar]);
-
-        }
-        return myItems.filter(usersItem);
-
+        return myItems.filter(sortTextItem);
       })
       .then(result => {
-        console.log(result);
         if(result === (null||undefined) || result instanceof Array && result.length === 0) {return;} 
-
+        console.log(result);
         result.forEach(textitem => {
           document.getElementById('previous-items').innerHTML = Number(document.getElementById('previous-items').innerHTML) +1;
 
           const importedTexts = document.getElementById('preview');
-          importedTexts.dataset.texts = JSON.stringify(textitem);
+          importedTexts.dataset.texts = JSON.stringify(result);
           
           document.getElementById('text-add').click();
         });
