@@ -1203,6 +1203,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         const myItems = thirdres.map(obj => obj);
         testAddSession(myItems);
         sortTextItems(myItems);
+        console.log(JSON.parse(importedTexts.dataset.allusers)); 
         myItems.forEach(textitem => {
           const importedTexts = document.getElementById('preview');
           importedTexts.dataset.texts = JSON.stringify(textitem);
