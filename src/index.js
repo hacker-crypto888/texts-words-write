@@ -98,6 +98,7 @@ class BasicForm extends React.Component {
       });
     };
     this.logout();
+    
   }
 
   fieldOnblur = () => {
@@ -344,6 +345,11 @@ class BasicForm extends React.Component {
       document.getElementById('username').value = "";
       this.logout();
       this.hideAllInputFields();
+      while (importedTexts.firstChild) {
+        importedTexts.removeChild(importedTexts.firstChild);
+      }
+      importedTexts.dataset.alltexts = JSON.stringify([]);
+      importedTexts.dataset.allusers = JSON.stringify([]);
 
     }
     
@@ -1810,6 +1816,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     addContent(newText, valueword);
     importedTexts.dataset.texts = JSON.stringify(newText);
     document.getElementById('text-add').click();
+    valueword = '';
 
   }
 
@@ -1852,6 +1859,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     textInputField(newText);
     importedTexts.dataset.texts = JSON.stringify(newText);
     document.getElementById('text-add').click();
+    this.state.value = "";
   }
 
   enableEditor = () => {
