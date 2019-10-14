@@ -320,8 +320,8 @@ class BasicForm extends React.Component {
         document.getElementById('loginModal').hidden = true;
         document.getElementById('login-form-body').focus();
       }
+      this.showAllInputFields();
 
-      this.showDropzone();
       this.checkStringLength(username);
       document.getElementById('loginbtn').innerHTML = 'log out';
       document.getElementById('username').hidden = true;
@@ -345,10 +345,16 @@ class BasicForm extends React.Component {
       document.getElementById('welcome').innerHTML = "";
       document.getElementById('username').value = "";
       this.logout();
-      this.hideDropzone(); 
+      this.hideAllInputFields();
 
     }
     
+  }
+  showAllInputFields = () => {
+    document.getElementById('all-input-fields').hidden = false;
+  }
+  hideAllInputFields = () => {
+    document.getElementById('all-input-fields').hidden = true;
   }
 
   logout = (event) => {
@@ -397,7 +403,7 @@ class BasicForm extends React.Component {
            </div>
          </div>
        </div>
-       <div>
+       <div id="all-input-fields">
        <div className={`form-group`}> 
 
 
@@ -927,7 +933,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
-    document.getElementById('dropzone').hidden = true;
+    document.getElementById('all-input-fields').hidden = true;
     const importedTexts = document.getElementById('preview');
     importedTexts.dataset.textValue = '';
     const wordList = [];
@@ -1113,6 +1119,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendTextFile = (file) => {
+    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1129,7 +1136,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createFileList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      list = [["textId",textId], ["dates", [today]],["users", [importedTexts.dataset.username]],["session_of_texts","current"], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
       return list;
     }
 
@@ -1179,10 +1186,9 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendDocxFile = (file) => {
-    const textId = '';
-    createNewTextId(textId);
-    const today = '';
-    daysDate(today);
+    const importedTexts = document.getElementById('preview'); 
+    const textId = createNewTextId(textId);
+    const today = daysDate(today);
 
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
@@ -1197,7 +1203,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createFileList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      list = [["textId",textId], ["dates", [today]],["users", [importedTexts.dataset.username]],["session_of_texts", "current"], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
       return list;
     }
 
@@ -1234,6 +1240,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendPdfFile = (file) => { 
+    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1250,7 +1257,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createFileList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      list = [["textId",textId], ["session_of_texts", "current"],["users",[importedTexts.dataset.username]], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
       console.log(list);
       return list;
     }
@@ -1741,6 +1748,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   }
   useWordItemInputField = (event) => {
+    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1761,7 +1769,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      list = [["textId",textId],["users", [importedTexts.dataset.username]],["session_of_texts", "current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
       return list;
     }
 
@@ -1771,7 +1779,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const valueword = document.getElementById('valueword').value;
     if (valueword === "") {return;};
     
-    const importedTexts = document.getElementById('preview');
+
     const newText = createList();
     wordItemInputField(newText);
     addContent(newText, valueword);
@@ -1781,6 +1789,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   useTextInputField = (event) => {
+    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1800,7 +1809,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      list = [["textId",textId],["users",[importedTexts.dataset.username]],["session_of_texts","current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
       return list;
     }
 
@@ -1811,7 +1820,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       value:
         this.state.value
     });
-    const importedTexts = document.getElementById('preview');
+
     if (this.state.value === "") {return;}
     const newText = createList();
     addContent(newText, this.state.value);
