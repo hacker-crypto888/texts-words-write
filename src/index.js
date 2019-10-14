@@ -88,7 +88,6 @@ class BasicForm extends React.Component {
         '' 
     });
     document.getElementById('loginbtn').innerHTML = 'log in';
-    document.getElementById('export_all_items').hidden = true;
     document.getElementById('modallogin-hidden-btn').hidden = true;
 
     document.getElementById('loginModal').onshow = (event) => {
@@ -294,14 +293,7 @@ class BasicForm extends React.Component {
       list.splice(idx, 1);
     }
   }
-  enablePreviousSessions = () => {
-      document.getElementById('labelTextsPreviousSessions').classList.remove("text-muted");
-      document.getElementById('textsPreviousSessions').removeAttribute('disabled');
-  }
-  preventPreviousSessions = () => {
-      document.getElementById('labelTextsPreviousSessions').classList.add("text-muted");
-      document.getElementById('textsPreviousSessions').disabled = true;
-  }
+
   showDropzone = () => {
     document.getElementById('dropzone').hidden = false;
   }
@@ -933,6 +925,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       textitemlist:null,
       previous_sessions:null,
       textRanges:null,
+      output:null,
       
     };
 
@@ -970,15 +963,14 @@ my two mistresses: what a beast am I to slack it!`,*/
       }
     }
     function testAddSession(importText){
-      const importedTexts = document.getElementById('preview'); 
       importText.forEach(function(myTextItem, index, jsonfile) {
         if (!myTextItem.some(x => x[0] === "session_of_texts")) {
           myTextItem.push(["session_of_texts","previous"]);
         } else if(myTextItem.some(x => x[0] === "session_of_texts")) { 
-          myTextItem.forEach(function(info) {
+          myTextItem.forEach(function(info, indexinfo, infos) {
             if(info[0] === "session_of_texts") {
               if (!info[1] === "previous") {
-                info[1] = "previous";
+                importText[index][indexinfo][1] = "previous";
               }
             } 
           });
@@ -1007,17 +999,31 @@ my two mistresses: what a beast am I to slack it!`,*/
     document.getElementById('edit-entries-save-changes').onclick = (event) => {
       document.getElementById('footer-edit-entries').focus();
       const importedTexts = document.getElementById('preview');
-      testAddUser(JSON.parse(importedTexts.dataset.alltexts));
-      testAddSession(JSON.parse(importedTexts.dataset.alltexts));
-      testAddDate(JSON.parse(importedTexts.dataset.alltexts));
-      console.log(JSON.parse(importedTexts.dataset.alltexts));
-      //const textitemlist = JSON.parse(importedTexts.dataset.alltexts);
-      const blobData = new Blob([JSON.stringify({"items": JSON.parse(importedTexts.dataset.alltexts)},null,2)], {type: 'application/json'});
+      const output = [...JSON.parse(importedTexts.dataset.alltexts)];
+     
+      output.forEach(element => {
+        element.forEach(el => {
+          if(el[0] === "session_of_texts") {
+            //element.splice(element.indexOf(el), 1);
+            el.splice(1,1);
+            el.push('previous');
+          }
+
+        })
+      });
+      //testAddSession(output); 
+     
+      //testAddUser(output);
+      //testAddSession(output);
+      //testAddDate(output);
+      const blobData = new Blob([JSON.stringify({"items": output},null,2)], {type: 'application/json'});
       const url = window.URL.createObjectURL(blobData);
       document.getElementById('export_all_items_link').href = url;
       document.getElementById('export_all_items_link').click();
-      
     }
+    document.getElementById('text-items').onchange = (event) => {
+    }
+      
   }
 
   handleNameChange = event => {
@@ -1218,6 +1224,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         if(result === (null||undefined) || result instanceof Array && result.length === 0) {return;} 
 
         result.forEach(textitem => {
+          document.getElementById('previous-items').innerHTML = Number(document.getElementById('previous-items').innerHTML) +1;
 
           const importedTexts = document.getElementById('preview');
           importedTexts.dataset.texts = JSON.stringify(result);
@@ -1284,6 +1291,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       importedTexts.dataset.texts = JSON.stringify(result);
       
       document.getElementById('text-add').click();
+      document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1; 
     }
 
     const mainFunction = callback => {
@@ -1346,6 +1354,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         addContent(newText, resultObject.value);
         importedTexts.dataset.texts = JSON.stringify(newText);
         document.getElementById('text-add').click();
+        document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
       })
     };
     reader.readAsArrayBuffer(file);
@@ -1437,7 +1446,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           importedTexts.dataset.texts = JSON.stringify(newText);
           console.log(JSON.parse(importedTexts.dataset.texts));
           document.getElementById('text-add').click();
-          
+          document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;          
 
         });
 
@@ -1716,17 +1725,10 @@ my two mistresses: what a beast am I to slack it!`,*/
             }
           }
         }
-
-
-
       }
     });
   }
 
-
-  previewFile = (file) => {
-    
-  }
 
   handleTextChange = (event) => {
     console.log(this.state.value);
@@ -1826,6 +1828,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     addContent(newText, valueword);
     importedTexts.dataset.texts = JSON.stringify(newText);
     document.getElementById('text-add').click();
+    document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
     valueword = '';
 
   }
@@ -1869,6 +1872,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     textInputField(newText);
     importedTexts.dataset.texts = JSON.stringify(newText);
     document.getElementById('text-add').click();
+    document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
     this.state.value = "";
   }
 
@@ -1943,9 +1947,7 @@ class EditEntries extends React.Component {
     }
   }
   componentDidMount = () => {
-    document.getElementById('export_all_items').disabled = true;
 
-    document.getElementById('textsCurrentSession').checked = true;
 
   }
 
@@ -2099,26 +2101,28 @@ class EditEntries extends React.Component {
   }
 
 
-
+  increment = (event) => {
+        
+  }
 
 
 
   render() {
     return (
-      <div id="editor">
-        <div class="display-sessions" >
-          <input type="checkbox"  value="current" id="textsCurrentSession" name="sessionsTexts"/>
-          <label for="textsCurrentSession" id="labelTextsCurrentSession">Texts for current session</label>
+      <div>
+        <div id="text-items">
+          <div class="display-items" >
+            <a id="current-items" name="sessions-of-texts" onclick={this.increment}>0</a> texts added during this session by the logged in user
+          </div>
+          <div class="display-items">
+            <a id="previous-items" onhover={this.increment} name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
+          </div>
         </div>
-        <div class="display-sessions">
-          <input type="checkbox" value="previous" id="textsPreviousSessions" name="sessionsTexts" disabled /> 
-          <label for="textsPreviousSessions" class="text-muted" id="labelTextsPreviousSessions">Texts from previous sessions</label>
+        <div id="editor">
+
+
+
         </div>
-
-        <button type="button" class="btn btn-primary" id="export_all_items" onClick={this.exportItems}>
-          Export my items
-        </button>
-
       </div>
     )
   }
