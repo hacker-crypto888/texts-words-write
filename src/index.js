@@ -932,6 +932,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       url:null,
       textitemlist:null,
       previous_sessions:null,
+      textRanges:null,
       
     };
 
@@ -1186,7 +1187,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       textvar.forEach(prop => {
         if(prop[0] === "users" && !prop[1].includes(importedTexts.dataset.username)) {
           importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textvar]);
-          return "other user";
+          return textvar;
+        } else if(prop[0] === "users" && prop[1].includes(importedTexts.dataset.username)) {
+          return undefined;
         }
       });
     }
@@ -1205,44 +1208,19 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
       .then(thirdres => {
         const myItems = thirdres.map(obj => obj);
-        const previous_sessions = [];
+
         testAddSession(myItems);
+        return myItems.filter(currentChar => {
+            return sortTextItem(currentChar) !== undefined;
+        });
+      })
+      .then(result => {
+        if(result === (null||undefined) || result instanceof Array && result.length === 0) {return;} 
 
-        function removeTextWithTextId(texts) {
-          texts.forEach(textitem => {
-            textitem.forEach(item => {
-              if(item[0] === "textId"){
-                if (item[1] === importedTexts.dataset.textId) {
-                  const idx2 = texts.indexOf(textitem);
-                  if (idx2 !== -1) {
-                    texts.splice(idx2, 1);
-                  }
-                }
-              }
-            });
-          });
-        }
-
-        function checkTextId(textitem) {
-          textitem.forEach(item => {
-            if(item[0] === "textId"){
-              importedTexts.dataset.textId = item[1];
-            }
-          });
-        }
-
-        myItems.forEach(textitem => {
-          if (sortTextItem(textitem) === "other user") {
-            checkTextId(textitem);
-            removeTextWithTextId(myItems);
-          }
-          
-        })
-        console.log(myItems);
-        myItems.forEach(textitem => {
+        result.forEach(textitem => {
 
           const importedTexts = document.getElementById('preview');
-          importedTexts.dataset.texts = JSON.stringify(textitem);
+          importedTexts.dataset.texts = JSON.stringify(result);
           
           document.getElementById('text-add').click();
         });
