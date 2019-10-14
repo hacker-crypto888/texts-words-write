@@ -348,8 +348,7 @@ class BasicForm extends React.Component {
       while (importedTexts.firstChild) {
         importedTexts.removeChild(importedTexts.firstChild);
       }
-      importedTexts.dataset.alltexts = JSON.stringify([]);
-      importedTexts.dataset.allusers = JSON.stringify([]);
+
 
     }
     
@@ -366,6 +365,10 @@ class BasicForm extends React.Component {
     document.getElementById('items_by_date').focus();
     document.getElementById('loadbydate').disabled = true;
     document.getElementById('editor').focus();
+    importedTexts.dataset.alltexts = JSON.stringify([]);
+    importedTexts.dataset.texts = JSON.stringify([]);
+    importedTexts.dataset.allusers = JSON.stringify([]);
+    importedTexts.dataset.previous_sessions = JSON.stringify([]);
 
 
   }
@@ -928,6 +931,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       blobData:null, 
       url:null,
       textitemlist:null,
+      previous_sessions:null,
       
     };
 
@@ -1138,6 +1142,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendFile = (file) => {
+    const importedTexts = document.getElementById('preview'); 
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1162,7 +1167,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       fileinfo.push(["mycontent", textstring]);
     }
     function testAddSession(importText){
-      const importedTexts = document.getElementById('preview'); 
+
       importText.forEach(function(myTextItem, index, jsonfile) {
         if (!myTextItem.some(x => x[0] === "session_of_texts")) {
           myTextItem.push(["session_of_texts","previous"]);
@@ -1177,21 +1182,14 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
       });
     }
-    function sortTextItems(list) {
-      importedTexts.dataset.allusers = JSON.stringify([]);
-      list.forEach(textitem => {
-        textitem.forEach(prop => {
-          if(prop[0] === "users" && !prop[1].includes(importedTexts.dataset.username)) {
-            importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textitem]);
-            const idx = list.indexOf(textitem);
-            if (idx !== -1) {
-              list.splice(idx, 1);
-            }
-          }
-        }); 
+    function sortTextItem(textvar) {
+      textvar.forEach(prop => {
+        if(prop[0] === "users" && !prop[1].includes(importedTexts.dataset.username)) {
+          importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textvar]);
+          return "other user";
+        }
       });
     }
-    const importedTexts = document.getElementById('preview');
     const fd = new FormData();
     fd.append('myFile', file);
     fetch(URL.createObjectURL(file))
@@ -1207,15 +1205,49 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
       .then(thirdres => {
         const myItems = thirdres.map(obj => obj);
+        const previous_sessions = [];
         testAddSession(myItems);
-        sortTextItems(myItems);
-        console.log(JSON.parse(importedTexts.dataset.allusers)); 
+
+        function removeTextWithTextId(texts) {
+          texts.forEach(textitem => {
+            textitem.forEach(item => {
+              if(item[0] === "textId"){
+                if (item[1] === importedTexts.dataset.textId) {
+                  const idx2 = texts.indexOf(textitem);
+                  if (idx2 !== -1) {
+                    texts.splice(idx2, 1);
+                  }
+                }
+              }
+            });
+          });
+        }
+
+        function checkTextId(textitem) {
+          textitem.forEach(item => {
+            if(item[0] === "textId"){
+              importedTexts.dataset.textId = item[1];
+            }
+          });
+        }
+
         myItems.forEach(textitem => {
+          if (sortTextItem(textitem) === "other user") {
+            checkTextId(textitem);
+            removeTextWithTextId(myItems);
+          }
+          
+        })
+        console.log(myItems);
+        myItems.forEach(textitem => {
+
           const importedTexts = document.getElementById('preview');
           importedTexts.dataset.texts = JSON.stringify(textitem);
           
           document.getElementById('text-add').click();
         });
+        
+
 
 
       })
