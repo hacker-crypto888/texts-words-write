@@ -340,8 +340,6 @@ class BasicForm extends React.Component {
       importedTexts.dataset.username = ''; 
       document.getElementById('loginbtn').innerHTML = 'log in';
       document.getElementById('username').hidden = false;
-      document.getElementById('export_all_items').hidden = true;
-      document.getElementById('export_all_items').disabled = true;
       document.getElementById('welcome').innerHTML = "";
       document.getElementById('username').value = "";
       this.logout();
@@ -942,6 +940,73 @@ my two mistresses: what a beast am I to slack it!`,*/
     const thisIsMyTextList = [];
     const allMyTexts = []; 
     document.getElementById('export_all_items_link').hidden = true;
+    function testAddUser(importText){
+      const importedTexts = document.getElementById('preview'); 
+      if (typeof importedTexts.dataset.username === "string" && importedTexts.dataset.username.length > 0) {
+        importText.forEach(function(myTextItem, index, jsonfile) {
+          if (!myTextItem.some(x => x[0] === "users")) {
+            myTextItem.push(["users",[importedTexts.dataset.username]]);
+          } else if(myTextItem.some(x => x[0] === "users")) { 
+            myTextItem.forEach(function(info) {
+              if(info[0] === "users") {
+                if (!info[1].includes(importedTexts.dataset.username)) {
+                  info[1].push(importedTexts.dataset.username);
+                }
+              } 
+            });
+          }
+        });
+      }
+    }
+    function testAddSession(importText){
+      const importedTexts = document.getElementById('preview'); 
+      importText.forEach(function(myTextItem, index, jsonfile) {
+        if (!myTextItem.some(x => x[0] === "session_of_texts")) {
+          myTextItem.push(["session_of_texts","previous"]);
+        } else if(myTextItem.some(x => x[0] === "session_of_texts")) { 
+          myTextItem.forEach(function(info) {
+            if(info[0] === "session_of_texts") {
+              if (!info[1] === "previous") {
+                info[1] = "previous";
+              }
+            } 
+          });
+        }
+      });
+    }
+    function testAddDate(importText) {
+      const daysDate = new Date();
+      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      const importedTexts = document.getElementById('preview'); 
+      importText.forEach(function(myTextItem, index, jsonfile) {
+        if (!myTextItem.some(x => x[0] === "dates")) {
+          myTextItem.push(["dates",[today]]);
+        } else if(myTextItem.some(x => x[0] === "dates")) { 
+          myTextItem.forEach(function(info) {
+            if(info[0] === "dates") {
+              if (!info[1].includes(today)) {
+                info[1].push(today);
+              }
+            } 
+          });
+        }
+      });
+    }
+    document.getElementById('edit-entries-save-changes').onclick = (event) => {
+      document.getElementById('footer-edit-entries').focus();
+      const importedTexts = document.getElementById('preview');
+      testAddUser(JSON.parse(importedTexts.dataset.alltexts));
+      testAddSession(JSON.parse(importedTexts.dataset.alltexts));
+      testAddDate(JSON.parse(importedTexts.dataset.alltexts));
+      console.log(JSON.parse(importedTexts.dataset.alltexts));
+      //const textitemlist = JSON.parse(importedTexts.dataset.alltexts);
+      const blobData = new Blob([JSON.stringify({"items": JSON.parse(importedTexts.dataset.alltexts)},null,2)], {type: 'application/json'});
+      const url = window.URL.createObjectURL(blobData);
+      document.getElementById('export_all_items_link').href = url;
+      document.getElementById('export_all_items_link').click();
+      
+    }
   }
 
   handleNameChange = event => {
@@ -1067,10 +1132,8 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendFile = (file) => {
-    const textId = '';
-    createNewTextId(textId);
-    const today = '';
-    daysDate(today);
+    const textId = createNewTextId();
+    const today = daysDate();
 
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
@@ -1092,6 +1155,36 @@ my two mistresses: what a beast am I to slack it!`,*/
     function addContent(fileinfo, textstring) {
       fileinfo.push(["mycontent", textstring]);
     }
+    function testAddSession(importText){
+      const importedTexts = document.getElementById('preview'); 
+      importText.forEach(function(myTextItem, index, jsonfile) {
+        if (!myTextItem.some(x => x[0] === "session_of_texts")) {
+          myTextItem.push(["session_of_texts","previous"]);
+        } else if(myTextItem.some(x => x[0] === "session_of_texts")) { 
+          myTextItem.forEach(function(info) {
+            if(info[0] === "session_of_texts") {
+              if (!info[1] === "previous") {
+                info[1] = "previous";
+              }
+            } 
+          });
+        }
+      });
+    }
+    function sortTextItems(list) {
+      importedTexts.dataset.allusers = JSON.stringify([]);
+      list.forEach(textitem => {
+        textitem.forEach(prop => {
+          if(prop[0] === "users" && !prop[1].includes(importedTexts.dataset.username)) {
+            importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textitem]);
+            const idx = list.indexOf(textitem);
+            if (idx !== -1) {
+              list.splice(idx, 1);
+            }
+          }
+        }); 
+      });
+    }
     const importedTexts = document.getElementById('preview');
     const fd = new FormData();
     fd.append('myFile', file);
@@ -1108,11 +1201,14 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
       .then(thirdres => {
         const myItems = thirdres.map(obj => obj);
-        const thisIsMyTextList = thirdres.map(obj => obj);
-        this.setState({myItems});
-
-        this.checkConnectedUser();
-        this.textsFromOtherUsers(thisIsMyTextList);
+        testAddSession(myItems);
+        sortTextItems(myItems);
+        myItems.forEach(textitem => {
+          const importedTexts = document.getElementById('preview');
+          importedTexts.dataset.texts = JSON.stringify(textitem);
+          
+          document.getElementById('text-add').click();
+        });
 
 
       })
@@ -1603,79 +1699,7 @@ my two mistresses: what a beast am I to slack it!`,*/
             }
           }
         }
-        function testAddUser(importText){
-          const importedTexts = document.getElementById('preview'); 
-          if (typeof importedTexts.dataset.username === "string" && importedTexts.dataset.username.length > 0) {
-            importText.forEach(function(myTextItem, index, jsonfile) {
-              if (!myTextItem.some(x => x[0] === "users")) {
-                myTextItem.push(["users",[importedTexts.dataset.username]]);
-                return jsonfile;
-              } else if(myTextItem.some(x => x[0] === "users")) { 
-                myTextItem.forEach(function(info) {
-                  if(info[0] === "users") {
-                    if (!info[1].includes(importedTexts.dataset.username)) {
-                      info[1].push(importedTexts.dataset.username);
-                      return jsonfile;
-                    }
-                  } 
-                });
-              }
-            });
-          }
-        }
-        function testAddSession(importText){
-          const importedTexts = document.getElementById('preview'); 
-          importText.forEach(function(myTextItem, index, jsonfile) {
-            if (!myTextItem.some(x => x[0] === "session_of_texts")) {
-              myTextItem.push(["session_of_texts","previous"]);
-              return jsonfile;
-            } else if(myTextItem.some(x => x[0] === "session_of_texts")) { 
-              myTextItem.forEach(function(info) {
-                if(info[0] === "session_of_texts") {
-                  if (!info[1] === "previous") {
-                    info[1] = "previous";
-                    return jsonfile;
-                  }
-                } 
-              });
-            }
-          });
-        }
-        function testAddDate(importText) {
-          const daysDate = new Date();
-          const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-          const msTime = Date.now();
-          const importedTexts = document.getElementById('preview'); 
-          importText.forEach(function(myTextItem, index, jsonfile) {
-            if (!myTextItem.some(x => x[0] === "dates")) {
-              myTextItem.push(["dates",[today]]);
-              return jsonfile;
-            } else if(myTextItem.some(x => x[0] === "dates")) { 
-              myTextItem.forEach(function(info) {
-                if(info[0] === "dates") {
-                  if (!info[1].includes(today)) {
-                    info[1].push(today);
-                    return jsonfile;
-                  }
-                } 
-              });
-            }
-          });
-        }
-        document.getElementById('edit-entries-save-changes').onclick = (event) => {
-          document.getElementById('footer-edit-entries').focus();
-          const importedTexts = document.getElementById('preview');
-          testAddUser(JSON.parse(importedTexts.dataset.alltexts));
-          testAddSession(JSON.parse(importedTexts.dataset.alltexts));
-          testAddDate(JSON.parse(importedTexts.dataset.alltexts));
-          console.log(JSON.parse(importedTexts.dataset.alltexts));
-          //const textitemlist = JSON.parse(importedTexts.dataset.alltexts);
-          const blobData = new Blob([JSON.stringify({"items": JSON.parse(importedTexts.dataset.alltexts)},null,2)], {type: 'application/json'});
-          const url = window.URL.createObjectURL(blobData);
-          document.getElementById('export_all_items_link').href = url;
-          document.getElementById('export_all_items_link').click();
-          
-        }
+
 
 
       }
