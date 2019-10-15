@@ -88,7 +88,6 @@ class BasicForm extends React.Component {
         '' 
     });
     document.getElementById('loginbtn').innerHTML = 'log in';
-    document.getElementById('export_all_items').hidden = true;
     document.getElementById('modallogin-hidden-btn').hidden = true;
 
     document.getElementById('loginModal').onshow = (event) => {
@@ -98,6 +97,7 @@ class BasicForm extends React.Component {
       });
     };
     this.logout();
+    
   }
 
   fieldOnblur = () => {
@@ -148,33 +148,9 @@ class BasicForm extends React.Component {
   };
   displayAudio = event => {
     const itemlist = [];
-    document.getElementById('import_texts_words').click();
     const importedTexts = document.getElementById("preview");
-    const importText = JSON.parse(importedTexts.dataset.texts); 
-    const thisIsMyTextList = [];
-    const myitems = [];
-    importText.forEach(function(mytext) {
-      const textObject = {};
-
-      mytext.forEach(function(myinfo) {
-        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;};
-        textObject[myinfo[0]] = myinfo[1];
-      });
-      if(textObject === {}) {return;};
-      if(!textObject.mycontent) {return;};
-      console.log(textObject.content); 
-      thisIsMyTextList.push(textObject);
-
-      mytext.forEach(function(f) {
-        if (f[0] === "mycontent" && f[1] instanceof Array && f[1].length > 0) {
-          myitems.push(f[1]);
-          myitems.flat();
-        }
-      });
-      
-    });
-    if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
-    console.log(thisIsMyTextList);
+    importedTexts.dataset.number = Number('');
+    const myitems = JSON.parse(importedTexts.dataset.alltexts); 
 
     if(myitems instanceof Array && myitems.length === 0) {return;};
     const myNode = document.getElementById('myAudioFiles');
@@ -197,50 +173,56 @@ class BasicForm extends React.Component {
         //    textObject[textitem[0]]=textitem[1];
         //  });
         console.log(myitems);
-        const myitems1 = myitems.filter((v,i,a) => a.indexOf(v) === i)[0];
-        console.log(myitems1);
-        myitems1.forEach(function(myworditem, index, wordlist) {
-          const audioFilePreview = document.createElement('audio'); 
-          audioFilePreview.className=myworditem;
-          audioFilePreview.key=index;
-          audioFilePreview.id=myworditem;
-          audioFilePreview.controls=true;
-          audioFilePreview.onpause = (event) => {
-            event.currentTarget.currentTime = 0;
-          }
-          if (document.getElementById('playAllTheWords').checked) {
-            audioFilePreview.onended = (event) => {
-              const allAudioElements = document.getElementsByTagName('audio');
-              if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
-                const myAudioItems = document.getElementById('myAudioFiles');
+        myitems.forEach(function(text) {
+          text.forEach(prop => {
+            if(prop[0] === "mycontent") {
+              prop[1].forEach(myworditem => {
+      
+                const audioFilePreview = document.createElement('audio'); 
+                audioFilePreview.className=myworditem;
+                importedTexts.dataset.number = Number(importedTexts.dataset.number) + 1;
+                audioFilePreview.key=importedTexts.dataset.number;
+                audioFilePreview.id=myworditem;
+                audioFilePreview.controls=true;
+                audioFilePreview.onpause = (event) => {
+                  event.currentTarget.currentTime = 0;
+                }
+                if (document.getElementById('playAllTheWords').checked) {
+                  audioFilePreview.onended = (event) => {
+                    const allAudioElements = document.getElementsByTagName('audio');
+                    if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
+                      const myAudioItems = document.getElementById('myAudioFiles');
 
-                const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
-                myAudioItems.childNodes[indexAudioElement].play();
+                      const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
+                      myAudioItems.childNodes[indexAudioElement].play();
 
-              }
-            };
-          }
-          audioFilePreview.onplay = (event) => { 
-            const wordInputField = document.getElementById('wordinput');
-            wordInputField.dataset.targetValue = audioFilePreview.id;
-          };
-          [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
-            if(mp3[0] === myworditem && mp3[1].length){
-              mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
-                const theFirstChild = audioFilePreview.firstChild;
-                const sourceFile = document.createElement('source');
-                sourceFile.src = mp3link; 
-                sourceFile.className = myworditem; 
-                sourceFile.type = 'audio/mpeg'; 
-                audioFilePreview.insertBefore(sourceFile, theFirstChild);
+                    }
+                  };
+                }
+                audioFilePreview.onplay = (event) => { 
+                  const wordInputField = document.getElementById('wordinput');
+                  wordInputField.dataset.targetValue = audioFilePreview.id;
+                };
+                [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
+                  if(mp3[0] === myworditem && mp3[1].length){
+                    mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
+                      const theFirstChild = audioFilePreview.firstChild;
+                      const sourceFile = document.createElement('source');
+                      sourceFile.src = mp3link; 
+                      sourceFile.className = myworditem; 
+                      sourceFile.type = 'audio/mpeg'; 
+                      audioFilePreview.insertBefore(sourceFile, theFirstChild);
 
-              })
-              myAudioFiles.push(audioFilePreview);
-              
+                    })
+                    myAudioFiles.push(audioFilePreview);
+                    
+                  }
+                });
+                
+                document.getElementById('loadingAudioFiles').hidden = true;
+              });
             }
           });
-          
-          document.getElementById('loadingAudioFiles').hidden = true;
 
         });
         const previewMyAudioFiles = document.getElementById('myAudioFiles');
@@ -293,14 +275,7 @@ class BasicForm extends React.Component {
       list.splice(idx, 1);
     }
   }
-  enablePreviousSessions = () => {
-      document.getElementById('labelTextsPreviousSessions').classList.remove("text-muted");
-      document.getElementById('textsPreviousSessions').removeAttribute('disabled');
-  }
-  preventPreviousSessions = () => {
-      document.getElementById('labelTextsPreviousSessions').classList.add("text-muted");
-      document.getElementById('textsPreviousSessions').disabled = true;
-  }
+
   showDropzone = () => {
     document.getElementById('dropzone').hidden = false;
   }
@@ -313,15 +288,14 @@ class BasicForm extends React.Component {
     const username_modal = document.getElementById('username_modal').value;
 
     if(event.target.id === "loginbtnmodal"||document.getElementById('loginbtn').innerHTML === 'log in') {
-      document.getElementById('loadbydate').removeAttribute('disabled');
       
       if (event.target.id === "loginbtnmodal") {
         document.body.focus();
         document.getElementById('loginModal').hidden = true;
         document.getElementById('login-form-body').focus();
       }
+      this.showAllInputFields();
 
-      this.showDropzone();
       this.checkStringLength(username);
       document.getElementById('loginbtn').innerHTML = 'log out';
       document.getElementById('username').hidden = true;
@@ -340,22 +314,38 @@ class BasicForm extends React.Component {
       importedTexts.dataset.username = ''; 
       document.getElementById('loginbtn').innerHTML = 'log in';
       document.getElementById('username').hidden = false;
-      document.getElementById('export_all_items').hidden = true;
-      document.getElementById('export_all_items').disabled = true;
       document.getElementById('welcome').innerHTML = "";
       document.getElementById('username').value = "";
       this.logout();
-      this.hideDropzone(); 
+      this.hideAllInputFields();
+      while (importedTexts.firstChild) {
+        importedTexts.removeChild(importedTexts.firstChild);
+      }
+
 
     }
     
   }
+  showAllInputFields = () => {
+    document.getElementById('all-input-fields').hidden = false;
+  }
+  hideAllInputFields = () => {
+    document.getElementById('all-input-fields').hidden = true;
+  }
 
   logout = (event) => {
     const importedTexts = document.getElementById('preview');
-    document.getElementById('items_by_date').focus();
-    document.getElementById('loadbydate').disabled = true;
     document.getElementById('editor').focus();
+    while(document.getElementById('editor').firstChild) {
+      document.getElementById('editor').removeChild(document.getElementById('editor').firstChild);
+    }
+    importedTexts.dataset.alltexts = JSON.stringify([]);
+    importedTexts.dataset.texts = JSON.stringify([]);
+    importedTexts.dataset.allusers = JSON.stringify([]);
+    importedTexts.dataset.previous_sessions = JSON.stringify([]);
+    document.getElementById('previous-items').innerHTML = Number('');
+    document.getElementById('current-items').innerHTML = Number('');
+    
 
 
   }
@@ -397,7 +387,7 @@ class BasicForm extends React.Component {
            </div>
          </div>
        </div>
-       <div>
+       <div id="all-input-fields">
        <div className={`form-group`}> 
 
 
@@ -479,7 +469,7 @@ class BasicForm extends React.Component {
              </div>
              <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-primary">Save changes</button>
+               <button type="button" id="btn-sort-by-date"class="btn btn-primary">Sort items by date</button>
              </div>
            </div>
          </div>
@@ -517,7 +507,7 @@ class FillInTheDateForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      date: '',
+      date: new Date(),
       selectedDate:'',
       database:[],
       data:null,
@@ -586,58 +576,36 @@ class FillInTheDateForm extends React.Component {
       displayWord:null,
       removeWord:null, 
       textelements:null,
+      selectDate:null,
+      date:null,
     }
   }
   componentDidMount() {
     const date = new Date();
     this.setState({date});
-    document.getElementById('loadbydate').disabled = true;
   }
   onChange = (date) => {
     this.setState({ date });
+    const selectDate = (date.getMonth()+1)+'/'+date.getDate()+'/'+date.getFullYear();
+    document.getElementById('sort-items-by-date').dataset.date = selectDate;
+    console.log(document.getElementById('sort-items-by-date').dataset.date);
+    console.log(date.toUTCString());
+
   }
   handleSubmittedDate = (event) => {
 
-    const modalbody = document.getElementById('modal-bodyloadbydate');
-    modalbody.innerHTML = 'no items found'; 
-    this.loadByDate();
   }
 
   render() {    
     return (    
       <form onSubmit={this.handleSubmittedDate}>
-      <div id="items_by_date"><label>Load words by date</label></div>
+      <div id="sort-items-by-date"><label>Load words by date</label></div>
       <div>
         <DatePicker
           id="myDatePicker"
           onChange={this.onChange}
           value={this.state.date}
         />
-      </div>
-      <div>
-        <button type="submit" /*onClick={this.loadByDate}*/ id="loadbydate" class="btn btn-primary" data-toggle="modal" data-target="#exampleLoadbydate">
-          Load by date 
-        </button>
-        
-        <div class="modal fade" id="exampleLoadbydate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Load by date</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div id="modal-body-loadbydate" class="modal-body">
-                 
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
       </form>
     );
@@ -915,6 +883,16 @@ my two mistresses: what a beast am I to slack it!`,*/
       info:null,
       displayDiv:null,
       mydisplayoptions:null,
+      blobData:null, 
+      url:null,
+      textitemlist:null,
+      previous_sessions:null,
+      textRanges:null,
+      output:null,
+      textlist:null,
+      selectText:null,
+      selectDate:null,
+      date:null, 
       
     };
 
@@ -924,7 +902,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
-    document.getElementById('dropzone').hidden = true;
+    document.getElementById('all-input-fields').hidden = true;
     const importedTexts = document.getElementById('preview');
     importedTexts.dataset.textValue = '';
     const wordList = [];
@@ -932,7 +910,103 @@ my two mistresses: what a beast am I to slack it!`,*/
     const thisIsMyWordList = [];
     const thisIsMyTextList = [];
     const allMyTexts = []; 
+    document.getElementById('export_all_items_link').hidden = true;
+    function testAddUser(importText){
+      const importedTexts = document.getElementById('preview'); 
+      if (typeof importedTexts.dataset.username === "string" && importedTexts.dataset.username.length > 0) {
+        importText.forEach(function(myTextItem, index, jsonfile) {
+          myTextItem.forEach(function(info) {
+            if(info[0] === "users") {
+              if (!info[1].includes(importedTexts.dataset.username)) {
+                info[1].push(importedTexts.dataset.username); //array
+              }
+            } 
+          });
+        });
+      }
+    }
+    function testAddDate(importText) {
+      const daysDate = new Date();
+      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      const importedTexts = document.getElementById('preview'); 
+      importText.forEach(function(myTextItem, index, jsonfile) {
+        myTextItem.forEach(function(info) {
+          if(info[0] === "dates" && !info[1].includes(today)) {
+              info[1].push(today); //array
+          } 
+        });
+      });
+    }
+    document.getElementById('btn-sort-by-date').onclick = (event) => {
+      console.log(document.getElementById('sort-items-by-date').dataset.date);
+      const importedTexts = document.getElementById('preview');
+      const allMyTexts = JSON.parse(importedTexts.dataset.alltexts);
+      if(document.getElementById('sort-items-by-date').dataset.date === null) {
+        this.displayNewEntries(allMyTexts);
+        return;
+      };
+      const selectDate = document.getElementById('sort-items-by-date').dataset.date;
 
+      
+      allMyTexts.forEach((text, index, allmytexts) => {
+        text.forEach(prop => {
+          if(prop[0] === "dates" && !prop[1].includes(selectDate)) {
+            allmytexts.forEach(text => {
+              text.forEach(prop => {
+                if(prop[0] === "select_text") {
+                  prop.splice(1,1);
+                  prop.push('unselected');
+                }
+              });
+            });
+          }
+        });
+      });
+      importedTexts.dataset.alltexts = JSON.stringify([...allMyTexts]);
+      this.displayNewEntries(JSON.parse(importedTexts.dataset.alltexts));
+    };
+    document.getElementById('edit-entries-save-changes').onclick = (event) => {
+      document.getElementById('footer-edit-entries').focus();
+      const importedTexts = document.getElementById('preview');
+      const output = [...JSON.parse(importedTexts.dataset.alltexts)];
+    
+      function sessionExport(output) { 
+        output.forEach(element => {
+          element.forEach(el => {
+            if(el[0] === "session_of_texts") {
+              //element.splice(element.indexOf(el), 1);
+              el.splice(1,1);
+              el.push('previous');
+            }
+
+          })
+        });
+      }
+      sessionExport(output);
+      testAddDate(output);
+      testAddUser(output);
+      output.forEach(element => {
+        element.forEach(el => {
+          if(el[0] === "select_text") {
+            element.splice(element.indexOf(el),1);
+          }
+
+        })
+      });
+      //testAddSession(output); 
+     
+      //testAddUser(output);
+      //testAddSession(output);
+      //testAddDate(output);
+      const blobData = new Blob([JSON.stringify({"items": output},null,2)], {type: 'application/json'});
+      const url = window.URL.createObjectURL(blobData);
+      document.getElementById('export_all_items_link').href = url;
+      document.getElementById('export_all_items_link').click();
+    }
+    document.getElementById('text-items').onchange = (event) => {
+    }
+      
   }
 
   handleNameChange = event => {
@@ -1058,10 +1132,9 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendFile = (file) => {
-    const textId = '';
-    createNewTextId(textId);
-    const today = '';
-    daysDate(today);
+    const importedTexts = document.getElementById('preview'); 
+    const textId = createNewTextId();
+    const today = daysDate();
 
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
@@ -1083,7 +1156,22 @@ my two mistresses: what a beast am I to slack it!`,*/
     function addContent(fileinfo, textstring) {
       fileinfo.push(["mycontent", textstring]);
     }
-    const importedTexts = document.getElementById('preview');
+    function testAddSession(importText){
+      importText.forEach(function(myTextItem, index, jsonfile) {
+        if (!myTextItem.some(x => x[0] === "session_of_texts")) {
+          myTextItem.push(["session_of_texts","previous"]);
+        } else if(myTextItem.some(x => x[0] === "session_of_texts")) { 
+          myTextItem.forEach(function(info) {
+            if(info[0] === "session_of_texts") {
+              if (!info[1] === "previous") {
+                info[1] = "previous";
+              }
+            } 
+          });
+        }
+      });
+    }
+
     const fd = new FormData();
     fd.append('myFile', file);
     fetch(URL.createObjectURL(file))
@@ -1099,17 +1187,47 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
       .then(thirdres => {
         const myItems = thirdres.map(obj => obj);
-        const thisIsMyTextList = thirdres.map(obj => obj);
-        this.setState({myItems});
+        console.log(myItems);
 
-        this.checkConnectedUser();
-        this.textsFromOtherUsers(thisIsMyTextList);
+        //testAddSession(myItems);
+        function usersItem(textvar) {
+          return textvar.some(x => x[0] === "users" && x[1].includes(importedTexts.dataset.username)); 
+          //textvar.forEach((prop, index, texts) => {
+          //  if(prop[0] === "users") {
+          //    prop[1].forEach(element => {
+          //      if(element === importedTexts.dataset.username) {
+          //        return arguments[0];
+          //      }
+          //    });
+          //  } 
+          //})
+          //importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textvar]);
+
+        }
+        return myItems.filter(usersItem);
+
+      })
+      .then(result => {
+        console.log(result);
+        if(result === (null||undefined) || result instanceof Array && result.length === 0) {return;} 
+
+        result.forEach(textitem => {
+          document.getElementById('previous-items').innerHTML = Number(document.getElementById('previous-items').innerHTML) +1;
+
+          const importedTexts = document.getElementById('preview');
+          importedTexts.dataset.texts = JSON.stringify(textitem);
+          
+          document.getElementById('text-add').click();
+        });
+        
+
 
 
       })
   }
 
   sendTextFile = (file) => {
+    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1126,7 +1244,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createFileList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      list = [["textId",textId], ["dates", [today]],["users", [importedTexts.dataset.username]],["session_of_texts","current"], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
       return list;
     }
 
@@ -1161,6 +1279,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       importedTexts.dataset.texts = JSON.stringify(result);
       
       document.getElementById('text-add').click();
+      document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1; 
     }
 
     const mainFunction = callback => {
@@ -1176,10 +1295,9 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendDocxFile = (file) => {
-    const textId = '';
-    createNewTextId(textId);
-    const today = '';
-    daysDate(today);
+    const importedTexts = document.getElementById('preview'); 
+    const textId = createNewTextId(textId);
+    const today = daysDate(today);
 
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
@@ -1194,7 +1312,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createFileList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      list = [["textId",textId], ["dates", [today]],["users", [importedTexts.dataset.username]],["session_of_texts", "current"], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
       return list;
     }
 
@@ -1224,6 +1342,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         addContent(newText, resultObject.value);
         importedTexts.dataset.texts = JSON.stringify(newText);
         document.getElementById('text-add').click();
+        document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
       })
     };
     reader.readAsArrayBuffer(file);
@@ -1231,6 +1350,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendPdfFile = (file) => { 
+    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1247,7 +1367,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createFileList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      list = [["textId",textId], ["session_of_texts", "current"],["users",[importedTexts.dataset.username]], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
       console.log(list);
       return list;
     }
@@ -1314,7 +1434,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           importedTexts.dataset.texts = JSON.stringify(newText);
           console.log(JSON.parse(importedTexts.dataset.texts));
           document.getElementById('text-add').click();
-          
+          document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;          
 
         });
 
@@ -1411,22 +1531,24 @@ my two mistresses: what a beast am I to slack it!`,*/
       list.push(['input','dropzone']);
     }
     function isDroppedFile(list){
+      if(list.some(x=>x[0] === 'input')) {return;}
       list.forEach(item => {
         if (item[0] === 'type' && item[1].length > 0) {
           fileIsDropped(list);
         }
       });
     }
+    function selectAText(list){
+      list.push(["select_text","selected"]);
+    }
 
     function pushItem(item) {
-      if(addedTexts.dataset.alltexts === undefined) {
-        addedTexts.dataset.alltexts = JSON.stringify([]);
-      }
       addedTexts.dataset.alltexts = JSON.stringify([...JSON.parse(addedTexts.dataset.alltexts), item]);
     }
 
     const newlist = JSON.parse(addedTexts.dataset.texts);
     isDroppedFile(newlist);
+    selectAText(newlist);
     function addTextSize(size, text) {
       //const VAR_NAME = 
       text.forEach(item => {
@@ -1462,7 +1584,10 @@ my two mistresses: what a beast am I to slack it!`,*/
     if (!(textsToDisplay instanceof Array)) {
       textsToDisplay = [];
     }
-    textsToDisplay.forEach(function(textItem) {
+    function selectedItems(textitem) {
+      return textitem.some(x=> x[0] === "select_text" && x[1] === "selected");
+    };
+    textsToDisplay.filter(selectedItems).forEach(function(textItem) {
       textItem.forEach(function(infoItem) {
 
         if (infoItem[0] === 'textId') { //1794
@@ -1472,6 +1597,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         if (infoItem[0] === 'mycontent') {
           const idx = textItem.indexOf(infoItem);
           const idx1 = textsToDisplay.indexOf(textItem);
+
           textItem[idx][1].forEach(function(word) {
             wordsToDisplay.push([word, idx,idx1]); //textsToDisplay[word[2]][word[1]][1]
           }) // 
@@ -1505,7 +1631,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       displayWord.classList.add('label-word');
       displayDiv.appendChild(displayWord);
       const removeWord = document.createElement('div');
-
+      const selectText = document.createElement('input');
       displayDiv.appendChild(removeWord);
       const importedTexts = document.getElementById('preview');
       if (ifUserConnected() && typeof words[rangeitem-1] === 'string' && item instanceof Array) {
@@ -1578,32 +1704,25 @@ my two mistresses: what a beast am I to slack it!`,*/
 
 
             if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
+              importedTexts.dataset.textId = removeWord.parentNode.parentNode.id; 
               removeWord.parentNode.parentNode.remove();
 
               findRange(removeText);
 
             } else {
+              importedTexts.dataset.textId = removeWord.parentNode.parentNode.id; 
               removeWord.parentNode.parentNode.childNodes[idx].remove();
+
 
               findRange(removeItem);
 
             }
           }
         }
-        document.getElementById('edit-entries-save-changes').onclick = (event) => {
-          document.getElementById('footer-edit-entries').focus();
-          const importedTexts = document.getElementById('preview');
-          console.log(JSON.parse(importedTexts.dataset.alltexts));
-        }
-
-
       }
     });
   }
 
-  previewFile = (file) => {
-    
-  }
 
   handleTextChange = (event) => {
     console.log(this.state.value);
@@ -1666,6 +1785,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   }
   useWordItemInputField = (event) => {
+    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1686,7 +1806,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      list = [["textId",textId],["users", [importedTexts.dataset.username]],["session_of_texts", "current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
       return list;
     }
 
@@ -1696,16 +1816,19 @@ my two mistresses: what a beast am I to slack it!`,*/
     const valueword = document.getElementById('valueword').value;
     if (valueword === "") {return;};
     
-    const importedTexts = document.getElementById('preview');
+
     const newText = createList();
     wordItemInputField(newText);
     addContent(newText, valueword);
     importedTexts.dataset.texts = JSON.stringify(newText);
     document.getElementById('text-add').click();
+    document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
+    valueword = '';
 
   }
 
   useTextInputField = (event) => {
+    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1725,7 +1848,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      list = [["textId",textId],["users",[importedTexts.dataset.username]],["session_of_texts","current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
       return list;
     }
 
@@ -1736,13 +1859,15 @@ my two mistresses: what a beast am I to slack it!`,*/
       value:
         this.state.value
     });
-    const importedTexts = document.getElementById('preview');
+
     if (this.state.value === "") {return;}
     const newText = createList();
     addContent(newText, this.state.value);
     textInputField(newText);
     importedTexts.dataset.texts = JSON.stringify(newText);
     document.getElementById('text-add').click();
+    document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
+    this.state.value = "";
   }
 
   enableEditor = () => {
@@ -1797,6 +1922,8 @@ my two mistresses: what a beast am I to slack it!`,*/
 
 
         <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
+        <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
+        <br/>
         <div id={`download_all_items`}></div> 
         <div id={`download_zone`}></div> 
         <input type="button" onClick={this.textAdd} hidden value="" id="text-add"/>
@@ -1814,9 +1941,7 @@ class EditEntries extends React.Component {
     }
   }
   componentDidMount = () => {
-    document.getElementById('export_all_items').disabled = true;
-    document.getElementById('export_all_items_link').hidden = true;
-    document.getElementById('textsCurrentSession').checked = true;
+
 
   }
 
@@ -1969,45 +2094,29 @@ class EditEntries extends React.Component {
     document.getElementById('export_all_items_link').click();
   }
 
-  addInfoUser = (importText) => {
-    const importedTexts = document.getElementById('preview'); 
-    if (typeof importedTexts.dataset.username === "string" && importedTexts.dataset.username.length > 0) {
-      importText.forEach(function(myTextItem) {
-        if (!myTextItem.some(x => x[0] === "users")) {
-          myTextItem.push(["users",[importedTexts.dataset.username]]);
-        } else if(myTextItem.some(x => x[0] === "users")) { 
-          myTextItem.forEach(function(info) {
-            if(info[0] === "users") {
-              if (!info[1].includes(importedTexts.dataset.username)) {
-                info[1].push(importedTexts.dataset.username);
-              }
-            } 
-          });
-        }
-      });
-    }
-  }
 
+  increment = (event) => {
+        
+  }
 
 
 
   render() {
     return (
-      <div id="editor">
-        <div class="display-sessions" >
-          <input type="checkbox"  value="current" id="textsCurrentSession" name="sessionsTexts"/>
-          <label for="textsCurrentSession" id="labelTextsCurrentSession">Texts for current session</label>
+      <div>
+        <div id="text-items" onchange={this.increment}>
+          <div class="display-items" >
+            <a id="current-items" name="sessions-of-texts">0</a> texts added during this session by the logged in user
+          </div>
+          <div class="display-items">
+            <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
+          </div>
         </div>
-        <div class="display-sessions">
-          <input type="checkbox" value="previous" id="textsPreviousSessions" name="sessionsTexts" disabled /> 
-          <label for="textsPreviousSessions" class="text-muted" id="labelTextsPreviousSessions">Texts from previous sessions</label>
-        </div>
+        <div id="editor">
 
-        <button type="button" class="btn btn-primary" id="export_all_items" onClick={this.exportItems}>
-          Export my items
-        </button>
-        <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
-        <br/>
+
+
+        </div>
       </div>
     )
   }

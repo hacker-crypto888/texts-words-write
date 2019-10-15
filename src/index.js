@@ -288,7 +288,6 @@ class BasicForm extends React.Component {
     const username_modal = document.getElementById('username_modal').value;
 
     if(event.target.id === "loginbtnmodal"||document.getElementById('loginbtn').innerHTML === 'log in') {
-      document.getElementById('loadbydate').removeAttribute('disabled');
       
       if (event.target.id === "loginbtnmodal") {
         document.body.focus();
@@ -336,8 +335,6 @@ class BasicForm extends React.Component {
 
   logout = (event) => {
     const importedTexts = document.getElementById('preview');
-    document.getElementById('items_by_date').focus();
-    document.getElementById('loadbydate').disabled = true;
     document.getElementById('editor').focus();
     while(document.getElementById('editor').firstChild) {
       document.getElementById('editor').removeChild(document.getElementById('editor').firstChild);
@@ -472,7 +469,7 @@ class BasicForm extends React.Component {
              </div>
              <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-primary">Save changes</button>
+               <button type="button" id="btn-sort-by-date"class="btn btn-primary">Sort items by date</button>
              </div>
            </div>
          </div>
@@ -510,7 +507,7 @@ class FillInTheDateForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      date: '',
+      date: new Date(),
       selectedDate:'',
       database:[],
       data:null,
@@ -579,58 +576,36 @@ class FillInTheDateForm extends React.Component {
       displayWord:null,
       removeWord:null, 
       textelements:null,
+      selectDate:null,
+      date:null,
     }
   }
   componentDidMount() {
     const date = new Date();
     this.setState({date});
-    document.getElementById('loadbydate').disabled = true;
   }
   onChange = (date) => {
     this.setState({ date });
+    const selectDate = (date.getMonth()+1)+'/'+date.getDate()+'/'+date.getFullYear();
+    document.getElementById('sort-items-by-date').dataset.date = selectDate;
+    console.log(document.getElementById('sort-items-by-date').dataset.date);
+    console.log(date.toUTCString());
+
   }
   handleSubmittedDate = (event) => {
 
-    const modalbody = document.getElementById('modal-bodyloadbydate');
-    modalbody.innerHTML = 'no items found'; 
-    this.loadByDate();
   }
 
   render() {    
     return (    
       <form onSubmit={this.handleSubmittedDate}>
-      <div id="items_by_date"><label>Load words by date</label></div>
+      <div id="sort-items-by-date"><label>Load words by date</label></div>
       <div>
         <DatePicker
           id="myDatePicker"
           onChange={this.onChange}
           value={this.state.date}
         />
-      </div>
-      <div>
-        <button type="submit" /*onClick={this.loadByDate}*/ id="loadbydate" class="btn btn-primary" data-toggle="modal" data-target="#exampleLoadbydate">
-          Load by date 
-        </button>
-        
-        <div class="modal fade" id="exampleLoadbydate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Load by date</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div id="modal-body-loadbydate" class="modal-body">
-                 
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
       </form>
     );
@@ -915,6 +890,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       textRanges:null,
       output:null,
       textlist:null,
+      selectText:null,
+      selectDate:null,
+      date:null, 
       
     };
 
@@ -960,6 +938,27 @@ my two mistresses: what a beast am I to slack it!`,*/
         });
       });
     }
+    document.getElementById('btn-sort-by-date').onclick = (event) => {
+      console.log(document.getElementById('sort-items-by-date').dataset.date);
+      const importedTexts = document.getElementById('preview');
+      const allMyTexts = JSON.parse(importedTexts.dataset.alltexts);
+      if(document.getElementById('sort-items-by-date').dataset.date === null) {
+        this.displayNewEntries(allMyTexts);
+        return;
+      };
+      const selectDate = document.getElementById('sort-items-by-date').dataset.date;
+
+      function loadTextsByDate(text) {
+        return text.some(prop => prop[0] === "dates" && prop[1].includes(selectDate));
+      }
+      //allMyTexts.filter(loadTextByDate)
+
+      //function selected(list){
+      //  return list.some(x=> x[0] === "select_text" && x[1] === "selected");
+      //}
+      importedTexts.dataset.alltexts = JSON.stringify([...allMyTexts.filter(loadTextsByDate)]);
+      this.displayNewEntries(allMyTexts.filter(loadTextsByDate));
+    };
     document.getElementById('edit-entries-save-changes').onclick = (event) => {
       document.getElementById('footer-edit-entries').focus();
       const importedTexts = document.getElementById('preview');
@@ -1143,7 +1142,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       fileinfo.push(["mycontent", textstring]);
     }
     function testAddSession(importText){
-
       importText.forEach(function(myTextItem, index, jsonfile) {
         if (!myTextItem.some(x => x[0] === "session_of_texts")) {
           myTextItem.push(["session_of_texts","previous"]);
@@ -1577,6 +1575,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         if (infoItem[0] === 'mycontent') {
           const idx = textItem.indexOf(infoItem);
           const idx1 = textsToDisplay.indexOf(textItem);
+
           textItem[idx][1].forEach(function(word) {
             wordsToDisplay.push([word, idx,idx1]); //textsToDisplay[word[2]][word[1]][1]
           }) // 
@@ -1610,7 +1609,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       displayWord.classList.add('label-word');
       displayDiv.appendChild(displayWord);
       const removeWord = document.createElement('div');
-
+      const selectText = document.createElement('input');
       displayDiv.appendChild(removeWord);
       const importedTexts = document.getElementById('preview');
       if (ifUserConnected() && typeof words[rangeitem-1] === 'string' && item instanceof Array) {

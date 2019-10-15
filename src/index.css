@@ -84,9 +84,12 @@ width:70%;
   width:100%;
   display:flex;
   flex-direction:row;
+
+
 }
 .display-text {
   border:1px black solid;
+
 }
 textarea {
   width:60%;
