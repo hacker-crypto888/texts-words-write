@@ -1518,6 +1518,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       list.push(['input','dropzone']);
     }
     function isDroppedFile(list){
+      if(list.some(x=>x[0] === 'input')) {return;}
       list.forEach(item => {
         if (item[0] === 'type' && item[1].length > 0) {
           fileIsDropped(list);
@@ -1526,9 +1527,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
 
     function pushItem(item) {
-      if(addedTexts.dataset.alltexts === undefined) {
-        addedTexts.dataset.alltexts = JSON.stringify([]);
-      }
       addedTexts.dataset.alltexts = JSON.stringify([...JSON.parse(addedTexts.dataset.alltexts), item]);
     }
 
