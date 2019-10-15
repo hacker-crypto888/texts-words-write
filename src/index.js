@@ -976,15 +976,19 @@ my two mistresses: what a beast am I to slack it!`,*/
           })
         });
       }
+      function addAllUsers(texts) {
+        return [...texts, JSON.parse(importedTexts.dataset.allusers)];
+      }
       sessionExport(output);
       testAddDate(output);
       testAddUser(output);
+      addAllUsers(output);
       //testAddSession(output); 
      
       //testAddUser(output);
       //testAddSession(output);
       //testAddDate(output);
-      const blobData = new Blob([JSON.stringify({"items": output},null,2)], {type: 'application/json'});
+      const blobData = new Blob([JSON.stringify({"items": [...output, JSON.parse(importedTexts.dataset.allusers)]},null,2)], {type: 'application/json'});
       const url = window.URL.createObjectURL(blobData);
       document.getElementById('export_all_items_link').href = url;
       document.getElementById('export_all_items_link').click();
@@ -1176,6 +1180,12 @@ my two mistresses: what a beast am I to slack it!`,*/
 
         //testAddSession(myItems);
         function usersItem(textvar) {
+          if(!textvar.some(x => x[0] === "users" && x[1].includes(importedTexts.dataset.username))) {
+            document.getElementById('other-users-items').innerHTML = Number(document.getElementById('other-users-items').innerHTML) +1;
+            importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textvar]);
+            
+          }
+
           return textvar.some(x => x[0] === "users" && x[1].includes(importedTexts.dataset.username)); 
           //textvar.forEach((prop, index, texts) => {
           //  if(prop[0] === "users") {
@@ -1186,7 +1196,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           //    });
           //  } 
           //})
-          //importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textvar]);
+
 
         }
         return myItems.filter(usersItem);
@@ -2088,6 +2098,9 @@ class EditEntries extends React.Component {
           </div>
           <div class="display-items">
             <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
+          </div>
+          <div class="display-items">
+            <a id="other-users-items" name="sessions-of-texts">0</a> texts from other users that are left in the database
           </div>
         </div>
         <div id="editor">
