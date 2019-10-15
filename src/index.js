@@ -148,33 +148,9 @@ class BasicForm extends React.Component {
   };
   displayAudio = event => {
     const itemlist = [];
-    document.getElementById('import_texts_words').click();
     const importedTexts = document.getElementById("preview");
-    const importText = JSON.parse(importedTexts.dataset.texts); 
-    const thisIsMyTextList = [];
-    const myitems = [];
-    importText.forEach(function(mytext) {
-      const textObject = {};
-
-      mytext.forEach(function(myinfo) {
-        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;};
-        textObject[myinfo[0]] = myinfo[1];
-      });
-      if(textObject === {}) {return;};
-      if(!textObject.mycontent) {return;};
-      console.log(textObject.content); 
-      thisIsMyTextList.push(textObject);
-
-      mytext.forEach(function(f) {
-        if (f[0] === "mycontent" && f[1] instanceof Array && f[1].length > 0) {
-          myitems.push(f[1]);
-          myitems.flat();
-        }
-      });
-      
-    });
-    if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
-    console.log(thisIsMyTextList);
+    importedTexts.dataset.number = Number('');
+    const myitems = JSON.parse(importedTexts.dataset.alltexts); 
 
     if(myitems instanceof Array && myitems.length === 0) {return;};
     const myNode = document.getElementById('myAudioFiles');
@@ -197,50 +173,56 @@ class BasicForm extends React.Component {
         //    textObject[textitem[0]]=textitem[1];
         //  });
         console.log(myitems);
-        const myitems1 = myitems.filter((v,i,a) => a.indexOf(v) === i)[0];
-        console.log(myitems1);
-        myitems1.forEach(function(myworditem, index, wordlist) {
-          const audioFilePreview = document.createElement('audio'); 
-          audioFilePreview.className=myworditem;
-          audioFilePreview.key=index;
-          audioFilePreview.id=myworditem;
-          audioFilePreview.controls=true;
-          audioFilePreview.onpause = (event) => {
-            event.currentTarget.currentTime = 0;
-          }
-          if (document.getElementById('playAllTheWords').checked) {
-            audioFilePreview.onended = (event) => {
-              const allAudioElements = document.getElementsByTagName('audio');
-              if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
-                const myAudioItems = document.getElementById('myAudioFiles');
+        myitems.forEach(function(text) {
+          text.forEach(prop => {
+            if(prop[0] === "mycontent") {
+              prop[1].forEach(myworditem => {
+      
+                const audioFilePreview = document.createElement('audio'); 
+                audioFilePreview.className=myworditem;
+                importedTexts.dataset.number = Number(importedTexts.dataset.number) + 1;
+                audioFilePreview.key=importedTexts.dataset.number;
+                audioFilePreview.id=myworditem;
+                audioFilePreview.controls=true;
+                audioFilePreview.onpause = (event) => {
+                  event.currentTarget.currentTime = 0;
+                }
+                if (document.getElementById('playAllTheWords').checked) {
+                  audioFilePreview.onended = (event) => {
+                    const allAudioElements = document.getElementsByTagName('audio');
+                    if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
+                      const myAudioItems = document.getElementById('myAudioFiles');
 
-                const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
-                myAudioItems.childNodes[indexAudioElement].play();
+                      const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
+                      myAudioItems.childNodes[indexAudioElement].play();
 
-              }
-            };
-          }
-          audioFilePreview.onplay = (event) => { 
-            const wordInputField = document.getElementById('wordinput');
-            wordInputField.dataset.targetValue = audioFilePreview.id;
-          };
-          [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
-            if(mp3[0] === myworditem && mp3[1].length){
-              mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
-                const theFirstChild = audioFilePreview.firstChild;
-                const sourceFile = document.createElement('source');
-                sourceFile.src = mp3link; 
-                sourceFile.className = myworditem; 
-                sourceFile.type = 'audio/mpeg'; 
-                audioFilePreview.insertBefore(sourceFile, theFirstChild);
+                    }
+                  };
+                }
+                audioFilePreview.onplay = (event) => { 
+                  const wordInputField = document.getElementById('wordinput');
+                  wordInputField.dataset.targetValue = audioFilePreview.id;
+                };
+                [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
+                  if(mp3[0] === myworditem && mp3[1].length){
+                    mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
+                      const theFirstChild = audioFilePreview.firstChild;
+                      const sourceFile = document.createElement('source');
+                      sourceFile.src = mp3link; 
+                      sourceFile.className = myworditem; 
+                      sourceFile.type = 'audio/mpeg'; 
+                      audioFilePreview.insertBefore(sourceFile, theFirstChild);
 
-              })
-              myAudioFiles.push(audioFilePreview);
-              
+                    })
+                    myAudioFiles.push(audioFilePreview);
+                    
+                  }
+                });
+                
+                document.getElementById('loadingAudioFiles').hidden = true;
+              });
             }
           });
-          
-          document.getElementById('loadingAudioFiles').hidden = true;
 
         });
         const previewMyAudioFiles = document.getElementById('myAudioFiles');
