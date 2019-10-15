@@ -35,6 +35,7 @@ The program can handle following file formats in the input:
 
 
 ### Outline of the variables of the program
+
 __PREVIOUS SESSIONS__  
 (JSON) ALL USERS' TEXT ITEMS  
 
@@ -43,7 +44,20 @@ __CURRENT SESSION__
 (INPUT TEXT FIELD/DROP ZONE) CONNECTED USER TEXT ITEMS  
 
 ### Outline of the functions of the program
-- Date picker
-- Dropzone
 
-- Login /logout The login/logout is not secure yet. The password should be encrypted. An additional login page should be used in addition to a post method, or even a login API.
+This program comprises five main functions: the date picker, the dropzone, the login and logout, the editor, and the audio player.
+
+#### Date picker
+The date picker sorts items by date by removing the texts that do not correspond to the selected date.
+
+#### Dropzone
+The dropzone accepts PDF, TXT, or DOCX to extract text from them, in addition to a database.json file that contains all the previous sessions of texts from all users.
+
+#### Login /logout 
+The login/logout is not secure. The password should be encrypted. An additional login page should be used in addition to a post method, or even a login API.
+
+#### Editor
+The editor displays the  number of texts from the previous and current session. It is possible to remove the word items one by one. The items are can be displayed according to a date selected in the date picker. In that case, only the user's items will be displayed sorted by date. You can also export all of the items together with that from other users.
+
+#### Audio player
+Each word item that is listed in the text items is displayed in the editor, and has an audio player. The user should play the word, write it in the word input field just above it, and make its spelling be checked by the program in order to make the audio player disappear.
