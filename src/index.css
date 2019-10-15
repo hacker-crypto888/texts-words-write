@@ -94,3 +94,6 @@ width:70%;
 textarea {
   width:60%;
 }
+.error-signin {
+  border: 1px red solid;
+}

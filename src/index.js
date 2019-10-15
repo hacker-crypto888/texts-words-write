@@ -2,7 +2,8 @@ import React, {setState} from 'react';
 import ReactDOM from 'react-dom'; 
 import './index.css';
 import DatePicker from 'react-date-picker';
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
+const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
@@ -79,6 +80,9 @@ class BasicForm extends React.Component {
       saltRounds:null,
       plainTextUsername1:null,
       plainTextPassword1:null,
+      password:null,
+      hash:null,
+      passwordlist:null,
     };
   }
   componentDidMount() {
@@ -94,10 +98,19 @@ class BasicForm extends React.Component {
         '' 
     });
 
-    
-    window.addEventListener("keydown", function(event) {
-      document.getElementById('username').focus();
-    });
+     
+    document.getElementById('signup-username').onfocus = (event) => {
+  
+      window.addEventListener("keydown", function(event) {
+        document.getElementById('signup-username').focus();
+      });
+    }
+    document.getElementById('signup-password').onfocus = (event) => {
+  
+      window.addEventListener("keydown", function(event) {
+        document.getElementById('signup-password').focus();
+      });
+    }
     this.logout();
     
   }
@@ -262,6 +275,8 @@ class BasicForm extends React.Component {
     this.setState({
       username:
         event.target.username,
+      password:
+        event.target.password,
       signupUsername:
         event.target.signupUsername,
       signupPassword:
@@ -287,32 +302,43 @@ class BasicForm extends React.Component {
   loginUser = (event) => {
     const importedTexts = document.getElementById("preview");
     const username = document.getElementById('username').value;
-    const username_modal = document.getElementById('username_modal').value;
-
+    const password = document.getElementById('password').value;
+    const passwordlist = JSON.parse(importedTexts.dataset.passwords); 
     if(document.getElementById('loginbtn').innerHTML === 'sign in') {
+      //const hash
+      //
+      passwordlist.forEach(element => {
+        bcrypt.compare(password, element.password, function(err, res) {
+          if(res === true) {
+            if(!passwordlist.some(x=> bcrypt.compareSync(password, element.password && username === x.username)) {
+              document.getElementById('username').classList.add('error-signin');
+              document.getElementById('password').classList.add('error-signin');
+              return;
+            }
+          }
+        });
+      }); 
       
       this.showAllInputFields();
 
       this.checkStringLength(username);
-      document.getElementById('loginbtn').innerHTML = 'log out';
+      document.getElementById('loginbtn').innerHTML = 'sign out';
       document.getElementById('username').hidden = true;
+      document.getElementById('password').hidden = true;
+      document.getElementById('username').classList.remove('error-signin');
+      document.getElementById('password').classList.remove('error-signin');
       document.getElementById('welcome').innerHTML = "Hello, "+username;
       importedTexts.dataset.username = username; 
-      if (event.target.id === "loginbtnmodal") {
-        this.checkStringLength(username_modal);
-
-        document.getElementById('welcome').innerHTML = "Hello, "+username_modal;
-        importedTexts.dataset.username = username_modal; 
-      }
 
       
 
     } else if(document.getElementById('loginbtn').innerHTML === 'sign out') {
       importedTexts.dataset.username = ''; 
-      document.getElementById('loginbtn').innerHTML = 'log in';
-      document.getElementById('username').hidden = false;
+      document.getElementById('loginbtn').innerHTML = 'sign in';
+
       document.getElementById('welcome').innerHTML = "";
       document.getElementById('username').value = "";
+      document.getElementById('password').value = "";
       this.logout();
       this.hideAllInputFields();
       while (importedTexts.firstChild) {
@@ -341,21 +367,27 @@ class BasicForm extends React.Component {
     importedTexts.dataset.texts = JSON.stringify([]);
     importedTexts.dataset.allusers = JSON.stringify([]);
     importedTexts.dataset.previous_sessions = JSON.stringify([]);
+    importedTexts.dataset.passwords = JSON.stringify([]);
     document.getElementById('previous-items').innerHTML = Number('');
     document.getElementById('current-items').innerHTML = Number('');
+    document.getElementById('password').hidden = false;
+    document.getElementById('username').hidden = false;
   }
   signupUser = (event) => {
     const saltRounds = 10;
-    const plainTextPassword1 = "DFGh5546*%^__90";
+
+    const plainTextUsername1 = document.getElementById('signup-username').value;
+    const plainTextPassword1 = document.getElementById('signup-password').value;
+
+
     
-    bcrypt
-      .hash(plainTextPassword1, saltRounds)
-      .then(hash => {
-        console.log(`Hash: ${hash}`);
-    
-        // Store hash in your password DB.
-      })
-      .catch(err => console.error(err.message));
+    bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hash(plainTextPassword1, salt, function(err, hash) {
+          const importedTexts = document.getElementById('preview');
+          importedTexts.dataset.passwords = JSON.stringify([...JSON.parse(importedTexts.dataset.passwords), {username: plainTextUsername1, password: plainTextPassword1}]);
+            // Store hash in your password DB.
+        });
+    });
 
   }
 
@@ -366,6 +398,7 @@ class BasicForm extends React.Component {
        <div id="login-form-body" className={`login-form`}> 
          <div id="welcome"></div>
          <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} /> 
+         <input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} /> 
          <br/><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
             
          </button>
