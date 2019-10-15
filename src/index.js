@@ -310,11 +310,12 @@ class BasicForm extends React.Component {
       passwordlist.forEach(element => {
         bcrypt.compare(password, element.password, function(err, res) {
           if(res === true) {
-            if(!passwordlist.some(x=> bcrypt.compareSync(password, element.password && username === x.username)) {
-              document.getElementById('username').classList.add('error-signin');
-              document.getElementById('password').classList.add('error-signin');
-              return;
-            }
+            
+            //if(!passwordlist.some(x=> bcrypt.compareSync(password, element.password) && username === x.username)) {
+            //  document.getElementById('username').classList.add('error-signin');
+            //  document.getElementById('password').classList.add('error-signin');
+            //  return;
+            //}
           }
         });
       }); 
