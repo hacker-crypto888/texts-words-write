@@ -98,30 +98,18 @@ __CURRENT SESSION__
 (INPUT TEXT FIELD/DROP ZONE) CONNECTED USER TEXT ITEMS  
 
 ### Outline of the functions
-In each function that extracts text
-- add a "users" property to the text item, and add the user's name 
-
-- add a "session of text" property to the text item, and fill in its value with "current" 
-- add the text item to the bigger list
-
 At JSON import
 - sort the text items into two groups: that of the connected user, and that from other users
-- look for the "session of text" property to each user's text item, and fill in its value with "previous"
-- add each user's text item to the bigger list
 
 - Display Number of items of each sort 
 
+At export
+- add the day's date to a text item from a previous session
 
-At JSON export
-- group all items
-- TEST FUNCTION:  if the text item has no "users" property, it must be added, and its value must be filled in with the currently connected user's name
-- TEST FUNCTION:  if the text item has no "session of text" property, it must be added, and its value must be filled in with "previous"
-- TEST FUNCTION:  if the text item has no "dates" property, it must be added, and its value must be filled in with the day's date
- 
-
-
-- choose when to add the day's date to a text item from a previous session
 - repair display of audio files: repair the variable it takes in entry, repair the function to display audio word items
 - it is possible to make the date picker work in two ways: to display the right audio word items, and to sort the right items for export, but, for practical reasons, I eventually choosed that the date picker only sorts items to display the right audio word items for the current session, whereas the editor can be used to export the right items as well as to only sort the items for the current session. I will also create a modal to remove whole texts.
+- add a button to the editor. rename "save changes" to "save and export changes", and create a "save changes and play. Add a third button "remove a text" to open a new modal that displays the selection of texts of the user currently selected, and allow the user to remove them, add a fourth button "close " to close the modal
+- this is a pity that there is no distinction between selecting/unselecting texts, and removing them from the database. we could keep the "delete a text and remove a word" systems that I already created, only customize a little bit more the system to remove a text, by allowing the user to do it in an other modal, and remove the whole text. 
+- the checkbox could be used to select/unselect elements to play, in addition to adding a "selected" property to mark whether the item is selected or not. By default, the items are all selected.
 
 The login/logout is not secure yet. The password should be encrypted. An additional login page should be used in addition to a post method, or even a login API.
