@@ -2,6 +2,7 @@ import React, {setState} from 'react';
 import ReactDOM from 'react-dom'; 
 import './index.css';
 import DatePicker from 'react-date-picker';
+const bcrypt = require("bcrypt");
 const PDFJS = window['pdfjs-dist/build/pdf'];
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
@@ -73,6 +74,11 @@ class BasicForm extends React.Component {
       myitems:null,
       myitems1:null,
       mynewitems:null,
+      signupUsername:null,
+      signupPassword:null,
+      saltRounds:null,
+      plainTextUsername1:null,
+      plainTextPassword1:null,
     };
   }
   componentDidMount() {
@@ -87,15 +93,11 @@ class BasicForm extends React.Component {
       username:
         '' 
     });
-    document.getElementById('loginbtn').innerHTML = 'log in';
-    document.getElementById('modallogin-hidden-btn').hidden = true;
 
-    document.getElementById('loginModal').onshow = (event) => {
-      document.getElementById('loginModal').focus();
-      window.addEventListener("keydown", function(event) {
-        document.getElementById('username_modal').focus();
-      });
-    };
+    
+    window.addEventListener("keydown", function(event) {
+      document.getElementById('username').focus();
+    });
     this.logout();
     
   }
@@ -259,11 +261,11 @@ class BasicForm extends React.Component {
   handleUsernameChange = (event) => {
     this.setState({
       username:
-        event.target.username
-    });
-    this.setState({
-      username_modal:
-        event.target.username_modal
+        event.target.username,
+      signupUsername:
+        event.target.signupUsername,
+      signupPassword:
+        event.target.signupPassword
     });
   }
   checkStringLength = (string) => {
@@ -287,13 +289,8 @@ class BasicForm extends React.Component {
     const username = document.getElementById('username').value;
     const username_modal = document.getElementById('username_modal').value;
 
-    if(event.target.id === "loginbtnmodal"||document.getElementById('loginbtn').innerHTML === 'log in') {
+    if(document.getElementById('loginbtn').innerHTML === 'sign in') {
       
-      if (event.target.id === "loginbtnmodal") {
-        document.body.focus();
-        document.getElementById('loginModal').hidden = true;
-        document.getElementById('login-form-body').focus();
-      }
       this.showAllInputFields();
 
       this.checkStringLength(username);
@@ -310,7 +307,7 @@ class BasicForm extends React.Component {
 
       
 
-    } else if(document.getElementById('loginbtn').innerHTML === 'log out') {
+    } else if(document.getElementById('loginbtn').innerHTML === 'sign out') {
       importedTexts.dataset.username = ''; 
       document.getElementById('loginbtn').innerHTML = 'log in';
       document.getElementById('username').hidden = false;
@@ -335,6 +332,7 @@ class BasicForm extends React.Component {
 
   logout = (event) => {
     const importedTexts = document.getElementById('preview');
+    document.getElementById('loginbtn').innerHTML = 'sign in';
     document.getElementById('editor').focus();
     while(document.getElementById('editor').firstChild) {
       document.getElementById('editor').removeChild(document.getElementById('editor').firstChild);
@@ -345,10 +343,22 @@ class BasicForm extends React.Component {
     importedTexts.dataset.previous_sessions = JSON.stringify([]);
     document.getElementById('previous-items').innerHTML = Number('');
     document.getElementById('current-items').innerHTML = Number('');
+  }
+  signupUser = (event) => {
+    const saltRounds = 10;
+    const plainTextPassword1 = "DFGh5546*%^__90";
     
-
+    bcrypt
+      .hash(plainTextPassword1, saltRounds)
+      .then(hash => {
+        console.log(`Hash: ${hash}`);
+    
+        // Store hash in your password DB.
+      })
+      .catch(err => console.error(err.message));
 
   }
+
   render() { 
     
     return(
@@ -360,10 +370,10 @@ class BasicForm extends React.Component {
             
          </button>
 
-         <button type="button" data-backdrop="false" data-toggle="modal" id="modallogin-hidden-btn" class="btn btn-primary" data-target="#loginModal">
-           Launch demo modal
+         <button type="button" data-backdrop="false" data-toggle="modal" id="btnmodal-signup" class="btn btn-secondary" data-target="#modal-signup">
+           Sign up 
          </button>
-         <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal fade" id="modal-signup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
            <div class="modal-dialog" role="document">
              <div class="modal-content">
                <div class="modal-header">
@@ -374,9 +384,10 @@ class BasicForm extends React.Component {
                </div>
                <div class="modal-body">
                  <div className={`login-form-modal`}> 
-                   <input onChange={this.handleUsernameChange} placeholder="Username" id="username_modal" value={this.state.username_modal} /> 
-                   <br/><button id="loginbtnmodal" onClick={this.loginUser} className={`btn btn-success`}>  
-                     Log in 
+                   <input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
+                   <input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
+                   <br/><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}>  
+                     Sign up 
                    </button>
                  </div>
                </div>
