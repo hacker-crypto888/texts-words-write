@@ -976,13 +976,9 @@ my two mistresses: what a beast am I to slack it!`,*/
           })
         });
       }
-      function addAllUsers(texts) {
-        return [...texts, JSON.parse(importedTexts.dataset.allusers)];
-      }
       sessionExport(output);
       testAddDate(output);
       testAddUser(output);
-      addAllUsers(output);
       //testAddSession(output); 
      
       //testAddUser(output);

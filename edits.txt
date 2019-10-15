@@ -137,4 +137,8 @@ When the connected user adds the database JSON , all texts go to a variable name
 
 so the checkboxes must be checked accordingly to display the right texts at the right moment.
 
-TODO: export button does not export all users' items, only that of the currently connecter user./ i did not write to function to remove texts. 
+TODO: export button does not export all users' items, only that of the currently connecter user./ i did not write any function to remove texts. 
+
+- I could add a login with one way encryption to manage the password
+- password / username with b crypt
+
