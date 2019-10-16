@@ -2,24 +2,11 @@ import React, {setState} from 'react';
 import ReactDOM from 'react-dom'; 
 import './index.css';
 import DatePicker from 'react-date-picker';
-import exportFromJSON from 'export-from-json';
+//import exportFromJSON from 'export-from-json';
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
-const writeJsonFile = require('write-json-file');
-(async () => {
-    await writeJsonFile('database.json', {foo: true});
-})();
-const Fs = require('fs')
-const fs = require('fs');
-
-function writeToFile (data) {  
-  const json = JSON.stringify(data, null, 2)
-  fs.writeFileSync('database.json', json);
-
-  console.log('Saved data to file.')
-}
-
+//const fs = require('fs');
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 const mammoth = require("mammoth");
@@ -954,6 +941,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       host:null,
       server:null,
       http:null,
+      jsonArr:null,
+      method:null,
+      jsonRequestURL:null,
       
     };
 
@@ -1012,6 +1002,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       function loadTextsByDate(text) {
         return text.some(prop => prop[0] === "dates" && prop[1].includes(selectDate));
       }
+
       //allMyTexts.filter(loadTextByDate)
 
       //function selected(list){
@@ -1021,6 +1012,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       this.displayNewEntries(allMyTexts.filter(loadTextsByDate));
     };
     document.getElementById('edit-entries-save-changes').onclick = (event) => {
+      console.log('test');
       document.getElementById('footer-edit-entries').focus();
       const importedTexts = document.getElementById('preview');
       const output = [...JSON.parse(importedTexts.dataset.alltexts)];
@@ -1054,12 +1046,15 @@ my two mistresses: what a beast am I to slack it!`,*/
       }
       //writeToFile(data);
 
-
+      //fs.writeFile("database.json", JSON.stringify(data, null, 2), (err) => { 
+      //  if(err) {return console.log(err)};/* handle error */ 
+      //  console.log('file saved');
+      //});
       //importedTexts.dataset.data = JSON.stringify(data);
-      const blobData = new Blob([JSON.stringify({"items": data},null,2)], {type: 'application/json'});
-      const url = window.URL.createObjectURL(blobData);
-      document.getElementById('export_all_items_link').href = url;
-      document.getElementById('export_all_items_link').click();
+      //const blobData = new Blob([JSON.stringify({"items": data},null,2)], {type: 'application/json'});
+      //const url = window.URL.createObjectURL(blobData);
+      //document.getElementById('export_all_items_link').href = url;
+      //document.getElementById('export_all_items_link').click();
 
 
      
