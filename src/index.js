@@ -445,13 +445,11 @@ my two mistresses: what a beast am I to slack it!`,*/
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
     const importedTexts = document.getElementById('preview');
-    importedTexts.dataset.textValue = '';
     const wordList = [];
     const allMyWords = [];
     const thisIsMyWordList = [];
     const thisIsMyTextList = [];
     const allMyTexts = []; 
-    document.getElementById('export_all_items_link').hidden = true;
     const date = new Date();
     this.setState({date});
 
