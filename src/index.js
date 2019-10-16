@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import DatePicker from 'react-date-picker';
 import './App.js';
-import { BrowserRouter as Router, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
@@ -89,20 +89,12 @@ class BasicForm extends React.Component {
     };
   }
   componentDidMount() {
-    document.getElementById('loadingAudioFiles').hidden = true;
-    this.btn.setAttribute('disabled','disabled'); 
     const allAudioElements = document.getElementsByTagName('audio'); 
-    this.setState({
-      itemsloaded:
-        'no items loaded'
-    });
+    document.getElementById('loadingAudioFiles').hidden = true; 
     this.setState({
       username:
         '' 
     });
-    const importedTexts = document.getElementById('preview');
-    importedTexts.dataset.passwords = JSON.stringify([]);
-    this.logout();
     
   }
 
@@ -294,8 +286,8 @@ class BasicForm extends React.Component {
     const importedTexts = document.getElementById("preview");
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    const passwordlist = JSON.parse(importedTexts.dataset.passwords); 
-    if(document.getElementById('loginbtn').innerHTML === 'sign in') {
+    const passwordlist = JSON.parse(document.getElementById('username').dataset.passwords);
+    if(document.getElementById('username').value.length > 0) {
       console.log(passwordlist); 
       if(!passwordlist.some(x=> bcrypt.compareSync(password, x.password) && username === x.username)) {
         document.getElementById('username').classList.add('error-signin');
@@ -303,7 +295,6 @@ class BasicForm extends React.Component {
         return;
       }
       
-      this.showAllInputFields();
 
       this.checkStringLength(username);
       document.getElementById('loginbtn').innerHTML = 'sign out';
@@ -312,19 +303,16 @@ class BasicForm extends React.Component {
       document.getElementById('username').className= '' 
       document.getElementById('password').className = '';
       document.getElementById('welcome').innerHTML = "Hello, "+username;
-      importedTexts.dataset.username = username; 
 
       
 
     } else if(document.getElementById('loginbtn').innerHTML === 'sign out') {
-      importedTexts.dataset.username = ''; 
+      document.getElementById('username').value = '';
       document.getElementById('loginbtn').innerHTML = 'sign in';
 
       document.getElementById('welcome').innerHTML = "";
       document.getElementById('username').value = "";
       document.getElementById('password').value = "";
-      this.logout();
-      this.hideAllInputFields();
       while (importedTexts.firstChild) {
         importedTexts.removeChild(importedTexts.firstChild);
       }
@@ -332,30 +320,6 @@ class BasicForm extends React.Component {
 
     }
     
-  }
-  showAllInputFields = () => {
-    document.getElementById('all-input-fields').hidden = false;
-  }
-  hideAllInputFields = () => {
-    document.getElementById('all-input-fields').hidden = true;
-  }
-
-  logout = (event) => {
-    const importedTexts = document.getElementById('preview');
-    document.getElementById('loginbtn').innerHTML = 'sign in';
-    document.getElementById('editor').focus();
-    while(document.getElementById('editor').firstChild) {
-      document.getElementById('editor').removeChild(document.getElementById('editor').firstChild);
-    }
-    importedTexts.dataset.alltexts = JSON.stringify([]);
-    importedTexts.dataset.texts = JSON.stringify([]);
-    importedTexts.dataset.allusers = JSON.stringify([]);
-    importedTexts.dataset.previous_sessions = JSON.stringify([]);
-
-    document.getElementById('previous-items').innerHTML = Number('');
-    document.getElementById('current-items').innerHTML = Number('');
-    document.getElementById('password').hidden = false;
-    document.getElementById('username').hidden = false;
   }
   signupUser = (event) => {
     const saltRounds = 10;
@@ -368,7 +332,7 @@ class BasicForm extends React.Component {
     bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(plainTextPassword1, salt, function(err, hash) {
           const importedTexts = document.getElementById('preview');
-          importedTexts.dataset.passwords = JSON.stringify([...JSON.parse(importedTexts.dataset.passwords), {username: plainTextUsername1, password: hash}]);
+          document.getElementById('username').dataset.passwords = JSON.stringify([...JSON.parse(document.getElementById('username').dataset.passwords), {username: plainTextUsername1, password: hash}]);
             // Store hash in your password DB.
         });
     });
@@ -405,9 +369,17 @@ class BasicForm extends React.Component {
           <Main>
             
             <form onSubmit={this.handleSubmit}>
-              <div id="login-form-body" className={`login-form`}> 
+              <Route path="/upload" component={RegistrationForm} />
+              <Route path="/sort" component={FillInTheDateForm} />
+              <Route path="/edit" component={EditEntries} />
+
+
+              <Route exact={true} path="/" render={() => (
+                <div id="login-form-body" className={`login-form`}> 
+                <h1>Welcome</h1>
                 <br /><div id="welcome"></div>
-                <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
+
+                <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
                 <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
 
                 <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
@@ -419,44 +391,45 @@ class BasicForm extends React.Component {
                 <br /><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
                   Sign up 
                 </button>
-                
-              </div>
-              <div id="all-input-fields">
-                <div className={`form-group`}> 
-
-
-                  <div className="spinner-border" id={`loadingAudioFiles`} role="status">
-                    <span className="sr-only">Loading...</span>
-                  </div>
-                  <label htmlFor={`wordinput`}></label>
-                  <input
-                    className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
-                    id={`wordinput`}
-                    placeholder='Enter word'
-                    value={this.state.inputValue}
-                    //onMouseOver={this.displayAudio}
-                    onClick={this.handleWordInput}
-                    onFocus={this.handleWordInput}
-                    onChange={e => this.setState({ inputValue: e.target.value }) }
-                         
-                  />
-                  <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
-                    click me
-                  </button>
-
-
-                  <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
-
-                    Start a new game 
-                  </button>
-                  <br />
-
-                  <div id={`myAudioFiles`}></div>
-                  <RegistrationForm />
-                  <FillInTheDateForm />
-                  <EditEntries/>
                 </div>
-              </div>
+              )} />
+
+              <Route path="/play" render={() => (
+                <div id="all-input-fields">
+                  <div className={`play`}> 
+
+
+                    <div className="spinner-border" id={`loadingAudioFiles`} role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                    <label htmlFor={`wordinput`}></label>
+                    <input
+                      className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
+                      id={`wordinput`}
+                      placeholder='Enter word'
+                      value={this.state.inputValue}
+                      //onMouseOver={this.displayAudio}
+                      onClick={this.handleWordInput}
+                      onFocus={this.handleWordInput}
+                      onChange={e => this.setState({ inputValue: e.target.value }) }
+                           
+                    />
+                    <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
+                      click me
+                    </button>
+
+
+                    <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
+
+                      Start a new game 
+                    </button>
+                    <br />
+
+                    <div id={`myAudioFiles`}></div>
+
+                  </div>
+                </div>
+              )}/>
             </form>
           </Main>
         </Root>
@@ -578,6 +551,27 @@ class FillInTheDateForm extends React.Component {
   componentDidMount() {
     const date = new Date();
     this.setState({date});
+    document.getElementById('btn-sort-by-date').onclick = (event) => {
+      console.log(document.getElementById('sort-items-by-date').dataset.date);
+      const importedTexts = document.getElementById('preview');
+      const allMyTexts = JSON.parse(importedTexts.dataset.alltexts);
+      if(document.getElementById('sort-items-by-date').dataset.date === null) {
+        this.displayNewEntries(allMyTexts);
+        return;
+      };
+      const selectDate = document.getElementById('sort-items-by-date').dataset.date;
+
+      function loadTextsByDate(text) {
+        return text.some(prop => prop[0] === "dates" && prop[1].includes(selectDate));
+      }
+      //allMyTexts.filter(loadTextByDate)
+
+      //function selected(list){
+      //  return list.some(x=> x[0] === "select_text" && x[1] === "selected");
+      //}
+      importedTexts.dataset.alltexts = JSON.stringify([...allMyTexts.filter(loadTextsByDate)]);
+      this.displayNewEntries(allMyTexts.filter(loadTextsByDate));
+    };
   }
   onChange = (date) => {
     this.setState({ date });
@@ -898,7 +892,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
     this.a.removeAttribute("href");
-    document.getElementById('all-input-fields').hidden = true;
     const importedTexts = document.getElementById('preview');
     importedTexts.dataset.textValue = '';
     const wordList = [];
@@ -907,86 +900,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const thisIsMyTextList = [];
     const allMyTexts = []; 
     document.getElementById('export_all_items_link').hidden = true;
-    function testAddUser(importText){
-      const importedTexts = document.getElementById('preview'); 
-      if (typeof importedTexts.dataset.username === "string" && importedTexts.dataset.username.length > 0) {
-        importText.forEach(function(myTextItem, index, jsonfile) {
-          myTextItem.forEach(function(info) {
-            if(info[0] === "users") {
-              if (!info[1].includes(importedTexts.dataset.username)) {
-                info[1].push(importedTexts.dataset.username); //array
-              }
-            } 
-          });
-        });
-      }
-    }
-    function testAddDate(importText) {
-      const daysDate = new Date();
-      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-      const msTime = Date.now();
-      const importedTexts = document.getElementById('preview'); 
-      importText.forEach(function(myTextItem, index, jsonfile) {
-        myTextItem.forEach(function(info) {
-          if(info[0] === "dates" && !info[1].includes(today)) {
-              info[1].push(today); //array
-          } 
-        });
-      });
-    }
-    document.getElementById('btn-sort-by-date').onclick = (event) => {
-      console.log(document.getElementById('sort-items-by-date').dataset.date);
-      const importedTexts = document.getElementById('preview');
-      const allMyTexts = JSON.parse(importedTexts.dataset.alltexts);
-      if(document.getElementById('sort-items-by-date').dataset.date === null) {
-        this.displayNewEntries(allMyTexts);
-        return;
-      };
-      const selectDate = document.getElementById('sort-items-by-date').dataset.date;
 
-      function loadTextsByDate(text) {
-        return text.some(prop => prop[0] === "dates" && prop[1].includes(selectDate));
-      }
-      //allMyTexts.filter(loadTextByDate)
-
-      //function selected(list){
-      //  return list.some(x=> x[0] === "select_text" && x[1] === "selected");
-      //}
-      importedTexts.dataset.alltexts = JSON.stringify([...allMyTexts.filter(loadTextsByDate)]);
-      this.displayNewEntries(allMyTexts.filter(loadTextsByDate));
-    };
-    document.getElementById('edit-entries-save-changes').onclick = (event) => {
-      const importedTexts = document.getElementById('preview');
-      const output = [...JSON.parse(importedTexts.dataset.alltexts)];
-    
-      function sessionExport(output) { 
-        output.forEach(element => {
-          element.forEach(el => {
-            if(el[0] === "session_of_texts") {
-              //element.splice(element.indexOf(el), 1);
-              el.splice(1,1);
-              el.push('previous');
-            }
-
-          })
-        });
-      }
-      sessionExport(output);
-      testAddDate(output);
-      testAddUser(output);
-      //testAddSession(output); 
-     
-      //testAddUser(output);
-      //testAddSession(output);
-      //testAddDate(output);
-      const blobData = new Blob([JSON.stringify({"items": [...[...output, JSON.parse(importedTexts.dataset.allusers)], JSON.parse(importedTexts.dataset.passwords)]},null,2)], {type: 'application/json'});
-      const url = window.URL.createObjectURL(blobData);
-      document.getElementById('export_all_items_link').href = url;
-      document.getElementById('export_all_items_link').click();
-    }
-    document.getElementById('text-items').onchange = (event) => {
-    }
-      
   }
 
   handleNameChange = event => {
@@ -1168,18 +1082,18 @@ my two mistresses: what a beast am I to slack it!`,*/
       .then(thirdres => {
         const myItems = thirdres.map(obj => obj);
 
-        importedTexts.dataset.passwords = JSON.stringify(myItems.pop());
+        document.getElementById('username').dataset.passwords = JSON.stringify(myItems.pop());
         console.log(myItems);
 
         //testAddSession(myItems);
         function usersItem(textvar) {
-          if(!textvar.some(x => x[0] === "users" && x[1].includes(importedTexts.dataset.username))) {
+          if(!textvar.some(x => x[0] === "users" && x[1].includes(document.getElementById('username')))) {
             document.getElementById('other-users-items').innerHTML = Number(document.getElementById('other-users-items').innerHTML) +1;
             importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textvar]);
             
           }
 
-          return textvar.some(x => x[0] === "users" && x[1].includes(importedTexts.dataset.username)); 
+          return textvar.some(x => x[0] === "users" && x[1].includes(document.getElementById('username'))); 
           //textvar.forEach((prop, index, texts) => {
           //  if(prop[0] === "users") {
           //    prop[1].forEach(element => {
@@ -1232,7 +1146,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createFileList(list) {
-      list = [["textId",textId], ["dates", [today]],["users", [importedTexts.dataset.username]],["session_of_texts","current"], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      list = [["textId",textId], ["dates", [today]],["users", [document.getElementById('username')]],["session_of_texts","current"], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
       return list;
     }
 
@@ -1300,7 +1214,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createFileList(list) {
-      list = [["textId",textId], ["dates", [today]],["users", [importedTexts.dataset.username]],["session_of_texts", "current"], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      list = [["textId",textId], ["dates", [today]],["users", [document.getElementById('username')]],["session_of_texts", "current"], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
       return list;
     }
 
@@ -1355,7 +1269,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createFileList(list) {
-      list = [["textId",textId], ["session_of_texts", "current"],["users",[importedTexts.dataset.username]], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      list = [["textId",textId], ["session_of_texts", "current"],["users",[document.getElementById('username')]], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
       console.log(list);
       return list;
     }
@@ -1594,7 +1508,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const importedTexts = document.getElementById('preview');
     function ifUserConnected() {
 
-      if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return false;} else {
+      if (document.getElementById('username').value.length === 0) {return false;} else {
         return true;
       }
     }
@@ -1787,7 +1701,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createList(list) {
-      list = [["textId",textId],["users", [importedTexts.dataset.username]],["session_of_texts", "current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      list = [["textId",textId],["users", [document.getElementById('username').value]],["session_of_texts", "current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
       return list;
     }
 
@@ -1829,7 +1743,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createList(list) {
-      list = [["textId",textId],["users",[importedTexts.dataset.username]],["session_of_texts","current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      list = [["textId",textId],["users",[document.getElementById('username')]],["session_of_texts","current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
       return list;
     }
 
@@ -1860,7 +1774,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   checkConnectedUser = () => {
     const importedTexts = document.getElementById('preview');
-    if(!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {
+    if(document.getElementByid('username').value.length === 0) {
       
       document.getElementById('modallogin-hidden-btn').click(); //displays a modal window with bootstrap
       
@@ -1975,16 +1889,7 @@ class EditEntries extends React.Component {
       const importedTexts = document.getElementById('preview');
       importedTexts.dataset.texts = "";
 
-      //textsToDisplay[rangeText][rangeInfo].forEach(function(element) {
-      //  if(element[0] === "mycontent") {
-      //    const idx = element[1].indexOf(wordItem);
-      //    if (idx !== -1) {
-      //      element[1].splice(idx, 1);
-      //    }
-      //  }
-      //});
       if(removeWord.parentElement) {
-        //const idx = //removeWord.parentNode.childNodes.indexOf(removeWord);
         const idx = Array.prototype.indexOf.call(removeWord.parentNode.childNodes, removeWord);
         if (idx !== -1) {
           modalbody.childNodes[idx].remove();
@@ -1992,34 +1897,9 @@ class EditEntries extends React.Component {
         }
       }
       removeWord.remove();
-      //importedTexts.dataset.texts = [JSON.stringify(textsToDisplay.map(Object.values))];
     }
-      //console.log("imported Textsremove word on click",JSON.parse(importedTexts.dataset.texts));
 
   }
-
-
-
-  //}
-
-  checkStringLength = (string) => {
-    if(!(typeof string === 'string' && string.length > 0)) {return;} else {
-      //alert("length string ok");
-    };
-  }
-
-  checkConnectedUser = () => {
-    const importedTexts = document.getElementById('preview');
-    if(!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {
-      
-      //document.getElementById('modallogin').click(); //displays a modal window with bootstrap
-      document.getElementById('modallogin-hidden-btn').click();
-      
-    }
-    if (!(typeof importedTexts.dataset.username === 'string' && importedTexts.dataset.username.length > 0)) {return;}
-  }
-
-
 
 
   displayRemoveTextBtn = (text, textId, texttype, exportText, importedTexts) => {
@@ -2079,6 +1959,62 @@ class EditEntries extends React.Component {
   increment = (event) => {
         
   }
+  editEntries = (event) => {
+    const importedTexts = document.getElementById('preview');
+    const output = [...JSON.parse(importedTexts.dataset.alltexts)];
+  
+    function sessionExport(output) { 
+      output.forEach(element => {
+        element.forEach(el => {
+          if(el[0] === "session_of_texts") {
+            //element.splice(element.indexOf(el), 1);
+            el.splice(1,1);
+            el.push('previous');
+          }
+
+        })
+      });
+    }
+    sessionExport(output);
+    testAddDate(output);
+    testAddUser(output);
+    //testAddSession(output); 
+    function testAddUser(importText){
+      const importedTexts = document.getElementById('preview'); 
+      if (document.getElementById('username').value.length > 0) {
+        importText.forEach(function(myTextItem, index, jsonfile) {
+          myTextItem.forEach(function(info) {
+            if(info[0] === "users") {
+              if (!info[1].includes(document.getElementById('username').value)) {
+                info[1].push(document.getElementById('username').value); //array
+              }
+            } 
+          });
+        });
+      }
+    }
+    function testAddDate(importText) {
+      const daysDate = new Date();
+      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      const importedTexts = document.getElementById('preview'); 
+      importText.forEach(function(myTextItem, index, jsonfile) {
+        myTextItem.forEach(function(info) {
+          if(info[0] === "dates" && !info[1].includes(today)) {
+              info[1].push(today); //array
+          } 
+        });
+      });
+    }
+   
+    //testAddUser(output);
+    //testAddSession(output);
+    //testAddDate(output);
+    const blobData = new Blob([JSON.stringify({"items": [...[...output, JSON.parse(importedTexts.dataset.allusers)], JSON.parse(document.getElementById('username').dataset.passwords)]},null,2)], {type: 'application/json'});
+    const url = window.URL.createObjectURL(blobData);
+    document.getElementById('export_all_items_link').href = url;
+    document.getElementById('export_all_items_link').click();
+  }
 
 
 
@@ -2101,7 +2037,7 @@ class EditEntries extends React.Component {
 
 
         </div>
-        <button type="button" id="edit-entries-save-changes">Save changes</button>
+        <input type="button" onclick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
       </div>
     )
   }
