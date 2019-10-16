@@ -86,526 +86,6 @@ class BasicForm extends React.Component {
       password:null,
       hash:null,
       passwordlist:null,
-    };
-  }
-  componentDidMount() {
-    const allAudioElements = document.getElementsByTagName('audio'); 
-    document.getElementById('loadingAudioFiles').hidden = true; 
-    this.setState({
-      username:
-        '' 
-    });
-    
-  }
-
-  fieldOnblur = () => {
-    this.setState({
-      audioplayerToggle:
-        null,
-      wordinputError:
-        null
-    });
-  }
-
-  handleSubmit = (event) => {
-    event.preventDefault();
-  }
-  handleWordInput = (event) => {
-    event.preventDefault();
-    this.btn.removeAttribute("disabled");
-  }
-  
-  disableButton = (event) => {
-    event.preventDefault();
-    if(document.getElementById('myAudioFiles').hasChildNodes) {
-      const targetValue = document.getElementById('wordinput').dataset.targetValue;
-      const { inputValue } = this.state;
-      this.btn.setAttribute("disabled", "disabled");
-      //console.log({targetValue});
-      //console.log({inputValue});
-      this.setState({
-        wordtest:
-          inputValue === targetValue ? this.removeAudioPlayer() : null,      
-        checkInput:
-          inputValue === '' ? 'enter a word' : null,
-        checkTarget:
-          targetValue === '' ? 'play a word' : null
-      });
-    }
-  }
-  disableFormButton = () => {
-    this.setState({
-      controls: 
-        '' 
-    });
-  }
-  handleNameChange = event => {
-    this.setState({ name: event.target.value }, () => {
-      this.validateName();
-    });
-  };
-  displayAudio = event => {
-    const itemlist = [];
-    const importedTexts = document.getElementById("preview");
-    importedTexts.dataset.number = Number('');
-    const myitems = JSON.parse(importedTexts.dataset.alltexts); 
-
-    if(myitems instanceof Array && myitems.length === 0) {return;};
-    const myNode = document.getElementById('myAudioFiles');
-    while(myNode.firstChild) {
-      myNode.removeChild(myNode.firstChild);
-    }
-    const myAudioFiles = [];
-
-    fetch("https://raw.githubusercontent.com/nathanielove/English-words-pronunciation-mp3-audio-download/master/ultimate.json")
-      .then(function(response){
-        return response.json();
-      })
-      .then(function(mp3WordList){
-        document.getElementById('loadingAudioFiles').hidden = false;
-
-        //const importText = JSON.parse(importedTexts.dataset.texts);
-        //importText.forEach(function(item, index, object) {
-        //  const textObject = {};
-        //  item.forEach(function(textitem) {
-        //    textObject[textitem[0]]=textitem[1];
-        //  });
-        console.log(myitems);
-        myitems.forEach(function(text) {
-          text.forEach(prop => {
-            if(prop[0] === "mycontent") {
-              prop[1].forEach(myworditem => {
-      
-                const audioFilePreview = document.createElement('audio'); 
-                audioFilePreview.className=myworditem;
-                importedTexts.dataset.number = Number(importedTexts.dataset.number) + 1;
-                audioFilePreview.key=importedTexts.dataset.number;
-                audioFilePreview.id=myworditem;
-                audioFilePreview.controls=true;
-                audioFilePreview.onpause = (event) => {
-                  event.currentTarget.currentTime = 0;
-                }
-                if (document.getElementById('playAllTheWords').checked) {
-                  audioFilePreview.onended = (event) => {
-                    const allAudioElements = document.getElementsByTagName('audio');
-                    if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
-                      const myAudioItems = document.getElementById('myAudioFiles');
-
-                      const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
-                      myAudioItems.childNodes[indexAudioElement].play();
-
-                    }
-                  };
-                }
-                audioFilePreview.onplay = (event) => { 
-                  const wordInputField = document.getElementById('wordinput');
-                  wordInputField.dataset.targetValue = audioFilePreview.id;
-                };
-                [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
-                  if(mp3[0] === myworditem && mp3[1].length){
-                    mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
-                      const theFirstChild = audioFilePreview.firstChild;
-                      const sourceFile = document.createElement('source');
-                      sourceFile.src = mp3link; 
-                      sourceFile.className = myworditem; 
-                      sourceFile.type = 'audio/mpeg'; 
-                      audioFilePreview.insertBefore(sourceFile, theFirstChild);
-
-                    })
-                    myAudioFiles.push(audioFilePreview);
-                    
-                  }
-                });
-                
-                document.getElementById('loadingAudioFiles').hidden = true;
-              });
-            }
-          });
-
-        });
-        const previewMyAudioFiles = document.getElementById('myAudioFiles');
-        myAudioFiles.forEach(function(item, index, object) {
-          previewMyAudioFiles.appendChild(item); 
-        });
-        
-      })
-  }
-  removeAudioPlayer = (props) => {
-    const targetValue = document.getElementById('wordinput').dataset.targetValue;
-    const { inputValue } = this.state;
-    this.setState({
-      wordtest:
-        `Values: \n ${inputValue} / ${targetValue} ok`   
-    });
-    //console.log({targetValue});
-    const mountElements = document.getElementById(targetValue);
-    //console.log({mountElements});
-    this.setState({
-      variableErrors:
-        mountElements === undefined ? "Please choose and listen to a word first" : null
-    });
-    if (mountElements !== undefined) {
-      mountElements.pause();
-      mountElements.currentTime = 0;
-      mountElements.removeAttribute('controls');
-    }
-    this.setState({
-      inputValue:
-        ''
-    });
-  }
-  handleUsernameChange = (event) => {
-    this.setState({
-      username:
-        event.target.username,
-      password:
-        event.target.password,
-      signupUsername:
-        event.target.signupUsername,
-      signupPassword:
-        event.target.signupPassword
-    });
-  }
-  checkStringLength = (string) => {
-    if(!(typeof string === 'string' && string.length > 0)) {return;};
-  }
-  rmItemFromList = (list, item) => {
-    const idx = list.indexOf(item);
-    if (idx !== -1) {
-      list.splice(idx, 1);
-    }
-  }
-
-  showDropzone = () => {
-    document.getElementById('dropzone').hidden = false;
-  }
-  hideDropzone = () => {
-    document.getElementById('dropzone').hidden = false;
-  }
-  loginUser = (event) => {
-    const importedTexts = document.getElementById("preview");
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const passwordlist = JSON.parse(document.getElementById('username').dataset.passwords);
-    if(document.getElementById('username').value.length > 0) {
-      console.log(passwordlist); 
-      if(!passwordlist.some(x=> bcrypt.compareSync(password, x.password) && username === x.username)) {
-        document.getElementById('username').classList.add('error-signin');
-        document.getElementById('password').classList.add('error-signin');
-        return;
-      }
-      
-
-      this.checkStringLength(username);
-      document.getElementById('loginbtn').innerHTML = 'sign out';
-      document.getElementById('username').hidden = true;
-      document.getElementById('password').hidden = true;
-      document.getElementById('username').className= '' 
-      document.getElementById('password').className = '';
-      document.getElementById('welcome').innerHTML = "Hello, "+username;
-
-      
-
-    } else if(document.getElementById('loginbtn').innerHTML === 'sign out') {
-      document.getElementById('username').value = '';
-      document.getElementById('loginbtn').innerHTML = 'sign in';
-
-      document.getElementById('welcome').innerHTML = "";
-      document.getElementById('username').value = "";
-      document.getElementById('password').value = "";
-      while (importedTexts.firstChild) {
-        importedTexts.removeChild(importedTexts.firstChild);
-      }
-
-
-    }
-    
-  }
-  signupUser = (event) => {
-    const saltRounds = 10;
-
-    const plainTextUsername1 = document.getElementById('signup-username').value;
-    const plainTextPassword1 = document.getElementById('signup-password').value;
-
-
-    
-    bcrypt.genSalt(10, function(err, salt) {
-        bcrypt.hash(plainTextPassword1, salt, function(err, hash) {
-          const importedTexts = document.getElementById('preview');
-          document.getElementById('username').dataset.passwords = JSON.stringify([...JSON.parse(document.getElementById('username').dataset.passwords), {username: plainTextUsername1, password: hash}]);
-            // Store hash in your password DB.
-        });
-    });
-
-  }
-
-  render() { 
-    
-    return(
-      <Router>
-        <Root>
-          <SideBar>
-            <SidebarItem>
-              <Link to={`upload`}>
-                Load files 
-              </Link>
-            </SidebarItem>
-            <SidebarItem>
-              <Link to={`sort`}>
-                Load by date
-              </Link>
-            </SidebarItem>
-            <SidebarItem>
-              <Link to={`edit`}>
-                Edit word lists
-              </Link>
-            </SidebarItem>
-            <SidebarItem>
-              <Link to={`play`}>
-                Write the words
-              </Link>
-            </SidebarItem>
-          </SideBar>
-          <Main>
-            
-            <form onSubmit={this.handleSubmit}>
-              <Route path="/upload" component={RegistrationForm} />
-              <Route path="/sort" component={FillInTheDateForm} />
-              <Route path="/edit" component={EditEntries} />
-
-
-              <Route exact={true} path="/" render={() => (
-                <div id="login-form-body" className={`login-form`}> 
-                <h1>Welcome</h1>
-                <br /><div id="welcome"></div>
-
-                <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
-                <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
-
-                <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
-                   
-                </button>
-
-                <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
-                <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
-                <br /><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
-                  Sign up 
-                </button>
-                </div>
-              )} />
-
-              <Route path="/play" render={() => (
-                <div id="all-input-fields">
-                  <div className={`play`}> 
-
-
-                    <div className="spinner-border" id={`loadingAudioFiles`} role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                    <label htmlFor={`wordinput`}></label>
-                    <input
-                      className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
-                      id={`wordinput`}
-                      placeholder='Enter word'
-                      value={this.state.inputValue}
-                      //onMouseOver={this.displayAudio}
-                      onClick={this.handleWordInput}
-                      onFocus={this.handleWordInput}
-                      onChange={e => this.setState({ inputValue: e.target.value }) }
-                           
-                    />
-                    <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
-                      click me
-                    </button>
-
-
-                    <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
-
-                      Start a new game 
-                    </button>
-                    <br />
-
-                    <div id={`myAudioFiles`}></div>
-
-                  </div>
-                </div>
-              )}/>
-            </form>
-          </Main>
-        </Root>
-      </Router>
-    );
-  }
-}
-const Root = (props) => (
-  <div style={{
-    display: 'flex'
-  }} {...props}/>
-)
-
-const SideBar = (props) => (
-  <div style={{
-    width: '33vw',
-    height: '100vh',
-    overflow: 'auto',
-    background: '#eee'
-  }} {...props} />
-)
-
-const SidebarItem = (props) => (
-  <div style={{
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-    padding: '5px 10px'
-  }} {...props}/>
-)
-
-const Main = (props) => (
-  <div style={{
-    flex: 1,
-    height: '100vh', 
-    overflow: 'auto'
-  }}>
-    <div style={{ padding: '20px' }} {...props}/>
-  </div>
-)
-
-class FillInTheDateForm extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      date: new Date(),
-      selectedDate:'',
-      database:[],
-      data:null,
-      json:null,
-      shortArray:'',
-      text:null,
-      url:null,
-      valueArray:null,
-      response:null,
-      myBlob:null,
-      myDatabase:null,
-      myBlub:null,
-      today:null,
-      daysDate:new Date(),
-      downloadLink:null,
-      mynewDb:null,
-      res:null,
-      element:null,
-      myNewBlob:null,
-      jsonString:null,
-      myItems:null,
-      myItemsByDate:null,
-      allItemsByDate:null,
-      jsonContent:"",
-      listContents:null,
-      mydatepicker:null,
-      content:"",
-      addLink:'',
-      outputJson:null,
-      outputLink:null,
-      files:null,
-      file:null, 
-      img:null,
-      myImage:null,
-      preview:null,
-      fileName:null,
-      reader:null,
-      dt:null,
-      i:null,
-      j:null,
-      k:null,
-      fd:null,
-      thirdres:null,
-      databaseIsLoaded:null,
-      noFileType:null,
-      importMode:null,    
-      saveFile:null,
-      downloadAll:null,
-      myNode:null,
-      myInputNode:null,
-      myOutputNode:null,
-      myPreviewNode:null,
-      myDatabaseJson:null,
-      someData:null,
-      dataOutput:null,
-      importedTexts:null,
-      importText:null,
-      thisIsMyTextList:null,
-      textObject:null,
-      modalbody:null,
-      exportText:null,
-      textdiv:null,
-      idx:null,
-      displayText:null,
-      removeText:null,
-      displayWord:null,
-      removeWord:null, 
-      textelements:null,
-      selectDate:null,
-      date:null,
-    }
-  }
-  componentDidMount() {
-    const date = new Date();
-    this.setState({date});
-    document.getElementById('btn-sort-by-date').onclick = (event) => {
-      console.log(document.getElementById('sort-items-by-date').dataset.date);
-      const importedTexts = document.getElementById('preview');
-      const allMyTexts = JSON.parse(importedTexts.dataset.alltexts);
-      if(document.getElementById('sort-items-by-date').dataset.date === null) {
-        this.displayNewEntries(allMyTexts);
-        return;
-      };
-      const selectDate = document.getElementById('sort-items-by-date').dataset.date;
-
-      function loadTextsByDate(text) {
-        return text.some(prop => prop[0] === "dates" && prop[1].includes(selectDate));
-      }
-      //allMyTexts.filter(loadTextByDate)
-
-      //function selected(list){
-      //  return list.some(x=> x[0] === "select_text" && x[1] === "selected");
-      //}
-      importedTexts.dataset.alltexts = JSON.stringify([...allMyTexts.filter(loadTextsByDate)]);
-      this.displayNewEntries(allMyTexts.filter(loadTextsByDate));
-    };
-  }
-  onChange = (date) => {
-    this.setState({ date });
-    const selectDate = (date.getMonth()+1)+'/'+date.getDate()+'/'+date.getFullYear();
-    document.getElementById('sort-items-by-date').dataset.date = selectDate;
-    console.log(document.getElementById('sort-items-by-date').dataset.date);
-    console.log(date.toUTCString());
-
-  }
-  handleSubmittedDate = (event) => {
-
-  }
-
-  render() {    
-    return (    
-      <form onSubmit={this.handleSubmittedDate}>
-      <div id="sort-items-by-date"><label>Load words by date</label></div>
-      <div>
-        <DatePicker
-          id="myDatePicker"
-          onChange={this.onChange}
-          value={this.state.date}
-        />
-      </div>
-      <button type="button" id="btn-sort-by-date">sort items by date</button>
-      </form>
-    );
-  }  
-}
-
-class RegistrationForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
       name: '',
       email: '',
       value: '',/*`Truly, for mine own part, I would little or nothing
@@ -883,15 +363,87 @@ my two mistresses: what a beast am I to slack it!`,*/
       selectText:null,
       selectDate:null,
       date:null, 
-      
+      date: new Date(),
+      selectedDate:'',
+      database:[],
+      data:null,
+      json:null,
+      shortArray:'',
+      text:null,
+      url:null,
+      valueArray:null,
+      response:null,
+      myBlob:null,
+      myDatabase:null,
+      myBlub:null,
+      today:null,
+      daysDate:new Date(),
+      downloadLink:null,
+      mynewDb:null,
+      res:null,
+      element:null,
+      myNewBlob:null,
+      jsonString:null,
+      myItems:null,
+      myItemsByDate:null,
+      allItemsByDate:null,
+      jsonContent:"",
+      listContents:null,
+      mydatepicker:null,
+      content:"",
+      addLink:'',
+      outputJson:null,
+      outputLink:null,
+      files:null,
+      file:null, 
+      img:null,
+      myImage:null,
+      preview:null,
+      fileName:null,
+      reader:null,
+      dt:null,
+      i:null,
+      j:null,
+      k:null,
+      fd:null,
+      thirdres:null,
+      databaseIsLoaded:null,
+      noFileType:null,
+      importMode:null,    
+      saveFile:null,
+      downloadAll:null,
+      myNode:null,
+      myInputNode:null,
+      myOutputNode:null,
+      myPreviewNode:null,
+      myDatabaseJson:null,
+      someData:null,
+      dataOutput:null,
+      importedTexts:null,
+      importText:null,
+      thisIsMyTextList:null,
+      textObject:null,
+      modalbody:null,
+      exportText:null,
+      textdiv:null,
+      idx:null,
+      displayText:null,
+      removeText:null,
+      displayWord:null,
+      removeWord:null, 
+      textelements:null,
+      selectDate:null,
+      date:null,
     };
-
   }
-
   componentDidMount() {
+    const allAudioElements = document.getElementsByTagName('audio'); 
+    this.setState({
+      username:
+        '' 
+    });
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
-    this.a.removeAttribute("href");
     const importedTexts = document.getElementById('preview');
     importedTexts.dataset.textValue = '';
     const wordList = [];
@@ -900,9 +452,308 @@ my two mistresses: what a beast am I to slack it!`,*/
     const thisIsMyTextList = [];
     const allMyTexts = []; 
     document.getElementById('export_all_items_link').hidden = true;
+    const date = new Date();
+    this.setState({date});
 
+    
   }
 
+  fieldOnblur = () => {
+    this.setState({
+      audioplayerToggle:
+        null,
+      wordinputError:
+        null
+    });
+  }
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+  }
+  handleWordInput = (event) => {
+    event.preventDefault();
+    this.btn.removeAttribute("disabled");
+  }
+  
+  disableButton = (event) => {
+    event.preventDefault();
+    if(document.getElementById('myAudioFiles').hasChildNodes) {
+      const targetValue = document.getElementById('wordinput').dataset.targetValue;
+      const { inputValue } = this.state;
+      this.btn.setAttribute("disabled", "disabled");
+      //console.log({targetValue});
+      //console.log({inputValue});
+      this.setState({
+        wordtest:
+          inputValue === targetValue ? this.removeAudioPlayer() : null,      
+        checkInput:
+          inputValue === '' ? 'enter a word' : null,
+        checkTarget:
+          targetValue === '' ? 'play a word' : null
+      });
+    }
+  }
+  disableFormButton = () => {
+    this.setState({
+      controls: 
+        '' 
+    });
+  }
+  handleNameChange = event => {
+    this.setState({ name: event.target.value }, () => {
+      this.validateName();
+    });
+  };
+  displayAudio = event => {
+    const itemlist = [];
+    const importedTexts = document.getElementById("preview");
+    importedTexts.dataset.number = Number('');
+    const myitems = JSON.parse(importedTexts.dataset.alltexts); 
+
+    if(myitems instanceof Array && myitems.length === 0) {return;};
+    const myNode = document.getElementById('myAudioFiles');
+    while(myNode.firstChild) {
+      myNode.removeChild(myNode.firstChild);
+    }
+    const myAudioFiles = [];
+
+    fetch("https://raw.githubusercontent.com/nathanielove/English-words-pronunciation-mp3-audio-download/master/ultimate.json")
+      .then(function(response){
+        return response.json();
+      })
+      .then(function(mp3WordList){
+        document.getElementById('loadingAudioFiles').hidden = false;
+
+        //const importText = JSON.parse(importedTexts.dataset.texts);
+        //importText.forEach(function(item, index, object) {
+        //  const textObject = {};
+        //  item.forEach(function(textitem) {
+        //    textObject[textitem[0]]=textitem[1];
+        //  });
+        console.log(myitems);
+        myitems.forEach(function(text) {
+          text.forEach(prop => {
+            if(prop[0] === "mycontent") {
+              prop[1].forEach(myworditem => {
+      
+                const audioFilePreview = document.createElement('audio'); 
+                audioFilePreview.className=myworditem;
+                importedTexts.dataset.number = Number(importedTexts.dataset.number) + 1;
+                audioFilePreview.key=importedTexts.dataset.number;
+                audioFilePreview.id=myworditem;
+                audioFilePreview.controls=true;
+                audioFilePreview.onpause = (event) => {
+                  event.currentTarget.currentTime = 0;
+                }
+                if (document.getElementById('playAllTheWords').checked) {
+                  audioFilePreview.onended = (event) => {
+                    const allAudioElements = document.getElementsByTagName('audio');
+                    if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
+                      const myAudioItems = document.getElementById('myAudioFiles');
+
+                      const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
+                      myAudioItems.childNodes[indexAudioElement].play();
+
+                    }
+                  };
+                }
+                audioFilePreview.onplay = (event) => { 
+                  const wordInputField = document.getElementById('wordinput');
+                  wordInputField.dataset.targetValue = audioFilePreview.id;
+                };
+                [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
+                  if(mp3[0] === myworditem && mp3[1].length){
+                    mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
+                      const theFirstChild = audioFilePreview.firstChild;
+                      const sourceFile = document.createElement('source');
+                      sourceFile.src = mp3link; 
+                      sourceFile.className = myworditem; 
+                      sourceFile.type = 'audio/mpeg'; 
+                      audioFilePreview.insertBefore(sourceFile, theFirstChild);
+
+                    })
+                    myAudioFiles.push(audioFilePreview);
+                    
+                  }
+                });
+                
+                document.getElementById('loadingAudioFiles').hidden = true;
+              });
+            }
+          });
+
+        });
+        const previewMyAudioFiles = document.getElementById('myAudioFiles');
+        myAudioFiles.forEach(function(item, index, object) {
+          previewMyAudioFiles.appendChild(item); 
+        });
+        
+      })
+  }
+  removeAudioPlayer = (props) => {
+    const targetValue = document.getElementById('wordinput').dataset.targetValue;
+    const { inputValue } = this.state;
+    this.setState({
+      wordtest:
+        `Values: \n ${inputValue} / ${targetValue} ok`   
+    });
+    //console.log({targetValue});
+    const mountElements = document.getElementById(targetValue);
+    //console.log({mountElements});
+    this.setState({
+      variableErrors:
+        mountElements === undefined ? "Please choose and listen to a word first" : null
+    });
+    if (mountElements !== undefined) {
+      mountElements.pause();
+      mountElements.currentTime = 0;
+      mountElements.removeAttribute('controls');
+    }
+    this.setState({
+      inputValue:
+        ''
+    });
+  }
+  handleUsernameChange = (event) => {
+    this.setState({
+      username:
+        event.target.username,
+      password:
+        event.target.password,
+      signupUsername:
+        event.target.signupUsername,
+      signupPassword:
+        event.target.signupPassword
+    });
+  }
+  checkStringLength = (string) => {
+    if(!(typeof string === 'string' && string.length > 0)) {return;};
+  }
+  rmItemFromList = (list, item) => {
+    const idx = list.indexOf(item);
+    if (idx !== -1) {
+      list.splice(idx, 1);
+    }
+  }
+
+  showDropzone = () => {
+    document.getElementById('dropzone').hidden = false;
+  }
+  hideDropzone = () => {
+    document.getElementById('dropzone').hidden = false;
+  }
+  loginUser = (event) => {
+    const importedTexts = document.getElementById("preview");
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const passwordlist = JSON.parse(document.getElementById('username').dataset.passwords);
+    if(document.getElementById('username').value.length > 0) {
+      console.log(passwordlist); 
+      if(!passwordlist.some(x=> bcrypt.compareSync(password, x.password) && username === x.username)) {
+        document.getElementById('username').classList.add('error-signin');
+        document.getElementById('password').classList.add('error-signin');
+        return;
+      }
+      
+
+      this.checkStringLength(username);
+      document.getElementById('loginbtn').innerHTML = 'sign out';
+      document.getElementById('username').hidden = true;
+      document.getElementById('password').hidden = true;
+      document.getElementById('username').className= '' 
+      document.getElementById('password').className = '';
+      document.getElementById('welcome').innerHTML = "Hello, "+username;
+
+      
+
+    } else if(document.getElementById('loginbtn').innerHTML === 'sign out') {
+      document.getElementById('username').value = '';
+      document.getElementById('loginbtn').innerHTML = 'sign in';
+
+      document.getElementById('welcome').innerHTML = "";
+      document.getElementById('username').value = "";
+      document.getElementById('password').value = "";
+      while (importedTexts.firstChild) {
+        importedTexts.removeChild(importedTexts.firstChild);
+      }
+
+
+    }
+    
+  }
+  signupUser = (event) => {
+    const saltRounds = 10;
+
+    const plainTextUsername1 = document.getElementById('signup-username').value;
+    const plainTextPassword1 = document.getElementById('signup-password').value;
+
+
+    
+    bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hash(plainTextPassword1, salt, function(err, hash) {
+          const importedTexts = document.getElementById('preview');
+          document.getElementById('username').dataset.passwords = JSON.stringify([...JSON.parse(document.getElementById('username').dataset.passwords), {username: plainTextUsername1, password: hash}]);
+            // Store hash in your password DB.
+        });
+    });
+
+  }
+  editEntries = (event) => {
+    const importedTexts = document.getElementById('preview');
+    const output = [...JSON.parse(importedTexts.dataset.alltexts)];
+  
+    function sessionExport(output) { 
+      output.forEach(element => {
+        element.forEach(el => {
+          if(el[0] === "session_of_texts") {
+            //element.splice(element.indexOf(el), 1);
+            el.splice(1,1);
+            el.push('previous');
+          }
+
+        })
+      });
+    }
+    sessionExport(output);
+    testAddDate(output);
+    testAddUser(output);
+    //testAddSession(output); 
+    function testAddUser(importText){
+      const importedTexts = document.getElementById('preview'); 
+      if (document.getElementById('username').value.length > 0) {
+        importText.forEach(function(myTextItem, index, jsonfile) {
+          myTextItem.forEach(function(info) {
+            if(info[0] === "users") {
+              if (!info[1].includes(document.getElementById('username').value)) {
+                info[1].push(document.getElementById('username').value); //array
+              }
+            } 
+          });
+        });
+      }
+    }
+    function testAddDate(importText) {
+      const daysDate = new Date();
+      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      const importedTexts = document.getElementById('preview'); 
+      importText.forEach(function(myTextItem, index, jsonfile) {
+        myTextItem.forEach(function(info) {
+          if(info[0] === "dates" && !info[1].includes(today)) {
+              info[1].push(today); //array
+          } 
+        });
+      });
+    }
+   
+    //testAddUser(output);
+    //testAddSession(output);
+    //testAddDate(output);
+    const blobData = new Blob([JSON.stringify({"items": [...[...output, JSON.parse(importedTexts.dataset.allusers)], JSON.parse(document.getElementById('username').dataset.passwords)]},null,2)], {type: 'application/json'});
+    const url = window.URL.createObjectURL(blobData);
+    document.getElementById('export_all_items_link').href = url;
+    document.getElementById('export_all_items_link').click();
+  }
   handleNameChange = event => {
     this.setState({ name: event.target.value }, () => {
       this.validateName();
@@ -1118,8 +969,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
           const importedTexts = document.getElementById('preview');
           importedTexts.dataset.texts = JSON.stringify(textitem);
-          
-          document.getElementById('text-add').click();
+          this.textAdd();  
         });
         
 
@@ -1179,8 +1029,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       console.log(result);
       const importedTexts = document.getElementById('preview');
       importedTexts.dataset.texts = JSON.stringify(result);
-      
-      document.getElementById('text-add').click();
+      this.textAdd(); 
       document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1; 
     }
 
@@ -1243,7 +1092,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         const importedTexts = document.getElementById('preview');
         addContent(newText, resultObject.value);
         importedTexts.dataset.texts = JSON.stringify(newText);
-        document.getElementById('text-add').click();
+        this.textAdd();
         document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
       })
     };
@@ -1335,7 +1184,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           
           importedTexts.dataset.texts = JSON.stringify(newText);
           console.log(JSON.parse(importedTexts.dataset.texts));
-          document.getElementById('text-add').click();
+          this.textAdd();
           document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;          
 
         });
@@ -1716,7 +1565,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     wordItemInputField(newText);
     addContent(newText, valueword);
     importedTexts.dataset.texts = JSON.stringify(newText);
-    document.getElementById('text-add').click();
+    this.textAdd();
     document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
     valueword = '';
 
@@ -1760,286 +1609,238 @@ my two mistresses: what a beast am I to slack it!`,*/
     addContent(newText, this.state.value);
     textInputField(newText);
     importedTexts.dataset.texts = JSON.stringify(newText);
-    document.getElementById('text-add').click();
+    this.textAdd();
     document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
     this.state.value = "";
   }
+  onChange = (date) => {
+    this.setState({ date });
+    const selectDate = (date.getMonth()+1)+'/'+date.getDate()+'/'+date.getFullYear();
+    document.getElementById('sort-items-by-date').dataset.date = selectDate;
+    console.log(document.getElementById('sort-items-by-date').dataset.date);
+    console.log(date.toUTCString());
 
-  enableEditor = () => {
-    document.getElementById('editentries').removeAttribute('disabled');
   }
-  enableExport = () => {
-    document.getElementById('export_all_items').removeAttribute('disabled');
-  }
-
-  checkConnectedUser = () => {
+  btnSortByDate = (event) => {
+    console.log(document.getElementById('sort-items-by-date').dataset.date);
     const importedTexts = document.getElementById('preview');
-    if(document.getElementByid('username').value.length === 0) {
-      
-      document.getElementById('modallogin-hidden-btn').click(); //displays a modal window with bootstrap
-      
+    const allMyTexts = JSON.parse(importedTexts.dataset.alltexts);
+    if(document.getElementById('sort-items-by-date').dataset.date === null) {
+      this.displayNewEntries(allMyTexts);
+      return;
+    };
+    const selectDate = document.getElementById('sort-items-by-date').dataset.date;
+
+    function loadTextsByDate(text) {
+      return text.some(prop => prop[0] === "dates" && prop[1].includes(selectDate));
     }
-  }
+    //allMyTexts.filter(loadTextByDate)
 
-  render() {
+    //function selected(list){
+    //  return list.some(x=> x[0] === "select_text" && x[1] === "selected");
+    //}
+    importedTexts.dataset.alltexts = JSON.stringify([...allMyTexts.filter(loadTextsByDate)]);
+    this.displayNewEntries(allMyTexts.filter(loadTextsByDate));
+  };
 
 
+  render() { 
     const itemsloaded = this.state.itemsloaded;
+    
+    return(
+      <Router>
+        <Root>
+          <SideBar>
+            <SidebarItem>
+              <Link to={`upload`}>
+                Load files 
+              </Link>
+            </SidebarItem>
+            <SidebarItem>
+              <Link to={`sort`}>
+                Load by date
+              </Link>
+            </SidebarItem>
+            <SidebarItem>
+              <Link to={`edit`}>
+                Edit word lists
+              </Link>
+            </SidebarItem>
+            <SidebarItem>
+              <Link to={`play`}>
+                Write the words
+              </Link>
+            </SidebarItem>
+          </SideBar>
+          <Main>
+            
+            <form onSubmit={this.handleSubmit}>
+              <Route path="/upload" render={() => ( 
+                <div>
+  	          <div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver} />
+                  <div id={`preview`} />
+                  <input type={`submit`} value={`Import all texts and words`} id={`import_texts_words`} className={`btn btn-success`} />  
+                  <label id={`labelText`}>
+                    Your Text:
 
-    return (
-
-      <form enctype={`multipart/form-data`}>
-        <div>
-          <input type="checkbox" id="playAllTheWords" value={this.state.preloadOrAutoplay} onChange={this.checkBox} name="playAllTheWords"/>
-          <label for="playAllTheWords">Play all the words</label>
-        </div>
-
-  	<div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver}></div>
-        <div id={`preview`}></div>
-        <input type={`submit`} value={`Import all texts and words`} id={`import_texts_words`} className={`btn btn-success`} />  
-        <label id={`labelText`}>
-          Your Text:
-
-          <br /><textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
-        </label>
-        <button id="add-new-text-btn" onClick={this.useTextInputField} className={`btn btn-success`}>  
-          Add a new text
-        </button>
-        <label id={`labelWord`}>
-          Your Word:
+                    <br /><textarea onChange={this.handleTextChange} placeholder="Enter a text" value={this.state.value} /> 
+                  </label>
+                  <button id="add-new-text-btn" onClick={this.useTextInputField} className={`btn btn-success`}>  
+                    Add a new text
+                  </button>
+                  <label id={`labelWord`}>
+                    Your Word:
 
 
-        </label>
-        <br /><input type="text" onChange={this.handleWordItem} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
-        <button onClick={this.useWordItemInputField} className={`btn btn-success`}>  
-          Add a new word 
-        </button>
+                  </label>
+                  <br /><input type="text" onChange={this.handleWordItem} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
+                  <button onClick={this.useWordItemInputField} className={`btn btn-success`}>  
+                    Add a new word 
+                  </button>
 
 
-        <a id={`download_items`} ref={a => {this.a = a}} onClick={this.downloadItems} download={`items.json`} href={``} ></a>
-        <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
-        <br/>
-        <div id={`download_all_items`}></div> 
-        <div id={`download_zone`}></div> 
-        <input type="button" onClick={this.textAdd} hidden value="" id="text-add"/>
+                  <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
+                  <br />
+                  <div id={`download_all_items`}></div> 
+                </div>
+              )} />
+              <Route path="/sort" render={() => ( 
+                <div>
+                  <div id="sort-items-by-date"><label>Load words by date</label></div>
+                  <div>
+                    <DatePicker
+                      id="myDatePicker"
+                      onChange={this.onChange}
+                      value={this.state.date}
+                    />
+                  </div>
+                  <button type="button" onClick={this.btnSortByDate} id="btn-sort-by-date">sort items by date</button>
+                </div>
+              )} />
+              <Route path="/edit" render={() => (
+                <div>
+                  <div id="text-items" onchange={this.increment}>
+                    <div class="display-items" >
+                      <a id="current-items" name="sessions-of-texts">0</a> texts added during this session by the logged in user
+                    </div>
+                    <div class="display-items">
+                      <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
+                    </div>
+                    <div class="display-items">
+                      <a id="other-users-items" name="sessions-of-texts">0</a> texts from other users that are left in the database
+                    </div>
+                  </div>
+                  <div id="editor">
 
- 
-      </form>
+
+
+                  </div>
+                  <input type="button" onclick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
+                </div>
+              )} />
+
+              <Route exact={true} path="/" render={() => (
+                <div id="login-form-body" className={`login-form`}> 
+                <h1>Welcome</h1>
+                <br /><div id="welcome"></div>
+
+                <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
+                <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
+
+                <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
+                   
+                </button>
+
+                <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
+                <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
+                <br /><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
+                  Sign up 
+                </button>
+                </div>
+              )} />
+
+              <Route path="/play" render={() => (
+                <div>
+                  <div>
+                    <input type="checkbox" id="playAllTheWords" value={this.state.preloadOrAutoplay} onChange={this.checkBox} name="playAllTheWords"/>
+                    <label for="playAllTheWords">Play all the words</label>
+                  </div>
+                  <div id="all-input-fields">
+                    <div className={`play`}> 
+
+
+                      <div className="spinner-border" id={`loadingAudioFiles`} role="status">
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                      <label htmlFor={`wordinput`}></label>
+                      <input
+                        className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
+                        id={`wordinput`}
+                        placeholder='Enter word'
+                        value={this.state.inputValue}
+                        //onMouseOver={this.displayAudio}
+                        onClick={this.handleWordInput}
+                        onFocus={this.handleWordInput}
+                        onChange={e => this.setState({ inputValue: e.target.value }) }
+                             
+                      />
+                      <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
+                        click me
+                      </button>
+
+
+                      <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
+
+                        Start a new game 
+                      </button>
+                      <br />
+
+                      <div id={`myAudioFiles`}></div>
+
+                    </div>
+                  </div>
+                </div>
+              )}/>
+            </form>
+          </Main>
+        </Root>
+      </Router>
     );
   }
 }
-class EditEntries extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
+const Root = (props) => (
+  <div style={{
+    display: 'flex'
+  }} {...props}/>
+)
 
-    }
-  }
-  componentDidMount = () => {
+const SideBar = (props) => (
+  <div style={{
+    width: '33vw',
+    height: '100vh',
+    overflow: 'auto',
+    background: '#eee'
+  }} {...props} />
+)
 
+const SidebarItem = (props) => (
+  <div style={{
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    padding: '5px 10px'
+  }} {...props}/>
+)
 
-  }
-
-  checkTextContent = (thisIsMyTextList, importText) => {
-    importText.forEach(function(mytext) {
-      const textObject = {};
-
-      mytext.forEach(function(myinfo) {
-        if (myinfo[0] === "mycontent" && myinfo[1] instanceof Array === false) {return;}
-        textObject[myinfo[0]] = myinfo[1];
-      });
-      if(textObject === {}) {return;};
-      if(!textObject.mycontent) {return;};
-      console.log(textObject.content); 
-      thisIsMyTextList.push(textObject);
-      
-    });
-    if (thisIsMyTextList instanceof Array && thisIsMyTextList.length === 0) {return;}
-    console.log(thisIsMyTextList);
-  }
-
-
-
-  dispWords = (words) => {
-    const modalbody = document.getElementById('modal-body');
-    words.forEach(function(item){
-      const displayWord = document.createElement('div');
-      displayWord.textContent = item[0];
-      modalbody.appendChild(displayWord);
-    });
-  }
+const Main = (props) => (
+  <div style={{
+    flex: 1,
+    height: '100vh', 
+    overflow: 'auto'
+  }}>
+    <div style={{ padding: '20px' }} {...props}/>
+  </div>
+)
 
 
-  dispWord = (wordItem) => {
-    const modalbody = document.getElementById('modal-body');
-    const displayWord = document.createElement('div');
-    displayWord.textContent = wordItem;
-    modalbody.appendChild(displayWord);
-  }
-  displayRemoveWordBtn = (wordItem) => {
-    const modalbody = document.getElementById('modal-body');
-
-    const removeWord = document.createElement('div');
-    modalbody.appendChild(removeWord);
-    removeWord.classList.add("btn");
-    removeWord.classList.add("btn-secondary");
-    removeWord.type = "button";
-    removeWord.textContent = "Remove this word";
-    removeWord.onclick = (event) => {
-      const importedTexts = document.getElementById('preview');
-      importedTexts.dataset.texts = "";
-
-      if(removeWord.parentElement) {
-        const idx = Array.prototype.indexOf.call(removeWord.parentNode.childNodes, removeWord);
-        if (idx !== -1) {
-          modalbody.childNodes[idx].remove();
-          modalbody.childNodes[idx-1].remove();
-        }
-      }
-      removeWord.remove();
-    }
-
-  }
-
-
-  displayRemoveTextBtn = (text, textId, texttype, exportText, importedTexts) => {
-    //the checkConnectedUser function is already in the displayNewEntries function
-    const displayWord = document.createElement('div');
-    const importText = JSON.parse(importedTexts.dataset.texts); 
-    const modalbody = document.getElementById('modal-body');
-    const removeText = document.createElement('button');
-    removeText.classList.add("btn");
-    removeText.classList.add("btn-secondary");
-    removeText.type = "button";
-    removeText.textContent = "Remove this text";
-    removeText.onclick = (event) => {
-      const importedTexts = document.getElementById('preview');
-      importedTexts.dataset.texts = "";
-      console.log("onclick");
-      removeText.remove();
-      const textelements = document.getElementsByClassName(textId);
-      while (textelements[0].firstChild) {
-        textelements[0].removeChild(textelements[0].firstChild);
-      }
-
-      const idx = exportText.indexOf(text);
-      if (idx !== -1) {
-        modalbody.children.splice(idx, 1);
-      }
-      importedTexts.dataset.texts = [JSON.stringify(exportText.map(Object.values))];
-      console.log("importTexts texts on click remove text", JSON.parse(importedTexts.dataset.texts));
-      
-    };
-
-    modalbody.appendChild(removeText);
-  }
-
-
-  exportItems = (event) => {
-    const exportMyItems = [];
-    const wordsFromText = [];
-    const importedTexts = document.getElementById('preview'); 
-    //const importText = JSON.parse(importedTexts.dataset.alltexts); 
-    const importText = this.state;
-    if(importText instanceof Array === false) {return;}
-    /**/
-    this.addDate(importText);
-    this.addInfoUser(importText);
-    //const jsonobj = [];
-    //importText.forEach(function(key){
-    //  jsonobj.push(Object.keys(key).map(k => ({ [key[k][0]]: key[k][1] })));
-    //});
-    const blobData = new Blob([JSON.stringify({"items": importText},null,2)], {type: 'application/json'});
-    const url = window.URL.createObjectURL(blobData);
-    document.getElementById('export_all_items_link').href = url;
-    document.getElementById('export_all_items_link').click();
-  }
-
-
-  increment = (event) => {
-        
-  }
-  editEntries = (event) => {
-    const importedTexts = document.getElementById('preview');
-    const output = [...JSON.parse(importedTexts.dataset.alltexts)];
-  
-    function sessionExport(output) { 
-      output.forEach(element => {
-        element.forEach(el => {
-          if(el[0] === "session_of_texts") {
-            //element.splice(element.indexOf(el), 1);
-            el.splice(1,1);
-            el.push('previous');
-          }
-
-        })
-      });
-    }
-    sessionExport(output);
-    testAddDate(output);
-    testAddUser(output);
-    //testAddSession(output); 
-    function testAddUser(importText){
-      const importedTexts = document.getElementById('preview'); 
-      if (document.getElementById('username').value.length > 0) {
-        importText.forEach(function(myTextItem, index, jsonfile) {
-          myTextItem.forEach(function(info) {
-            if(info[0] === "users") {
-              if (!info[1].includes(document.getElementById('username').value)) {
-                info[1].push(document.getElementById('username').value); //array
-              }
-            } 
-          });
-        });
-      }
-    }
-    function testAddDate(importText) {
-      const daysDate = new Date();
-      const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-      const msTime = Date.now();
-      const importedTexts = document.getElementById('preview'); 
-      importText.forEach(function(myTextItem, index, jsonfile) {
-        myTextItem.forEach(function(info) {
-          if(info[0] === "dates" && !info[1].includes(today)) {
-              info[1].push(today); //array
-          } 
-        });
-      });
-    }
-   
-    //testAddUser(output);
-    //testAddSession(output);
-    //testAddDate(output);
-    const blobData = new Blob([JSON.stringify({"items": [...[...output, JSON.parse(importedTexts.dataset.allusers)], JSON.parse(document.getElementById('username').dataset.passwords)]},null,2)], {type: 'application/json'});
-    const url = window.URL.createObjectURL(blobData);
-    document.getElementById('export_all_items_link').href = url;
-    document.getElementById('export_all_items_link').click();
-  }
-
-
-
-  render() {
-    return (
-      <div>
-        <div id="text-items" onchange={this.increment}>
-          <div class="display-items" >
-            <a id="current-items" name="sessions-of-texts">0</a> texts added during this session by the logged in user
-          </div>
-          <div class="display-items">
-            <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
-          </div>
-          <div class="display-items">
-            <a id="other-users-items" name="sessions-of-texts">0</a> texts from other users that are left in the database
-          </div>
-        </div>
-        <div id="editor">
-
-
-
-        </div>
-        <input type="button" onclick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
-      </div>
-    )
-  }
-}
 ReactDOM.render(<BasicForm/>, document.getElementById('root'));
