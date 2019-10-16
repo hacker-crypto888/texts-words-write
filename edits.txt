@@ -142,3 +142,9 @@ TODO: export button does not export all users' items, only that of the currently
 - I could add a login with one way encryption to manage the password
 - password / username with b crypt
 
+TODO:
+-one page for login
+- json can be imported in the same directory in stead of dropped (fetch)
+-json could be exported (export from json)
+
+-craete msg "username already exists"
