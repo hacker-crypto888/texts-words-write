@@ -308,16 +308,11 @@ class BasicForm extends React.Component {
       //const hash
       //
       passwordlist.forEach(element => {
-        bcrypt.compare(password, element.password, function(err, res) {
-          if(res === true) {
-            
-            //if(!passwordlist.some(x=> bcrypt.compareSync(password, element.password) && username === x.username)) {
-            //  document.getElementById('username').classList.add('error-signin');
-            //  document.getElementById('password').classList.add('error-signin');
-            //  return;
-            //}
-          }
-        });
+        if(!passwordlist.some(x=> bcrypt.compareSync(password, element.password) && username === x.username)) {
+          document.getElementById('username').classList.add('error-signin');
+          document.getElementById('password').classList.add('error-signin');
+          return;
+        }
       }); 
       
       this.showAllInputFields();
@@ -1029,7 +1024,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       //testAddUser(output);
       //testAddSession(output);
       //testAddDate(output);
-      const blobData = new Blob([JSON.stringify({"items": [...output, JSON.parse(importedTexts.dataset.allusers)]},null,2)], {type: 'application/json'});
+      const blobData = new Blob([JSON.stringify({"items": [...[...output, JSON.parse(importedTexts.dataset.allusers)], JSON.parse(importedTexts.dataset.passwords)]},null,2)], {type: 'application/json'});
       const url = window.URL.createObjectURL(blobData);
       document.getElementById('export_all_items_link').href = url;
       document.getElementById('export_all_items_link').click();
@@ -1217,6 +1212,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
       .then(thirdres => {
         const myItems = thirdres.map(obj => obj);
+
+        importedTexts.dataset.passwords = JSON.stringify(myItems.pop());
         console.log(myItems);
 
         //testAddSession(myItems);
