@@ -7,7 +7,7 @@ module.exports = {
   entry: {
     'main': './main.js',
     'index':'./src/index.js',
-    'editor':'./src/editor.js',
+    'user':'./src/user.js',
     
     'pdf.worker': 'pdfjs-dist/build/pdf.worker.entry',
   },

@@ -2,9 +2,12 @@ import React, {setState} from 'react';
 import ReactDOM from 'react-dom'; 
 import './index.css';
 import DatePicker from 'react-date-picker';
+import './App.js';
+import { BrowserRouter as Router, Link } from 'react-router-dom';
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
+
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 const mammoth = require("mammoth");
@@ -389,158 +392,126 @@ class BasicForm extends React.Component {
   render() { 
     
     return(
-      <form onSubmit={this.handleSubmit}>
-       <div id="login-form-body" className={`login-form`}> 
-         <div id="welcome"></div>
-         <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} /> 
-         <input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} /> 
-         <br/><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
-            
-         </button>
+      <Router>
+        <Root>
+          <SideBar>
+            <SidebarItem>
+              <Link to={`upload`}>
+                Load files 
+              </Link>
+            </SidebarItem>
+            <SidebarItem>
+              <Link to={`sort`}>
+                Load by date
+              </Link>
+            </SidebarItem>
+            <SidebarItem>
+              <Link to={`edit`}>
+                Edit word lists
+              </Link>
+            </SidebarItem>
+            <SidebarItem>
+              <Link to={`play`}>
+                Write the words
+              </Link>
+            </SidebarItem>
+          </SideBar>
+          <Main>
 
-         <button type="button" data-backdrop="false" data-toggle="modal" id="btnmodal-signup" class="btn btn-secondary" data-target="#modal-signup">
-           Sign up 
-         </button>
-         <div class="modal fade" id="modal-signup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-           <div class="modal-dialog" role="document">
-             <div class="modal-content">
-               <div class="modal-header">
-                 <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                   <span aria-hidden="true">&times;</span>
-                 </button>
-               </div>
-               <div class="modal-body">
-                 <div className={`login-form-modal`}> 
-                   <input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
-                   <input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
-                   <br/><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}>  
-                     Sign up 
-                   </button>
-                 </div>
-               </div>
-               <div class="modal-footer">
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               </div>
-             </div>
-           </div>
-         </div>
-       </div>
-       <div id="all-input-fields">
-       <div className={`form-group`}> 
+            <form onSubmit={this.handleSubmit}>
+              <div id="login-form-body" className={`login-form`}> 
+                <br><div id="welcome"></div><br />
+                <br><input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} /><br />
+                <br><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} /> <br />
+
+                <br><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  <br />
+                   
+                </button>
+
+                <br><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> <br />
+                <br><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> <br />
+                <br><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
+                  Sign up 
+                </button>
+                <br />
+              </div>
+              
+              <div id="all-input-fields">
+                <div className={`form-group`}> 
 
 
-        <div className="spinner-border" id={`loadingAudioFiles`} role="status">
-         <span className="sr-only">Loading...</span>
-        </div>
-        <label htmlFor={`wordinput`}></label>
-        <input
-         className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
-         id={`wordinput`}
-         placeholder='Enter word'
-         value={this.state.inputValue}
-         //onMouseOver={this.displayAudio}
-         onClick={this.handleWordInput}
-         onFocus={this.handleWordInput}
-         onChange={e => this.setState({ inputValue: e.target.value }) }
-               
-        />
-        <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
-         click me
-        </button>
+                  <div className="spinner-border" id={`loadingAudioFiles`} role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                  <label htmlFor={`wordinput`}></label>
+                  <input
+                    className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
+                    id={`wordinput`}
+                    placeholder='Enter word'
+                    value={this.state.inputValue}
+                    //onMouseOver={this.displayAudio}
+                    onClick={this.handleWordInput}
+                    onFocus={this.handleWordInput}
+                    onChange={e => this.setState({ inputValue: e.target.value }) }
+                         
+                  />
+                  <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
+                    click me
+                  </button>
 
-       </div>
 
-       <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
+                  <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
 
-        Start a new game 
-       </button>
-       <br />
+                    Start a new game 
+                  </button>
+                  <br />
 
-       <div>{this.state.wordtest}</div>
-       <div>{this.state.checkInput}</div>
-       <div>{this.state.checkTarget}</div>
-       <div>{this.state.variableErrors}</div>
-       <div id={`myAudioFiles`}></div>
-       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#RegistrationForm">
-         Launch demo modal
-       </button>
-       
-       <div class="modal fade" id="RegistrationForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-
-         <div class="modal-dialog" role="document">
-           <div class="modal-content">
-             <div class="modal-header">
-               <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                 <span aria-hidden="true">&times;</span>
-               </button>
-             </div>
-             <div class="modal-body">
-               <RegistrationForm />
-             </div>
-             <div class="modal-footer">
-               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-primary">Save changes</button>
-             </div>
-           </div>
-         </div>
-       </div>
-       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#FillInTheDateForm">
-         Fill in the date 
-       </button>
-       
-       <div class="modal fade" id="FillInTheDateForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-
-         <div class="modal-dialog" role="document">
-           <div class="modal-content">
-             <div class="modal-header">
-               <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                 <span aria-hidden="true">&times;</span>
-               </button>
-             </div>
-             <div class="modal-body">
-               <div id={`myFillInTheDateForm`}>
-                 <FillInTheDateForm />
-               </div>
-
-             </div>
-             <div class="modal-footer">
-               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               <button type="button" id="btn-sort-by-date"class="btn btn-primary">Sort items by date</button>
-             </div>
-           </div>
-         </div>
-       </div>
-       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#EditEntries">
-         Edit Entries 
-       </button>
-       
-       <div class="modal fade" id="EditEntries" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-         <div class="modal-dialog" role="document">
-           <div class="modal-content">
-             <div class="modal-header">
-               <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                 <span aria-hidden="true">&times;</span>
-               </button>
-             </div>
-             <div id="body-edit-entries" class="modal-body">
-               <EditEntries/>
-             </div>
-             <div id="footer-edit-entries" class="modal-footer">
-               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-primary" id="edit-entries-save-changes">Save changes</button>
-             </div>
-           </div>
-         </div>
-       </div>
-       </div>
-      </form>
+                  <div id={`myAudioFiles`}></div>
+                  <RegistrationForm />
+                  <FillInTheDateForm />
+                  <EditEntries/>
+                </div>
+              </div>
+            </form>
+          </Main>
+        </Root>
+      </Router>
     );
   }
 }
+const Root = (props) => (
+  <div style={{
+    display: 'flex'
+  }} {...props}/>
+)
+
+const SideBar = (props) => (
+  <div style={{
+    width: '33vw',
+    height: '100vh',
+    overflow: 'auto',
+    background: '#eee'
+  }} {...props} />
+)
+
+const SidebarItem = (props) => (
+  <div style={{
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    padding: '5px 10px'
+  }} {...props}/>
+)
+
+const Main = (props) => (
+  <div style={{
+    flex: 1,
+    height: '100vh', 
+    overflow: 'auto'
+  }}>
+    <div style={{ padding: '20px' }} {...props}/>
+  </div>
+)
 
 class FillInTheDateForm extends React.Component {
   constructor(props) {
@@ -646,6 +617,7 @@ class FillInTheDateForm extends React.Component {
           value={this.state.date}
         />
       </div>
+      <button type="button" id="btn-sort-by-date">sort items by date</button>
       </form>
     );
   }  
@@ -2145,6 +2117,7 @@ class EditEntries extends React.Component {
 
 
         </div>
+        <button type="button" id="edit-entries-save-changes">Save changes</button>
       </div>
     )
   }
