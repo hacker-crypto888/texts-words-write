@@ -97,6 +97,8 @@ class BasicForm extends React.Component {
       username:
         '' 
     });
+    const importedTexts = document.getElementById('preview');
+    importedTexts.dataset.passwords = JSON.stringify([]);
 
      
     document.getElementById('signup-username').onfocus = (event) => {
@@ -305,15 +307,12 @@ class BasicForm extends React.Component {
     const password = document.getElementById('password').value;
     const passwordlist = JSON.parse(importedTexts.dataset.passwords); 
     if(document.getElementById('loginbtn').innerHTML === 'sign in') {
-      //const hash
-      //
-      passwordlist.forEach(element => {
-        if(!passwordlist.some(x=> bcrypt.compareSync(password, element.password) && username === x.username)) {
-          document.getElementById('username').classList.add('error-signin');
-          document.getElementById('password').classList.add('error-signin');
-          return;
-        }
-      }); 
+      console.log(passwordlist); 
+      if(!passwordlist.some(x=> bcrypt.compareSync(password, x.password) && username === x.username)) {
+        document.getElementById('username').classList.add('error-signin');
+        document.getElementById('password').classList.add('error-signin');
+        return;
+      }
       
       this.showAllInputFields();
 
@@ -321,8 +320,8 @@ class BasicForm extends React.Component {
       document.getElementById('loginbtn').innerHTML = 'sign out';
       document.getElementById('username').hidden = true;
       document.getElementById('password').hidden = true;
-      document.getElementById('username').classList.remove('error-signin');
-      document.getElementById('password').classList.remove('error-signin');
+      document.getElementById('username').className= '' 
+      document.getElementById('password').className = '';
       document.getElementById('welcome').innerHTML = "Hello, "+username;
       importedTexts.dataset.username = username; 
 
@@ -363,7 +362,7 @@ class BasicForm extends React.Component {
     importedTexts.dataset.texts = JSON.stringify([]);
     importedTexts.dataset.allusers = JSON.stringify([]);
     importedTexts.dataset.previous_sessions = JSON.stringify([]);
-    importedTexts.dataset.passwords = JSON.stringify([]);
+
     document.getElementById('previous-items').innerHTML = Number('');
     document.getElementById('current-items').innerHTML = Number('');
     document.getElementById('password').hidden = false;
@@ -380,7 +379,7 @@ class BasicForm extends React.Component {
     bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(plainTextPassword1, salt, function(err, hash) {
           const importedTexts = document.getElementById('preview');
-          importedTexts.dataset.passwords = JSON.stringify([...JSON.parse(importedTexts.dataset.passwords), {username: plainTextUsername1, password: plainTextPassword1}]);
+          importedTexts.dataset.passwords = JSON.stringify([...JSON.parse(importedTexts.dataset.passwords), {username: plainTextUsername1, password: hash}]);
             // Store hash in your password DB.
         });
     });
