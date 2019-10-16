@@ -102,20 +102,6 @@ class BasicForm extends React.Component {
     });
     const importedTexts = document.getElementById('preview');
     importedTexts.dataset.passwords = JSON.stringify([]);
-
-     
-    document.getElementById('signup-username').onfocus = (event) => {
-  
-      window.addEventListener("keydown", function(event) {
-        document.getElementById('signup-username').focus();
-      });
-    }
-    document.getElementById('signup-password').onfocus = (event) => {
-  
-      window.addEventListener("keydown", function(event) {
-        document.getElementById('signup-password').focus();
-      });
-    }
     this.logout();
     
   }
@@ -417,25 +403,24 @@ class BasicForm extends React.Component {
             </SidebarItem>
           </SideBar>
           <Main>
-
+            
             <form onSubmit={this.handleSubmit}>
               <div id="login-form-body" className={`login-form`}> 
-                <br><div id="welcome"></div><br />
-                <br><input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} /><br />
-                <br><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} /> <br />
+                <br /><div id="welcome"></div>
+                <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
+                <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
 
-                <br><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  <br />
+                <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
                    
                 </button>
 
-                <br><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> <br />
-                <br><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> <br />
-                <br><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
+                <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
+                <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
+                <br /><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
                   Sign up 
                 </button>
-                <br />
+                
               </div>
-              
               <div id="all-input-fields">
                 <div className={`form-group`}> 
 
@@ -971,7 +956,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       this.displayNewEntries(allMyTexts.filter(loadTextsByDate));
     };
     document.getElementById('edit-entries-save-changes').onclick = (event) => {
-      document.getElementById('footer-edit-entries').focus();
       const importedTexts = document.getElementById('preview');
       const output = [...JSON.parse(importedTexts.dataset.alltexts)];
     
