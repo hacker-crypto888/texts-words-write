@@ -20,7 +20,6 @@
     "mammoth": "^1.4.8",
     "node-expat": "^2.3.18",
     "node-gyp": "^5.0.3",
-    "nodejs": "0.0.0",
     "pdfjs-dist": "^2.1.266",
     "react": "^16.9.0",
     "react-date-picker": "^7.8.1",

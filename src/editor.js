@@ -6,21 +6,19 @@ import exportFromJSON from 'export-from-json';
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
-const http = require('http');
-const exportFromJSON = require('export-from-json');
-const importedTexts = document.getElementById('preview');
-const server = http.createServer(function (req, res){
-          // exportFromJSON actually supports passing JSON as the data option. It's very common that reading it from http request directly.
-        res.writeHead(200, {
-          'Content-Type': 'application/octet-stream',
-          "content-disposition": "attachment; filename=\"database.json\""
-        });
-        const data = JSON.parse(importedTexts.dataset.data);
-        console.log(data);
+const writeJsonFile = require('write-json-file');
+(async () => {
+    await writeJsonFile('database.json', {foo: true});
+})();
+const Fs = require('fs')
+const fs = require('fs');
 
-        res.end(JSON.stringify(data));
-});
+function writeToFile (data) {  
+  const json = JSON.stringify(data, null, 2)
+  fs.writeFileSync('database.json', json);
 
+  console.log('Saved data to file.')
+}
 
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
@@ -954,6 +952,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       exportType:null,
       port:null,
       host:null,
+      server:null,
+      http:null,
       
     };
 
@@ -1052,19 +1052,16 @@ my two mistresses: what a beast am I to slack it!`,*/
       if (JSON.parse(importedTexts.dataset.allusers).length > 0) {
         data.push(JSON.parse(importedTexts.dataset.allusers));
       }
-      importedTexts.dataset.data = JSON.stringify(data);
+      //writeToFile(data);
+
+
+      //importedTexts.dataset.data = JSON.stringify(data);
       const blobData = new Blob([JSON.stringify({"items": data},null,2)], {type: 'application/json'});
       const url = window.URL.createObjectURL(blobData);
       document.getElementById('export_all_items_link').href = url;
       document.getElementById('export_all_items_link').click();
 
 
-
-      const port = 3000;
-      const host = '127.0.0.1';
-      server.listen(port, host, () => {
-        console.log('Listening at http://' + host + ':' + port);
-      })
      
 
     }
