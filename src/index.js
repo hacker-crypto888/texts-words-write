@@ -432,8 +432,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       date:null,  
       allusers:[],
       texts:null,
-      alltexts:null,
+      alltexts:[],
       number:null,
+      otherUsersItems:null,
     };
   }
   componentDidMount() {
@@ -474,6 +475,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     this.setState({texts: JSON.stringify([])});
     this.setState({username:'user'});
+    const alltexts = [];
+    this.setState({alltexts});
+    const otherUsersItems = Number('');
 
     fetch('database.json')
       .then(function(response) {
@@ -491,15 +495,13 @@ my two mistresses: what a beast am I to slack it!`,*/
         });
         console.log(items);
         function allusersItems(textvar) {
-          if(!textvar.some(x => x[0] === "users" && x[1].includes(username))) {
-            document.getElementById('other-users-items').innerHTML = Number(document.getElementById('other-users-items').innerHTML) +1;
-            return !textvar.some(x => x[0] === "users" && x[1].includes(username));
-          } 
+          return !textvar.some(x => x[0] === "users" && x[1].includes(username));
         }
         function usersItem(textvar) {
           return textvar.some(x => x[0] === "users" && x[1].includes(username)); 
         }
         const allusers = items.map(x=>x).filter(allusersItems);
+        this.state.otherUsersItems += 1;
         return items.map(x => x).filter(usersItem);
 
       })
@@ -510,8 +512,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         result.forEach(textitem => {
           document.getElementById('previous-items').innerHTML = Number(document.getElementById('previous-items').innerHTML) +1;
 
-          const texts = JSON.stringify(textitem);
-          this.textAdd(texts);  
+          this.textAdd(textitem);  
         });
       })
     const allAudioElements = document.getElementsByTagName('audio'); 
@@ -576,7 +577,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   displayAudio = event => {
     const itemlist = [];
     const number = Number('');
-    const alltexts = this.state;
+    const alltexts = this.state.alltexts;
 
     if(alltexts.length === 0) {return;};
     const myNode = document.getElementById('myAudioFiles');
@@ -755,7 +756,8 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
   editEntries = (event) => {
     const allusers = this.state;
-    const output = [...JSON.parse(this.state.alltexts)];
+    const alltexts = this.state.alltexts;
+    const output = [...alltexts];
   
     function sessionExport(output) { 
       output.forEach(element => {
@@ -950,8 +952,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     const callbackFunction = result => {
       console.log(result);
-      const texts = JSON.stringify(result);
-      this.textAdd(texts); 
+      this.textAdd(result); 
       document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1; 
     }
 
@@ -1010,7 +1011,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         result2.innerHTML = resultObject.value
         const newText = createFileList();
         addContent(newText, resultObject.value);
-        this.textAdd(JSON.stringify(newText));
+        this.textAdd(newText);
         document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
       })
     };
@@ -1098,7 +1099,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
           addContent(newText, pagesText.join(' '));
           
-          this.textAdd(JSON.stringify(newText));
+          this.textAdd(newText);
           document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;          
 
         });
@@ -1203,9 +1204,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       });
     }
 
-    function pushItem(item) {
-      const alltexts = JSON.stringify([...JSON.parse(this.state.alltexts), item]);
-    }
 
     isDroppedFile(text);
     function addTextSize(size, text) {
@@ -1226,19 +1224,15 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     getTextSize(addTextSize);
     handleText(text); 
-    pushItem(text);
-    this.displayNewEntries(JSON.parse(this.state.alltexts));
+    const alltexts = this.state.alltexts;
+    console.log(this.state.alltexts, "add a text"); 
+    alltexts.push(text);
+    this.displayNewEntries(alltexts);
     
   }
   displayNewEntries = (textsToDisplay) => { 
     const idx = this.state;
-    const modalbody = document.getElementById('editor');
 
-    while (modalbody.firstChild) {
-      modalbody.removeChild(modalbody.firstChild);
-    }
-    //this.dispWord('mot');
-    //this.displayRemoveWordBtn('mot', 0, 7, textsToDisplay);
     const wordsToDisplay = [];
     if (!(textsToDisplay instanceof Array)) {
       textsToDisplay = [];
@@ -1265,114 +1259,17 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   displayWordsBtnsToRmWords = (words, texts) => {
 
-
+    const username = this.state;
     function ifUserConnected() {
 
-      if (document.getElementById('username').value.length === 0) {return false;} else {
+      if (username.length === 0) {return false;} else {
         return true;
       }
     }
     const modalbody = document.getElementById('editor');
     if(words instanceof Array && words.length === 0) {return};
     
-    words.forEach(function(item, rangeitem, allwords){
-      if(typeof item === 'string') { return; }
 
-      const displayDiv = document.createElement('div');
-
-      displayDiv.classList.add('display-div');
-      const displayWord = document.createElement('div');
-      displayWord.textContent = item[0];
-      displayWord.classList.add('label-word');
-      displayDiv.appendChild(displayWord);
-      const removeWord = document.createElement('div');
-      const selectText = document.createElement('input');
-      displayDiv.appendChild(removeWord);
-      if (ifUserConnected() && typeof words[rangeitem-1] === 'string' && item instanceof Array) {
-        const textDiv = document.createElement('div');
-        textDiv.classList.add('display-text');
-        textDiv.id = words[rangeitem-1];
-        const textId = words[rangeitem-1];
-        modalbody.appendChild(textDiv);
-        textDiv.appendChild(displayDiv);
-        //modalbody.removeChild(modalbody.firstChild);
-      } else if (ifUserConnected() && words[rangeitem-1] instanceof Array && item instanceof Array) {
-        document.getElementById(this.state.textId).appendChild(displayDiv);
-      } else {
-        modalbody.appendChild(displayDiv); //1855
-      }
-
-
- 
-      removeWord.classList.add("btn");
-      removeWord.classList.add("btn-secondary");
-      removeWord.classList.add("btn-word");
-      removeWord.type = "button";
-      removeWord.textContent = "Remove this word";
-      removeWord.onclick = (event) => {
-
-        if(removeWord.parentElement) {
-          //console.log(texts);
-
-          const idx = Array.prototype.indexOf.call(removeWord.parentNode.parentNode.childNodes, removeWord.parentNode);
-          if (idx !== -1) {
-            function removeText(idx1, texts, text) {
-              texts.splice(idx1, 1);
-              console.log(texts);
-              const alltexts = JSON.stringify([...texts]);
-              alert('rm text');
-            }
-
-            function removeItem(idx1, texts, text) {
-              alert('rm item'+(idx+1));
-              text.forEach(item => {
-                if(item[0] === "mycontent"){
-                  texts[idx1][text.indexOf(item)][1].splice(idx, 1);
-                  console.log(texts[idx1][text.indexOf(item)][1]);
-                  const alltexts = JSON.stringify([...texts]);
-                }
-              });
-            } 
-
-            function findRange(callback) {
-              const textvar = [...JSON.parse(this.state.alltexts)];
-              //console.log(textvar);
-              textvar.forEach(textitem => {
-                textitem.forEach(item => {
-                  if(item[0] === "textId"){
-                    if (item[1] === this.state.textId) {
-                      const idx2 = textvar.indexOf(textitem);
-                      if (idx2 !== -1) {
-                        callback(idx2, textvar, textitem);
-                      }
-                    }
-                  }
-                });
-              });
-            }
-
-
-
-
-
-            if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
-              const textId = removeWord.parentNode.parentNode.id; 
-              removeWord.parentNode.parentNode.remove();
-
-              findRange(removeText);
-
-            } else {
-              const textId = removeWord.parentNode.parentNode.id; 
-              removeWord.parentNode.parentNode.childNodes[idx].remove();
-
-
-              findRange(removeItem);
-
-            }
-          }
-        }
-      }
-    });
   }
 
 
@@ -1471,7 +1368,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const newText = createList();
     wordItemInputField(newText);
     addContent(newText, valueword);
-    this.textAdd(JSON.stringify(newText));
+    this.textAdd(newText);
     document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
     valueword = '';
 
@@ -1513,7 +1410,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const newText = createList();
     addContent(newText, this.state.value);
     textInputField(newText);
-    this.textAdd(JSON.stringify(newText));
+    this.textAdd(newText);
     document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
     this.state.value = "";
   }
@@ -1523,7 +1420,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   }
   btnSortByDate = (event) => {
-    const alltexts = this.state;
+    const alltexts = this.state.alltexts;
     const date = this.state;
     if(date === null) {
       this.displayNewEntries(alltexts);
@@ -1533,7 +1430,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     function loadTextsByDate(text) {
       return text.some(prop => prop[0] === "dates" && prop[1].includes(date));
     }
-    this.displayNewEntries(JSON.stringify(alltexts.filter(loadTextsByDate)));
+    this.displayNewEntries(alltexts.filter(loadTextsByDate));
   };
 
 
@@ -1610,28 +1507,8 @@ my two mistresses: what a beast am I to slack it!`,*/
                   <button type="button" onClick={this.btnSortByDate} id="btn-sort-by-date">sort items by date</button>
                 </div>
               )} />
-              <Route path="/edit" render={() => (
-                <div>
-                  <div id="text-items" onchange={this.increment}>
-                    <div class="display-items" >
-                      <a id="current-items" name="sessions-of-texts">0</a> texts added during this session by the logged in user
-                    </div>
-                    <div class="display-items">
-                      <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
-                    </div>
-                    <div class="display-items">
-                      <a id="other-users-items" name="sessions-of-texts">0</a> texts from other users that are left in the database
-                    </div>
-                  </div>
-                  <div id="editor">
 
-
-
-                  </div>
-                  <input type="button" onclick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
-                </div>
-              )} />
-
+              <Route path="/edit" component={Editor}/>
               <Route exact={true} path="/" render={() => (
                 <div id="login-form-body" className={`login-form`}> 
                 <h1>Welcome</h1>
@@ -1641,7 +1518,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                 <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
 
                 <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
-                   
+                  sign in 
                 </button>
 
                 <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
@@ -1734,6 +1611,155 @@ const Main = (props) => (
     <div style={{ padding: '20px' }} {...props}/>
   </div>
 )
+const DisplayDiv = (props) => (
+  <div className={'display-div'} {...props}/>
+
+)
+const DisplayWord = (props) => (
+  <div className={{'label-word'}} {...props}/>
+
+)
+const RemoveWord = (props) => (
+  <div {...props}/>
+
+)
+const Editor = ({ wordsToDisplay }) => {
+  return(
+    <div>
+      <div id="text-items" onchange={this.increment}>
+        <div class="display-items" >
+          <a id="current-items" name="sessions-of-texts">0</a> texts added during this session by the logged in user
+        </div>
+        <div class="display-items">
+          <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
+        </div>
+        <div class="display-items">
+          {this.state.otherUsersItems} texts from other users that are left in the database
+        </div>
+      </div>
+      <div id="editor">
+      
+        {wordsToDisplay ? (
+          {wordsToDisplay.forEach((item, rangeitem, allwords) => {
+            {typeof item === 'string' ? ( 
+              {rangeitem !== 0 ? (
+                </TextDiv>
+              ) : ( null )}
+              <TextDiv id={wordsToDisplay[0]}>
+            ) : (
+                <DisplayDiv>
+                  <DisplayWord>
+                    {item[0]}
+                  </DisplayWord>
+                  <RemoveWord>
+                  </RemoveWord>
+                </DisplayDiv>
+              {rangeItem === allwords.length -1 ? (
+                </TextDiv>
+              ) ? ( 
+                null 
+              )}
 
 
+
+
+              if (ifUserConnected() && typeof words[rangeitem-1] === 'string' && item instanceof Array) {
+                const modalbody = document.getElementById('editor');
+                const textDiv = document.createElement('div');
+                textDiv.classList.add('display-text');
+                textDiv.id = words[rangeitem-1];
+                const textId = words[rangeitem-1];
+                modalbody.appendChild(textDiv);
+                //modalbody.removeChild(modalbody.firstChild);
+              } else if (ifUserConnected() && words[rangeitem-1] instanceof Array && item instanceof Array) {
+                document.getElementById(this.state.textId).appendChild(displayDiv);
+              } else {
+                modalbody.appendChild(displayDiv); //1855
+              }
+
+
+ 
+              removeWord.classList.add("btn");
+              removeWord.classList.add("btn-secondary");
+              removeWord.classList.add("btn-word");
+              removeWord.type = "button";
+              removeWord.textContent = "Remove this word";
+              removeWord.onclick = (event) => {
+
+                if(removeWord.parentElement) {
+                  //console.log(texts);
+
+                  const idx = Array.prototype.indexOf.call(removeWord.parentNode.parentNode.childNodes, removeWord.parentNode);
+                  if (idx !== -1) {
+                    function removeText(idx1, texts, text) {
+                      texts.splice(idx1, 1);
+                      console.log(texts);
+                      const alltexts = [...texts];
+                      this.setState({alltexts});
+                      alert('rm text');
+                    }
+
+                    function removeItem(idx1, texts, text) {
+                      alert('rm item'+(idx+1));
+                      text.forEach(item => {
+                        if(item[0] === "mycontent"){
+                          texts[idx1][text.indexOf(item)][1].splice(idx, 1);
+                          console.log(texts[idx1][text.indexOf(item)][1]);
+                          const alltexts = [...texts];
+                          this.setState({alltexts});
+                        }
+                      });
+                    } 
+
+                    function findRange(callback) {
+                      const alltexts = this.state.alltexts;
+                      const textvar = [...alltexts];
+                      //console.log(textvar);
+                      textvar.forEach(textitem => {
+                        textitem.forEach(item => {
+                          if(item[0] === "textId"){
+                            if (item[1] === this.state.textId) {
+                              const idx2 = textvar.indexOf(textitem);
+                              if (idx2 !== -1) {
+                                callback(idx2, textvar, textitem);
+                              }
+                            }
+                          }
+                        });
+                      });
+                    }
+
+
+
+
+
+                    if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
+                      const textId = removeWord.parentNode.parentNode.id; 
+                      removeWord.parentNode.parentNode.remove();
+
+                      findRange(removeText);
+
+                    } else {
+                      const textId = removeWord.parentNode.parentNode.id; 
+                      removeWord.parentNode.parentNode.childNodes[idx].remove();
+
+
+                      findRange(removeItem);
+
+                    }
+                  }
+                }
+              }
+            )}
+          })};
+        ) : (
+          <div>Loading...</div>
+        )}
+    
+
+      </div>
+      <input type="button" onclick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
+    </div>
+  )
+}
 ReactDOM.render(<BasicForm/>, document.getElementById('root'));
