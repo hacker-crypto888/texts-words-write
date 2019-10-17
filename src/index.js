@@ -434,11 +434,13 @@ my two mistresses: what a beast am I to slack it!`,*/
       texts:null,
       alltexts:[],
       number:null,
-      otherUsersItems:null,
-      nbCurrent:null,
+      otherUsersItems:Number(''),
+      nbCurrent:Number(''),
     };
   }
   componentDidMount() {
+    const preloadOrAutoplay = 'preload';
+    this.setState({preloadOrAutoplay});
     const username = "username";
     const textId = createNewTextId();
     const today = daysDate();
@@ -479,9 +481,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     const alltexts = [];
     this.setState({alltexts});
     const wordsToDisplay=[];
-	this.setState({wordsToDisplay});
-    const otherUsersItems = Number('');
-    const nbCurrent = Number('');
+    this.setState({wordsToDisplay});
+    const nbCurrent = 0;
 
     fetch('database.json')
       .then(function(response) {
@@ -505,7 +506,9 @@ my two mistresses: what a beast am I to slack it!`,*/
           return textvar.some(x => x[0] === "users" && x[1].includes(username)); 
         }
         const allusers = items.map(x=>x).filter(allusersItems);
-        this.state.otherUsersItems += 1;
+        for (var i=0; i<allusers.length ; i++) {
+          this.setState({otherUsersItems: this.state.otherUsersItems + 1});
+        }
         return items.map(x => x).filter(usersItem);
 
       })
@@ -958,7 +961,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       console.log(result);
       this.textAdd(result); 
       const nbCurrent = this.state.nbCurrent;
-      this.state.nbCurrent += 1;
+      nbCurrent+=1;
     }
 
     const mainFunction = callback => {
@@ -1018,7 +1021,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         addContent(newText, resultObject.value);
         this.textAdd(newText);
         const nbCurrent = this.state.nbCurrent;
-        this.state.nbCurrent += 1;
+        nbCurrent+=1;
       })
     };
     reader.readAsArrayBuffer(file);
@@ -1107,7 +1110,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           
           this.textAdd(newText);
           const nbCurrent = this.state.nbCurrent;
-          this.state.nbCurrent += 1;
+          nbCurrent+=1;
 
         });
 
@@ -1232,7 +1235,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     getTextSize(addTextSize);
     handleText(text); 
     const alltexts = this.state.alltexts;
-    console.log(this.state.alltexts, "add a text"); 
+    console.log(alltexts, "add a text"); 
     alltexts.push(text);
     this.displayNewEntries(alltexts);
     
@@ -1262,7 +1265,8 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
       });
     });
-    this.setState({wordsToDisplay});
+    this.setState({wordsToDisplay: wordsToDisplay});
+    
   }
 
 
@@ -1365,7 +1369,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     addContent(newText, valueword);
     this.textAdd(newText);
     const nbCurrent = this.state.nbCurrent;
-    this.state.nbCurrent = this.state.nbCurrent;
+    nbCurrent+=1;
     valueword = '';
 
   }
@@ -1407,8 +1411,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     addContent(newText, this.state.value);
     textInputField(newText);
     this.textAdd(newText);
-    const nbCurrent = this.state.nbCurrent;
-    this.state.nbCurrent += 1;
+    this.setState({nbCurrent: this.state.nbCurrent+=1});
     this.state.value = "";
   }
   onChange = (date) => {
@@ -1429,72 +1432,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     this.displayNewEntries(alltexts.filter(loadTextsByDate));
   };
-  removeWord = (event) => {
 
-    if(event.target.parentElement) {
-      //console.log(texts);
-
-      const idx = Array.prototype.indexOf.call(event.target.parentNode.parentNode.childNodes, event.target.parentNode);
-      if (idx !== -1) {
-        function removeText(idx1, texts, text) {
-          texts.splice(idx1, 1);
-          console.log(texts);
-          const alltexts = [...texts];
-          this.setState({alltexts});
-          alert('rm text');
-        }
-
-        function removeItem(idx1, texts, text) {
-          alert('rm item'+(idx+1));
-          text.forEach(item => {
-            if(item[0] === "mycontent"){
-              texts[idx1][text.indexOf(item)][1].splice(idx, 1);
-              console.log(texts[idx1][text.indexOf(item)][1]);
-              const alltexts = [...texts];
-              this.setState({alltexts});
-            }
-          });
-        } 
-
-        function findRange(callback) {
-          const alltexts = this.state.alltexts;
-          const textvar = [...alltexts];
-          //console.log(textvar);
-          textvar.forEach(textitem => {
-            textitem.forEach(item => {
-              if(item[0] === "textId"){
-                if (item[1] === this.state.textId) {
-                  const idx2 = textvar.indexOf(textitem);
-                  if (idx2 !== -1) {
-                    callback(idx2, textvar, textitem);
-                  }
-                }
-              }
-            });
-          });
-        }
-
-
-
-
-
-        if (event.target.parentNode.parentNode.childNodes.length === 1 && event.target.parentNode.parentNode.classList.contains("display-text")) {
-          const textId = event.target.parentNode.parentNode.id; 
-          event.target.parentNode.parentNode.remove();
-
-          findRange(removeText);
-
-        } else {
-          const textId = event.target.parentNode.parentNode.id; 
-          event.target.parentNode.parentNode.childNodes[idx].remove();
-
-
-          findRange(removeItem);
-
-        }
-      }
-    }
-  }
 
 
   render() { 
@@ -1579,7 +1517,7 @@ my two mistresses: what a beast am I to slack it!`,*/
               <Route path="/edit" component={Editor}/>
               <Route path="/edit" render={() => (
                 <div>
-                  <input type="button" onclick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
+                  <input type="button" onClick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
                 </div>
               )} />
               <Route exact={true} path="/" render={() => (
@@ -1712,11 +1650,76 @@ const DisplayWord = (props) => (
 
 )
 const RemoveWord = (props) => (
-  <div onClick={this.removeWord} {...props}/>
+  <div {...props}/>
 
 
 )
-const Editor = ({ wordsToDisplay }) => {
+const Editor = ({ wordsToDisplay, alltexts }) => {
+  function removeWord(event){
+
+    if(event.target.parentElement) {
+      //console.log(texts);
+
+      const idx = Array.prototype.indexOf.call(event.target.parentNode.parentNode.childNodes, event.target.parentNode);
+      if (idx !== -1) {
+        function removeText(idx1, texts, text) {
+          texts.splice(idx1, 1);
+          console.log(texts);
+          const alltexts = [...texts];
+          this.setState({alltexts});
+          alert('rm text');
+        }
+
+        function removeItem(idx1, texts, text) {
+          alert('rm item'+(idx+1));
+          text.forEach(item => {
+            if(item[0] === "mycontent"){
+              texts[idx1][text.indexOf(item)][1].splice(idx, 1);
+              console.log(texts[idx1][text.indexOf(item)][1]);
+              const alltexts = [...texts];
+              this.setState({alltexts});
+            }
+          });
+        } 
+
+        function findRange(callback) {
+          const textvar = [...alltexts];
+          //console.log(textvar);
+          textvar.forEach(textitem => {
+            textitem.forEach(item => {
+              if(item[0] === "textId"){
+                if (item[1] === this.state.textId) {
+                  const idx2 = textvar.indexOf(textitem);
+                  if (idx2 !== -1) {
+                    callback(idx2, textvar, textitem);
+                  }
+                }
+              }
+            });
+          });
+        }
+
+
+
+
+
+        if (event.target.parentNode.parentNode.childNodes.length === 1 && event.target.parentNode.parentNode.classList.contains("display-text")) {
+          const textId = event.target.parentNode.parentNode.id; 
+          event.target.parentNode.parentNode.remove();
+
+          findRange(removeText);
+
+        } else {
+          const textId = event.target.parentNode.parentNode.id; 
+          event.target.parentNode.parentNode.childNodes[idx].remove();
+
+
+          findRange(removeItem);
+
+        }
+      }
+    }
+  }
   return(
     <div>
 
@@ -1728,7 +1731,7 @@ const Editor = ({ wordsToDisplay }) => {
                 {item[0]}
               </DisplayWord>
               <RemoveWord>
-                <button type="button" className="btn btn-secondary btn-word">
+                <button type="button" onClick={removeWord} className="btn btn-secondary btn-word">
                   Remove this word
                 </button>
               </RemoveWord>
