@@ -114,6 +114,13 @@
         "input",
         "dropzone"
       ]
+    ],
+  
+    [
+      { 
+        "username": "a",
+        "password": "$2a$10$qY7LrNI2Tmh3.yOvNccJwODoDssqCefHS55JK2qv9BH9zW2qkKxaK"
+      }
     ]
   ]
 }

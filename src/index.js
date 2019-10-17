@@ -83,7 +83,7 @@ class BasicForm extends React.Component {
       saltRounds:null,
       plainTextUsername1:null,
       plainTextPassword1:null,
-      password:null,
+      password:'',
       hash:null,
       passwordlist:null,
       name: '',
@@ -340,7 +340,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       today:null,
       msTime:null,
       textype:null,
-      username:'',
       wordsToDisplay:null,
       checkPrev:null,
       checkCurrent:null,
@@ -434,16 +433,32 @@ my two mistresses: what a beast am I to slack it!`,*/
       texts:null,
       alltexts:[],
       number:null,
-      otherUsersItems:Number(''),
+      otherUsersItems:Number('-1'),
       nbCurrent:Number(''),
+      passwords:[],
     };
   }
   componentDidMount() {
+    const valueword = '';
+    this.setState({valueword:this.state.valueword});
+    const value = '';
+    this.setState({value:this.state.value});
+    const otherUsersItems = -1;
+    this.setState({otherUsersItems});
     const preloadOrAutoplay = 'preload';
     this.setState({preloadOrAutoplay});
     const username = "username";
     const textId = createNewTextId();
     const today = daysDate();
+    this.setState({texts: JSON.stringify([])});
+    this.setState({username});
+    const alltexts = [];
+    this.setState({alltexts});
+    const wordsToDisplay=[];
+    this.setState({wordsToDisplay});
+    const nbCurrent = 0;
+    const passwords = [];
+    this.setState({passwords});
 
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
@@ -476,13 +491,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
       });
     }
-    this.setState({texts: JSON.stringify([])});
-    this.setState({username:'user'});
-    const alltexts = [];
-    this.setState({alltexts});
-    const wordsToDisplay=[];
-    this.setState({wordsToDisplay});
-    const nbCurrent = 0;
+
 
     fetch('database.json')
       .then(function(response) {
@@ -493,12 +502,14 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
       .then(items => {
 
-
-        this.setState({
-          passwords:
-            JSON.stringify(items.map(obj => obj).pop())
-        });
+        if(items === (null||undefined)) {return;}
         console.log(items);
+        const passwords = this.state.passwords;
+        console.log(passwords);
+        passwords.push(items.map(obj => obj)[items.length -1]);
+        items.map(obj => obj).pop();
+
+        console.log(passwords);
         function allusersItems(textvar) {
           return !textvar.some(x => x[0] === "users" && x[1].includes(username));
         }
@@ -523,10 +534,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         });
       })
     const allAudioElements = document.getElementsByTagName('audio'); 
-    this.setState({
-      username:
-        '' 
-    });
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
     const date = new Date();
@@ -711,8 +718,12 @@ my two mistresses: what a beast am I to slack it!`,*/
     document.getElementById('dropzone').hidden = false;
   }
   loginUser = (event) => {
-    const {username, password, passwords} = this.state;
-    if(document.getElementById('username').value.length > 0) {
+    const username = this.state.username;
+    const password = this.state.password;
+    const passwords = this.state.passwords;
+    console.log(username, password, passwords);
+    
+    if(typeof username === 'string') {
       if(!passwords.some(x=> bcrypt.compareSync(password, x.password) && username === x.username)) {
         document.getElementById('username').classList.add('error-signin');
         document.getElementById('password').classList.add('error-signin');
@@ -748,19 +759,18 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
   signupUser = (event) => {
     const saltRounds = 10;
-
-    const plainTextUsername1 = document.getElementById('signup-username').value;
-    const plainTextPassword1 = document.getElementById('signup-password').value;
-
+    const plainTextUsername1 = this.state.signupUsername;
+    const plainTextPassword1 = this.state.signupPassword;
+    const passwords = this.state.passwords;
     
     bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(plainTextPassword1, salt, function(err, hash) {
-          const passwords = JSON.stringify([...JSON.parse(this.state.passwords), {username: plainTextUsername1, password: hash}]);
+          passwords.push({username: plainTextUsername1, password: hash});
             // Store hash in your password DB.
         });
     });
-
   }
+
   editEntries = (event) => {
     const allusers = this.state;
     const alltexts = this.state.alltexts;
@@ -1216,56 +1226,23 @@ my two mistresses: what a beast am I to slack it!`,*/
 
 
     isDroppedFile(text);
-    function addTextSize(size, text) {
+    function addTextSize(text) {
       //const VAR_NAME = 
       text.forEach(item => {
         if(item[0] === "size" && item[1].length === 0) {
           item.splice(1,1);
-          item.push(size);
+          //item.push(JSON.stringify(text.filter(x=>x[0] === "mycontent")[0][1].length));
+          console.log(text.filter(x=>x[0] === "mycontent").length);
+          console.log(text.filter(x=>x[0] === "mycontent"));
         }
       });
     }
-    function getTextSize(callback) {
-      text.forEach(item => {
-        if(item[0] === "mycontent" && item[1].length > 0) {
-          callback(item[1].length, text);
-        }
-      });
-    }
-    getTextSize(addTextSize);
+    addTextSize(text);
     handleText(text); 
     const alltexts = this.state.alltexts;
-    console.log(alltexts, "add a text"); 
+
     alltexts.push(text);
-    this.displayNewEntries(alltexts);
-    
-  }
-  displayNewEntries = (textsToDisplay) => { 
-    const idx = this.state;
-    const textId = [];
-
-    const wordsToDisplay = [];
-    if (!(textsToDisplay instanceof Array)) {
-      textsToDisplay = [];
-    }
-    textsToDisplay.forEach(function(textItem) {
-      textItem.forEach(function(infoItem) {
-
-        if (infoItem[0] === 'textId') { //1794
-          textId.push(infoItem[1]); 
-        } 
-
-        if (infoItem[0] === 'mycontent') {
-          const idx = textItem.indexOf(infoItem);
-          const idx1 = textsToDisplay.indexOf(textItem);
-
-          textItem[idx][1].forEach(function(word) {
-            wordsToDisplay.push([word, idx,idx1, textId[textId.length-1]]); //textsToDisplay[word[2]][word[1]][1]
-          }) // 
-        }
-      });
-    });
-    this.setState({wordsToDisplay: wordsToDisplay});
+    console.log(alltexts, "add a text"); 
     
   }
 
@@ -1283,7 +1260,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     this.setState({
       valueword:
         event.target.valueword
+
     });
+    console.log(this.state.valueword);
   }
 
 
@@ -1335,7 +1314,10 @@ my two mistresses: what a beast am I to slack it!`,*/
   useWordItemInputField = (event) => {
     const textId = createNewTextId();
     const today = daysDate();
-
+    const username = this.state.username;
+    const valueword = this.state.valueword; 
+    this.setState({valueword});
+    if (valueword === (null||undefined)) {return;};
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
       return string;
@@ -1353,24 +1335,22 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createList(list) {
-      list = [["textId",textId],["users", [document.getElementById('username').value]],["session_of_texts", "current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      list = [["textId",textId],["users", [username]],["session_of_texts", "current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
       return list;
     }
 
     function addContent(fileinfo, textstring) {
       fileinfo.push(["mycontent", textstring]);
     }
-    const valueword = document.getElementById('valueword').value;
-    if (valueword === "") {return;};
+
     
 
     const newText = createList();
     wordItemInputField(newText);
     addContent(newText, valueword);
     this.textAdd(newText);
-    const nbCurrent = this.state.nbCurrent;
-    nbCurrent+=1;
-    valueword = '';
+    this.setState({nbCurrent: this.state.nbCurrent +1});
+    valueword.length = null;
 
   }
 
@@ -1432,7 +1412,17 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     this.displayNewEntries(alltexts.filter(loadTextsByDate));
   };
+  removeWord = (event) => {
+  }
+                  //<label id={`labelWord`}>
+                  //  Your Word:
 
+
+                  //</label>
+                  //<br /><input onChange={this.handleWordItem} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
+                  //<button onClick={this.useWordItemInputField} className={`btn btn-success`}>  
+                  //  Add a new word 
+                  //</button>
 
 
   render() { 
@@ -1484,16 +1474,9 @@ my two mistresses: what a beast am I to slack it!`,*/
                   <button id="add-new-text-btn" onClick={this.useTextInputField} className={`btn btn-success`}>  
                     Add a new text
                   </button>
-                  <label id={`labelWord`}>
-                    Your Word:
 
 
-                  </label>
-                  <br /><input type="text" onChange={this.handleWordItem} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
-                  <button onClick={this.useWordItemInputField} className={`btn btn-success`}>  
-                    Add a new word 
-                  </button>
-
+                  <br />
 
                   <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
                   <br />
@@ -1514,44 +1497,67 @@ my two mistresses: what a beast am I to slack it!`,*/
                 </div>
               )} />
 
-              <Route path="/edit" component={Editor}/>
               <Route path="/edit" render={() => (
                 <div>
                   <input type="button" onClick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
                 </div>
               )} />
               <Route exact={true} path="/" render={() => (
-                <div id="login-form-body" className={`login-form`}> 
-                <h1>Welcome</h1>
-                <br /><div id="welcome"></div>
+                <div>
+                  <div id="login-form-body" className={`login-form`}> 
+                  <h1>Welcome</h1>
+                  <br /><div id="welcome"></div>
 
-                <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
-                <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
+                  <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
+                  <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
 
-                <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
-                  sign in 
-                </button>
+                  <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
+                    sign in 
+                  </button>
 
-                <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
-                <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
-                <br /><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
-                  Sign up 
-                </button>
+                  <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
+                  <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
+                  <br /><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
+                    Sign up 
+                  </button>
+                  </div>
                 </div>
               )} />
               <Route path="/import" render={() => (
-                <div id="text-items">
+                <div>
                   <div class="display-items" >
                     {this.state.nbCurrent} texts added during this session by the logged in user
                   </div>
                   <div class="display-items">
-                    <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
+                    {this.state.nbPrev} texts imported from the user's previous sessions of texts
                   </div>
                   <div class="display-items">
                     {this.state.otherUsersItems} texts from other users that are left in the database
                   </div>
                 </div>
               )} />
+              <Route path="/edit" render={() => (
+                <div>
+                  {this.state.alltexts.length > 0 ? (
+                    this.state.alltexts.map(text => (
+                      text.filter(x=> x[0] === "mycontent")[1].map(content => (
+                        <div>
+                          <DisplayWord>
+                            {content}
+                          </DisplayWord>
+                          <RemoveWord onClick={this.removeWord}>
+                            {'Remove this word'}
+                          </RemoveWord>
+                        </div>
+                      ))
+
+                    ))
+                  ) : (
+                    <div>Load new texts...</div>
+                  )}
+                </div>
+              )} />
+
               
 
 
@@ -1596,7 +1602,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                     </div>
                   </div>
                 </div>
-              )}/>
+              )} />
             </form>
           </Main>
         </Root>
@@ -1650,99 +1656,8 @@ const DisplayWord = (props) => (
 
 )
 const RemoveWord = (props) => (
-  <div {...props}/>
+  <button {...props}/>
 
 
 )
-const Editor = ({ wordsToDisplay, alltexts }) => {
-  function removeWord(event){
-
-    if(event.target.parentElement) {
-      //console.log(texts);
-
-      const idx = Array.prototype.indexOf.call(event.target.parentNode.parentNode.childNodes, event.target.parentNode);
-      if (idx !== -1) {
-        function removeText(idx1, texts, text) {
-          texts.splice(idx1, 1);
-          console.log(texts);
-          const alltexts = [...texts];
-          this.setState({alltexts});
-          alert('rm text');
-        }
-
-        function removeItem(idx1, texts, text) {
-          alert('rm item'+(idx+1));
-          text.forEach(item => {
-            if(item[0] === "mycontent"){
-              texts[idx1][text.indexOf(item)][1].splice(idx, 1);
-              console.log(texts[idx1][text.indexOf(item)][1]);
-              const alltexts = [...texts];
-              this.setState({alltexts});
-            }
-          });
-        } 
-
-        function findRange(callback) {
-          const textvar = [...alltexts];
-          //console.log(textvar);
-          textvar.forEach(textitem => {
-            textitem.forEach(item => {
-              if(item[0] === "textId"){
-                if (item[1] === this.state.textId) {
-                  const idx2 = textvar.indexOf(textitem);
-                  if (idx2 !== -1) {
-                    callback(idx2, textvar, textitem);
-                  }
-                }
-              }
-            });
-          });
-        }
-
-
-
-
-
-        if (event.target.parentNode.parentNode.childNodes.length === 1 && event.target.parentNode.parentNode.classList.contains("display-text")) {
-          const textId = event.target.parentNode.parentNode.id; 
-          event.target.parentNode.parentNode.remove();
-
-          findRange(removeText);
-
-        } else {
-          const textId = event.target.parentNode.parentNode.id; 
-          event.target.parentNode.parentNode.childNodes[idx].remove();
-
-
-          findRange(removeItem);
-
-        }
-      }
-    }
-  }
-  return(
-    <div>
-
-      <div id="editor">
-        {wordsToDisplay ? (
-          wordsToDisplay.map(item => (
-            <DisplayDiv id={item[3]}>
-              <DisplayWord>
-                {item[0]}
-              </DisplayWord>
-              <RemoveWord>
-                <button type="button" onClick={removeWord} className="btn btn-secondary btn-word">
-                  Remove this word
-                </button>
-              </RemoveWord>
-            </DisplayDiv>
-          ))
-        ) : (
-          <div>Loading...</div>
-        )}
-      </div>
-
-    </div>
-  )
-}
 ReactDOM.render(<BasicForm/>, document.getElementById('root'));

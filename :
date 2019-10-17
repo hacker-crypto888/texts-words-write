@@ -83,7 +83,7 @@ class BasicForm extends React.Component {
       saltRounds:null,
       plainTextUsername1:null,
       plainTextPassword1:null,
-      password:null,
+      password:'',
       hash:null,
       passwordlist:null,
       name: '',
@@ -340,7 +340,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       today:null,
       msTime:null,
       textype:null,
-      username:'',
       wordsToDisplay:null,
       checkPrev:null,
       checkCurrent:null,
@@ -432,14 +431,34 @@ my two mistresses: what a beast am I to slack it!`,*/
       date:null,  
       allusers:[],
       texts:null,
-      alltexts:null,
+      alltexts:[],
       number:null,
+      otherUsersItems:Number('-1'),
+      nbCurrent:Number(''),
+      passwords:[],
     };
   }
   componentDidMount() {
+    const valueword = '';
+    this.setState({valueword:this.state.valueword});
+    const value = '';
+    this.setState({value:this.state.value});
+    const otherUsersItems = -1;
+    this.setState({otherUsersItems});
+    const preloadOrAutoplay = 'preload';
+    this.setState({preloadOrAutoplay});
     const username = "username";
     const textId = createNewTextId();
     const today = daysDate();
+    this.setState({texts: JSON.stringify([])});
+    this.setState({username});
+    const alltexts = [];
+    this.setState({alltexts});
+    const wordsToDisplay=[];
+    this.setState({wordsToDisplay});
+    const nbCurrent = 0;
+    const passwords = [];
+    this.setState({passwords});
 
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
@@ -472,8 +491,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
       });
     }
-    this.setState({texts: JSON.stringify([])});
-    this.setState({username:'user'});
+
 
     fetch('database.json')
       .then(function(response) {
@@ -484,22 +502,24 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
       .then(items => {
 
-
-        this.setState({
-          passwords:
-            JSON.stringify(items.map(obj => obj).pop())
-        });
+        if(items === (null||undefined)) {return;}
         console.log(items);
+        const passwords = this.state.passwords;
+        console.log(passwords);
+        passwords.push(items.map(obj => obj)[items.length -1]);
+        items.map(obj => obj).pop();
+
+        console.log(passwords);
         function allusersItems(textvar) {
-          if(!textvar.some(x => x[0] === "users" && x[1].includes(username))) {
-            document.getElementById('other-users-items').innerHTML = Number(document.getElementById('other-users-items').innerHTML) +1;
-            return !textvar.some(x => x[0] === "users" && x[1].includes(username));
-          } 
+          return !textvar.some(x => x[0] === "users" && x[1].includes(username));
         }
         function usersItem(textvar) {
           return textvar.some(x => x[0] === "users" && x[1].includes(username)); 
         }
         const allusers = items.map(x=>x).filter(allusersItems);
+        for (var i=0; i<allusers.length ; i++) {
+          this.setState({otherUsersItems: this.state.otherUsersItems + 1});
+        }
         return items.map(x => x).filter(usersItem);
 
       })
@@ -514,10 +534,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         });
       })
     const allAudioElements = document.getElementsByTagName('audio'); 
-    this.setState({
-      username:
-        '' 
-    });
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
     const date = new Date();
@@ -575,7 +591,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   displayAudio = event => {
     const itemlist = [];
     const number = Number('');
-    const alltexts = this.state;
+    const alltexts = this.state.alltexts;
 
     if(alltexts.length === 0) {return;};
     const myNode = document.getElementById('myAudioFiles');
@@ -702,8 +718,12 @@ my two mistresses: what a beast am I to slack it!`,*/
     document.getElementById('dropzone').hidden = false;
   }
   loginUser = (event) => {
-    const {username, password, passwords} = this.state;
-    if(document.getElementById('username').value.length > 0) {
+    const username = this.state.username;
+    const password = this.state.password;
+    const passwords = this.state.passwords;
+    console.log(username, password, passwords);
+    
+    if(typeof username === 'string') {
       if(!passwords.some(x=> bcrypt.compareSync(password, x.password) && username === x.username)) {
         document.getElementById('username').classList.add('error-signin');
         document.getElementById('password').classList.add('error-signin');
@@ -739,22 +759,22 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
   signupUser = (event) => {
     const saltRounds = 10;
-
-    const plainTextUsername1 = document.getElementById('signup-username').value;
-    const plainTextPassword1 = document.getElementById('signup-password').value;
-
+    const plainTextUsername1 = this.state.signupUsername;
+    const plainTextPassword1 = this.state.signupPassword;
+    const passwords = this.state.passwords;
     
     bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(plainTextPassword1, salt, function(err, hash) {
-          const passwords = JSON.stringify([...JSON.parse(this.state.passwords), {username: plainTextUsername1, password: hash}]);
+          passwords.push({username: plainTextUsername1, password: hash});
             // Store hash in your password DB.
         });
     });
-
   }
+
   editEntries = (event) => {
     const allusers = this.state;
-    const output = [...JSON.parse(this.state.alltexts)];
+    const alltexts = this.state.alltexts;
+    const output = [...alltexts];
   
     function sessionExport(output) { 
       output.forEach(element => {
@@ -950,7 +970,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     const callbackFunction = result => {
       console.log(result);
       this.textAdd(result); 
-      document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1; 
+      const nbCurrent = this.state.nbCurrent;
+      nbCurrent+=1;
     }
 
     const mainFunction = callback => {
@@ -1009,7 +1030,8 @@ my two mistresses: what a beast am I to slack it!`,*/
         const newText = createFileList();
         addContent(newText, resultObject.value);
         this.textAdd(newText);
-        document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
+        const nbCurrent = this.state.nbCurrent;
+        nbCurrent+=1;
       })
     };
     reader.readAsArrayBuffer(file);
@@ -1097,7 +1119,8 @@ my two mistresses: what a beast am I to slack it!`,*/
           addContent(newText, pagesText.join(' '));
           
           this.textAdd(newText);
-          document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;          
+          const nbCurrent = this.state.nbCurrent;
+          nbCurrent+=1;
 
         });
 
@@ -1201,177 +1224,29 @@ my two mistresses: what a beast am I to slack it!`,*/
       });
     }
 
-    function pushItem(item) {
-      const alltexts = JSON.stringify([...JSON.parse(this.state.alltexts), item]);
-    }
 
     isDroppedFile(text);
-    function addTextSize(size, text) {
+    function addTextSize(text) {
       //const VAR_NAME = 
       text.forEach(item => {
         if(item[0] === "size" && item[1].length === 0) {
           item.splice(1,1);
-          item.push(size);
+          //item.push(JSON.stringify(text.filter(x=>x[0] === "mycontent")[0][1].length));
+          console.log(text.filter(x=>x[0] === "mycontent").length);
+          console.log(text.filter(x=>x[0] === "mycontent"));
         }
       });
     }
-    function getTextSize(callback) {
-      text.forEach(item => {
-        if(item[0] === "mycontent" && item[1].length > 0) {
-          callback(item[1].length, text);
-        }
-      });
-    }
-    getTextSize(addTextSize);
+    addTextSize(text);
     handleText(text); 
-    pushItem(text);
-    this.displayNewEntries(JSON.parse(this.state.alltexts));
+    const alltexts = this.state.alltexts;
+
+    alltexts.push(text);
+    console.log(alltexts, "add a text"); 
     
   }
-  displayNewEntries = (textsToDisplay) => { 
-    const idx = this.state;
-    const modalbody = document.getElementById('editor');
-
-    while (modalbody.firstChild) {
-      modalbody.removeChild(modalbody.firstChild);
-    }
-    //this.dispWord('mot');
-    //this.displayRemoveWordBtn('mot', 0, 7, textsToDisplay);
-    const wordsToDisplay = [];
-    if (!(textsToDisplay instanceof Array)) {
-      textsToDisplay = [];
-    }
-    textsToDisplay.forEach(function(textItem) {
-      textItem.forEach(function(infoItem) {
-
-        if (infoItem[0] === 'textId') { //1794
-          wordsToDisplay.push(infoItem[1]); 
-        } 
-
-        if (infoItem[0] === 'mycontent') {
-          const idx = textItem.indexOf(infoItem);
-          const idx1 = textsToDisplay.indexOf(textItem);
-
-          textItem[idx][1].forEach(function(word) {
-            wordsToDisplay.push([word, idx,idx1]); //textsToDisplay[word[2]][word[1]][1]
-          }) // 
-        }
-      });
-    });
-    this.displayWordsBtnsToRmWords(wordsToDisplay, textsToDisplay);
-  }
-
-  displayWordsBtnsToRmWords = (words, texts) => {
 
 
-    function ifUserConnected() {
-
-      if (document.getElementById('username').value.length === 0) {return false;} else {
-        return true;
-      }
-    }
-    const modalbody = document.getElementById('editor');
-    if(words instanceof Array && words.length === 0) {return};
-    
-    words.forEach(function(item, rangeitem, allwords){
-      if(typeof item === 'string') { return; }
-
-      const displayDiv = document.createElement('div');
-
-      displayDiv.classList.add('display-div');
-      const displayWord = document.createElement('div');
-      displayWord.textContent = item[0];
-      displayWord.classList.add('label-word');
-      displayDiv.appendChild(displayWord);
-      const removeWord = document.createElement('div');
-      const selectText = document.createElement('input');
-      displayDiv.appendChild(removeWord);
-      if (ifUserConnected() && typeof words[rangeitem-1] === 'string' && item instanceof Array) {
-        const textDiv = document.createElement('div');
-        textDiv.classList.add('display-text');
-        textDiv.id = words[rangeitem-1];
-        const textId = words[rangeitem-1];
-        modalbody.appendChild(textDiv);
-        textDiv.appendChild(displayDiv);
-        //modalbody.removeChild(modalbody.firstChild);
-      } else if (ifUserConnected() && words[rangeitem-1] instanceof Array && item instanceof Array) {
-        document.getElementById(this.state.textId).appendChild(displayDiv);
-      } else {
-        modalbody.appendChild(displayDiv); //1855
-      }
-
-
- 
-      removeWord.classList.add("btn");
-      removeWord.classList.add("btn-secondary");
-      removeWord.classList.add("btn-word");
-      removeWord.type = "button";
-      removeWord.textContent = "Remove this word";
-      removeWord.onclick = (event) => {
-
-        if(removeWord.parentElement) {
-          //console.log(texts);
-
-          const idx = Array.prototype.indexOf.call(removeWord.parentNode.parentNode.childNodes, removeWord.parentNode);
-          if (idx !== -1) {
-            function removeText(idx1, texts, text) {
-              texts.splice(idx1, 1);
-              console.log(texts);
-              const alltexts = JSON.stringify([...texts]);
-              alert('rm text');
-            }
-
-            function removeItem(idx1, texts, text) {
-              alert('rm item'+(idx+1));
-              text.forEach(item => {
-                if(item[0] === "mycontent"){
-                  texts[idx1][text.indexOf(item)][1].splice(idx, 1);
-                  console.log(texts[idx1][text.indexOf(item)][1]);
-                  const alltexts = JSON.stringify([...texts]);
-                }
-              });
-            } 
-
-            function findRange(callback) {
-              const textvar = [...JSON.parse(this.state.alltexts)];
-              //console.log(textvar);
-              textvar.forEach(textitem => {
-                textitem.forEach(item => {
-                  if(item[0] === "textId"){
-                    if (item[1] === this.state.textId) {
-                      const idx2 = textvar.indexOf(textitem);
-                      if (idx2 !== -1) {
-                        callback(idx2, textvar, textitem);
-                      }
-                    }
-                  }
-                });
-              });
-            }
-
-
-
-
-
-            if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
-              const textId = removeWord.parentNode.parentNode.id; 
-              removeWord.parentNode.parentNode.remove();
-
-              findRange(removeText);
-
-            } else {
-              const textId = removeWord.parentNode.parentNode.id; 
-              removeWord.parentNode.parentNode.childNodes[idx].remove();
-
-
-              findRange(removeItem);
-
-            }
-          }
-        }
-      }
-    });
-  }
 
 
   handleTextChange = (event) => {
@@ -1385,7 +1260,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     this.setState({
       valueword:
         event.target.valueword
+
     });
+    console.log(this.state.valueword);
   }
 
 
@@ -1437,7 +1314,10 @@ my two mistresses: what a beast am I to slack it!`,*/
   useWordItemInputField = (event) => {
     const textId = createNewTextId();
     const today = daysDate();
-
+    const username = this.state.username;
+    const valueword = this.state.valueword; 
+    this.setState({valueword});
+    if (valueword === (null||undefined)) {return;};
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
       return string;
@@ -1455,23 +1335,22 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createList(list) {
-      list = [["textId",textId],["users", [document.getElementById('username').value]],["session_of_texts", "current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      list = [["textId",textId],["users", [username]],["session_of_texts", "current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
       return list;
     }
 
     function addContent(fileinfo, textstring) {
       fileinfo.push(["mycontent", textstring]);
     }
-    const valueword = document.getElementById('valueword').value;
-    if (valueword === "") {return;};
+
     
 
     const newText = createList();
     wordItemInputField(newText);
     addContent(newText, valueword);
     this.textAdd(newText);
-    document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
-    valueword = '';
+    this.setState({nbCurrent: this.state.nbCurrent +1});
+    valueword.length = null;
 
   }
 
@@ -1512,7 +1391,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     addContent(newText, this.state.value);
     textInputField(newText);
     this.textAdd(newText);
-    document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
+    this.setState({nbCurrent: this.state.nbCurrent+=1});
     this.state.value = "";
   }
   onChange = (date) => {
@@ -1521,7 +1400,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   }
   btnSortByDate = (event) => {
-    const alltexts = this.state;
+    const alltexts = this.state.alltexts;
     const date = this.state;
     if(date === null) {
       this.displayNewEntries(alltexts);
@@ -1531,8 +1410,20 @@ my two mistresses: what a beast am I to slack it!`,*/
     function loadTextsByDate(text) {
       return text.some(prop => prop[0] === "dates" && prop[1].includes(date));
     }
-    this.displayNewEntries(JSON.stringify(alltexts.filter(loadTextsByDate)));
+    this.displayNewEntries(alltexts.filter(loadTextsByDate));
   };
+  removeWord = (event) => {
+    console.log(event.target.id.split(','));
+  }
+                  //<label id={`labelWord`}>
+                  //  Your Word:
+
+
+                  //</label>
+                  //<br /><input onChange={this.handleWordItem} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
+                  //<button onClick={this.useWordItemInputField} className={`btn btn-success`}>  
+                  //  Add a new word 
+                  //</button>
 
 
   render() { 
@@ -1562,6 +1453,11 @@ my two mistresses: what a beast am I to slack it!`,*/
                 Write the words
               </Link>
             </SidebarItem>
+            <SidebarItem>
+              <Link to={`import`}>
+                Import 
+              </Link>
+            </SidebarItem>
           </SideBar>
           <Main>
             
@@ -1579,15 +1475,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                   <button id="add-new-text-btn" onClick={this.useTextInputField} className={`btn btn-success`}>  
                     Add a new text
                   </button>
-                  <label id={`labelWord`}>
-                    Your Word:
 
-
-                  </label>
-                  <br /><input type="text" onChange={this.handleWordItem} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
-                  <button onClick={this.useWordItemInputField} className={`btn btn-success`}>  
-                    Add a new word 
-                  </button>
 
 
                   <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
@@ -1608,28 +1496,13 @@ my two mistresses: what a beast am I to slack it!`,*/
                   <button type="button" onClick={this.btnSortByDate} id="btn-sort-by-date">sort items by date</button>
                 </div>
               )} />
+
+              <Route path="/edit" component={Editor}/>
               <Route path="/edit" render={() => (
                 <div>
-                  <div id="text-items" onchange={this.increment}>
-                    <div class="display-items" >
-                      <a id="current-items" name="sessions-of-texts">0</a> texts added during this session by the logged in user
-                    </div>
-                    <div class="display-items">
-                      <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
-                    </div>
-                    <div class="display-items">
-                      <a id="other-users-items" name="sessions-of-texts">0</a> texts from other users that are left in the database
-                    </div>
-                  </div>
-                  <div id="editor">
-
-
-
-                  </div>
-                  <input type="button" onclick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
+                  <input type="button" onClick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
                 </div>
               )} />
-
               <Route exact={true} path="/" render={() => (
                 <div id="login-form-body" className={`login-form`}> 
                 <h1>Welcome</h1>
@@ -1639,7 +1512,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                 <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
 
                 <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
-                   
+                  sign in 
                 </button>
 
                 <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
@@ -1649,6 +1522,43 @@ my two mistresses: what a beast am I to slack it!`,*/
                 </button>
                 </div>
               )} />
+              <Route path="/import" render={() => (
+                <div id="text-items">
+                  <div class="display-items" >
+                    {this.state.nbCurrent} texts added during this session by the logged in user
+                  </div>
+                  <div class="display-items">
+                    <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
+                  </div>
+                  <div class="display-items">
+                    {this.state.otherUsersItems} texts from other users that are left in the database
+                  </div>
+                </div>
+              )} />
+              <Route path="/edit" render={() => (
+                <div id="editor">
+                  {this.state.alltexts.length > 0 ? (
+                    this.state.alltexts.map(text => (
+                      text.filter(x=> x[0] === "mycontent")[1].map(content => (
+                        <div>
+                          <DisplayWord>
+                            {content}
+                          </DisplayWord>
+                          <RemoveWord id={JSON.stringify([text.filter(x=>x[0] === 'textId')[1]+text.indexOf(this.state.alltexts)+content].join(',')])} onClick={this.removeWord}>
+                            {'Remove this word'}
+                          </RemoveWord>
+                        </div>
+                      ))
+
+                    ))
+                  ) : (
+                    <div>Load new texts...</div>
+                  )}
+                </div>
+              )} />
+
+              
+
 
               <Route path="/play" render={() => (
                 <div>
@@ -1732,6 +1642,110 @@ const Main = (props) => (
     <div style={{ padding: '20px' }} {...props}/>
   </div>
 )
+const DisplayDiv = (props) => (
+  <div className={'display-div'} {...props}/>
+
+)
+const TextDiv = (props) => (
+  <div className={'display-text'} {...props}/>
+
+)
+const DisplayWord = (props) => (
+  <div className={'label-word'} {...props}/>
+
+)
+const RemoveWord = (props) => (
+  <button {...props}/>
 
 
+)
+const Editor = ({ alltexts }) => {
+  function removeWord(event){
+
+    if(event.target.parentElement) {
+      //console.log(texts);
+
+      const idx = Array.prototype.indexOf.call(event.target.parentNode.parentNode.childNodes, event.target.parentNode);
+      if (idx !== -1) {
+        function removeText(idx1, texts, text) {
+          texts.splice(idx1, 1);
+          console.log(texts);
+          const alltexts = [...texts];
+          this.setState({alltexts});
+          alert('rm text');
+        }
+
+        function removeItem(idx1, texts, text) {
+          alert('rm item'+(idx+1));
+          text.forEach(item => {
+            if(item[0] === "mycontent"){
+              texts[idx1][text.indexOf(item)][1].splice(idx, 1);
+              console.log(texts[idx1][text.indexOf(item)][1]);
+              const alltexts = [...texts];
+              this.setState({alltexts});
+            }
+          });
+        } 
+
+        function findRange(callback) {
+          const textvar = [...alltexts];
+          //console.log(textvar);
+          textvar.forEach(textitem => {
+            textitem.forEach(item => {
+              if(item[0] === "textId"){
+                if (item[1] === this.state.textId) {
+                  const idx2 = textvar.indexOf(textitem);
+                  if (idx2 !== -1) {
+                    callback(idx2, textvar, textitem);
+                  }
+                }
+              }
+            });
+          });
+        }
+
+
+
+
+
+        if (event.target.parentNode.parentNode.childNodes.length === 1 && event.target.parentNode.parentNode.classList.contains("display-text")) {
+          const textId = event.target.parentNode.parentNode.id; 
+          event.target.parentNode.parentNode.remove();
+
+          findRange(removeText);
+
+        } else {
+          const textId = event.target.parentNode.parentNode.id; 
+          event.target.parentNode.parentNode.childNodes[idx].remove();
+
+
+          findRange(removeItem);
+
+        }
+      }
+    }
+  }
+            //<div id={text.filter(x => x[0] === "textId")[1]}>
+            //text.filter(x=> x[0] === "mycontent").map(content => (
+            //  content[1].map(word => (
+            //    <DisplayDiv>
+            //      <DisplayWord>
+            //        word
+            //      </DisplayWord>
+            //      <RemoveWord>
+            //        <button type="button" onClick={removeWord} className="btn btn-secondary btn-word">
+            //          {'Remove this word'}
+            //        </button>
+            //      </RemoveWord>
+            //    </DisplayDiv>
+            //  ))
+            //))
+            //</div>
+  return(
+    <div>
+
+
+    </div>
+  )
+}
 ReactDOM.render(<BasicForm/>, document.getElementById('root'));
