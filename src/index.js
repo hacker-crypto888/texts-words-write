@@ -200,11 +200,9 @@ my two mistresses: what a beast am I to slack it!`,*/
       msTime:Date.now(),
       jsonParse:null,
       newText:null,
-      indataset:null,
       mySuperList:null,
       myDivForNewData:null,
       newTexts: null,
-      importedTexts:null,
       finalArray:null,
       output:null,
       myTextContent:null,
@@ -316,7 +314,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       thisIsMyTextList:null,
       myTextList:null,
       myItems:null,
-      importedTexts:null,
       textAfterEdit:null,
       newText:null,
       myTextInfo:null,
@@ -419,7 +416,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       myDatabaseJson:null,
       someData:null,
       dataOutput:null,
-      importedTexts:null,
       importText:null,
       thisIsMyTextList:null,
       textObject:null,
@@ -433,10 +429,91 @@ my two mistresses: what a beast am I to slack it!`,*/
       removeWord:null, 
       textelements:null,
       selectDate:null,
-      date:null,
+      date:null,  
+      allusers:[],
+      texts:null,
+      alltexts:null,
+      number:null,
     };
   }
   componentDidMount() {
+    const username = "username";
+    const textId = createNewTextId();
+    const today = daysDate();
+
+    function createNewTextId(string) {
+      string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
+      return string;
+    }
+
+    function daysDate(string) {
+      const daysDate = new Date();
+      string += (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
+      const msTime = Date.now();
+      return string;
+    }
+      
+
+    function addContent(fileinfo, textstring) {
+      fileinfo.push(["mycontent", textstring]);
+    }
+    function testAddSession(importText){
+      importText.forEach(function(myTextItem, index, jsonfile) {
+        if (!myTextItem.some(x => x[0] === "session_of_texts")) {
+          myTextItem.push(["session_of_texts","previous"]);
+        } else if(myTextItem.some(x => x[0] === "session_of_texts")) { 
+          myTextItem.forEach(function(info) {
+            if(info[0] === "session_of_texts") {
+              if (!info[1] === "previous") {
+                info[1] = "previous";
+              }
+            } 
+          });
+        }
+      });
+    }
+    this.setState({texts: JSON.stringify([])});
+    this.setState({username:'user'});
+
+    fetch('database.json')
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myBlub) {
+        return [...Object.values(myBlub.items)];
+      })
+      .then(items => {
+
+
+        this.setState({
+          passwords:
+            JSON.stringify(items.map(obj => obj).pop())
+        });
+        console.log(items);
+        function allusersItems(textvar) {
+          if(!textvar.some(x => x[0] === "users" && x[1].includes(username))) {
+            document.getElementById('other-users-items').innerHTML = Number(document.getElementById('other-users-items').innerHTML) +1;
+            return !textvar.some(x => x[0] === "users" && x[1].includes(username));
+          } 
+        }
+        function usersItem(textvar) {
+          return textvar.some(x => x[0] === "users" && x[1].includes(username)); 
+        }
+        const allusers = items.map(x=>x).filter(allusersItems);
+        return items.map(x => x).filter(usersItem);
+
+      })
+      .then(result => {
+        console.log(result);
+        if(result === (null||undefined) || result instanceof Array && result.length === 0) {return;} 
+
+        result.forEach(textitem => {
+          document.getElementById('previous-items').innerHTML = Number(document.getElementById('previous-items').innerHTML) +1;
+
+          const texts = JSON.stringify(textitem);
+          this.textAdd(texts);  
+        });
+      })
     const allAudioElements = document.getElementsByTagName('audio'); 
     this.setState({
       username:
@@ -444,12 +521,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     });
     window.addEventListener('dragover',this.windowdragover);
     window.addEventListener('drop',this.windowdrop);
-    const importedTexts = document.getElementById('preview');
-    const wordList = [];
-    const allMyWords = [];
-    const thisIsMyWordList = [];
-    const thisIsMyTextList = [];
-    const allMyTexts = []; 
     const date = new Date();
     this.setState({date});
 
@@ -476,7 +547,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   disableButton = (event) => {
     event.preventDefault();
     if(document.getElementById('myAudioFiles').hasChildNodes) {
-      const targetValue = document.getElementById('wordinput').dataset.targetValue;
+      const targetValue = this.state;
       const { inputValue } = this.state;
       this.btn.setAttribute("disabled", "disabled");
       //console.log({targetValue});
@@ -504,11 +575,10 @@ my two mistresses: what a beast am I to slack it!`,*/
   };
   displayAudio = event => {
     const itemlist = [];
-    const importedTexts = document.getElementById("preview");
-    importedTexts.dataset.number = Number('');
-    const myitems = JSON.parse(importedTexts.dataset.alltexts); 
+    const number = Number('');
+    const alltexts = this.state;
 
-    if(myitems instanceof Array && myitems.length === 0) {return;};
+    if(alltexts.length === 0) {return;};
     const myNode = document.getElementById('myAudioFiles');
     while(myNode.firstChild) {
       myNode.removeChild(myNode.firstChild);
@@ -522,22 +592,15 @@ my two mistresses: what a beast am I to slack it!`,*/
       .then(function(mp3WordList){
         document.getElementById('loadingAudioFiles').hidden = false;
 
-        //const importText = JSON.parse(importedTexts.dataset.texts);
-        //importText.forEach(function(item, index, object) {
-        //  const textObject = {};
-        //  item.forEach(function(textitem) {
-        //    textObject[textitem[0]]=textitem[1];
-        //  });
-        console.log(myitems);
-        myitems.forEach(function(text) {
+        alltexts.forEach(function(text) {
           text.forEach(prop => {
             if(prop[0] === "mycontent") {
               prop[1].forEach(myworditem => {
       
                 const audioFilePreview = document.createElement('audio'); 
                 audioFilePreview.className=myworditem;
-                importedTexts.dataset.number = Number(importedTexts.dataset.number) + 1;
-                audioFilePreview.key=importedTexts.dataset.number;
+                const number = Number(this.state.number) + 1;
+                audioFilePreview.key=this.state.number;
                 audioFilePreview.id=myworditem;
                 audioFilePreview.controls=true;
                 audioFilePreview.onpause = (event) => {
@@ -556,8 +619,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                   };
                 }
                 audioFilePreview.onplay = (event) => { 
-                  const wordInputField = document.getElementById('wordinput');
-                  wordInputField.dataset.targetValue = audioFilePreview.id;
+                  const targetValue = audioFilePreview.id;
                 };
                 [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
                   if(mp3[0] === myworditem && mp3[1].length){
@@ -589,7 +651,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       })
   }
   removeAudioPlayer = (props) => {
-    const targetValue = document.getElementById('wordinput').dataset.targetValue;
+    const targetValue = this.state;
     const { inputValue } = this.state;
     this.setState({
       wordtest:
@@ -641,13 +703,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     document.getElementById('dropzone').hidden = false;
   }
   loginUser = (event) => {
-    const importedTexts = document.getElementById("preview");
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const passwordlist = JSON.parse(document.getElementById('username').dataset.passwords);
+    const {username, password, passwords} = this.state;
     if(document.getElementById('username').value.length > 0) {
-      console.log(passwordlist); 
-      if(!passwordlist.some(x=> bcrypt.compareSync(password, x.password) && username === x.username)) {
+      if(!passwords.some(x=> bcrypt.compareSync(password, x.password) && username === x.username)) {
         document.getElementById('username').classList.add('error-signin');
         document.getElementById('password').classList.add('error-signin');
         return;
@@ -671,6 +729,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       document.getElementById('welcome').innerHTML = "";
       document.getElementById('username').value = "";
       document.getElementById('password').value = "";
+      const importedTexts = document.getElementById('preview');
       while (importedTexts.firstChild) {
         importedTexts.removeChild(importedTexts.firstChild);
       }
@@ -685,20 +744,18 @@ my two mistresses: what a beast am I to slack it!`,*/
     const plainTextUsername1 = document.getElementById('signup-username').value;
     const plainTextPassword1 = document.getElementById('signup-password').value;
 
-
     
     bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(plainTextPassword1, salt, function(err, hash) {
-          const importedTexts = document.getElementById('preview');
-          document.getElementById('username').dataset.passwords = JSON.stringify([...JSON.parse(document.getElementById('username').dataset.passwords), {username: plainTextUsername1, password: hash}]);
+          const passwords = JSON.stringify([...JSON.parse(this.state.passwords), {username: plainTextUsername1, password: hash}]);
             // Store hash in your password DB.
         });
     });
 
   }
   editEntries = (event) => {
-    const importedTexts = document.getElementById('preview');
-    const output = [...JSON.parse(importedTexts.dataset.alltexts)];
+    const allusers = this.state;
+    const output = [...JSON.parse(this.state.alltexts)];
   
     function sessionExport(output) { 
       output.forEach(element => {
@@ -717,7 +774,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     testAddUser(output);
     //testAddSession(output); 
     function testAddUser(importText){
-      const importedTexts = document.getElementById('preview'); 
       if (document.getElementById('username').value.length > 0) {
         importText.forEach(function(myTextItem, index, jsonfile) {
           myTextItem.forEach(function(info) {
@@ -734,7 +790,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       const daysDate = new Date();
       const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
       const msTime = Date.now();
-      const importedTexts = document.getElementById('preview'); 
       importText.forEach(function(myTextItem, index, jsonfile) {
         myTextItem.forEach(function(info) {
           if(info[0] === "dates" && !info[1].includes(today)) {
@@ -747,7 +802,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     //testAddUser(output);
     //testAddSession(output);
     //testAddDate(output);
-    const blobData = new Blob([JSON.stringify({"items": [...[...output, JSON.parse(importedTexts.dataset.allusers)], JSON.parse(document.getElementById('username').dataset.passwords)]},null,2)], {type: 'application/json'});
+    const blobData = new Blob([JSON.stringify({"items": [...[...output, JSON.parse(this.state.allusers)], JSON.parse(this.state.passwords)]},null,2)], {type: 'application/json'});
     const url = window.URL.createObjectURL(blobData);
     document.getElementById('export_all_items_link').href = url;
     document.getElementById('export_all_items_link').click();
@@ -846,138 +901,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
   }
 
-  createNewTextId = (string) => {
-    string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
-  }
-  returnDaysDate = (string) => {
-    const daysDate = new Date();
-    string = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-    const msTime = Date.now();
-  }
-
-  inputNewText  = (text) => {
-    const input = document.getElementById('add-new-text-current-session');
-    input.dataset.newtext =text;
-    input.value +='h';
-    input.click();
-  }
-
-  checkNullUndefinedList = (list) => {
-    if (list === (null||undefined)) { list = [];}
-  }
-  appendNewText = (text, list) => {
-    list.push(text); 
-  }
-
-  displaySettingsModal = (event) => {
-    document.getElementById('editor-display').click();
-      
-  }
-
-  sendFile = (file) => {
-    const importedTexts = document.getElementById('preview'); 
-    const textId = createNewTextId();
-    const today = daysDate();
-
-    function createNewTextId(string) {
-      string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
-      return string;
-    }
-
-    function daysDate(string) {
-      const daysDate = new Date();
-      string += (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-      const msTime = Date.now();
-      return string;
-    }
-      
-    function createFileList(list) {
-      list = [["textId",textId], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
-      return list;
-    }
-
-    function addContent(fileinfo, textstring) {
-      fileinfo.push(["mycontent", textstring]);
-    }
-    function testAddSession(importText){
-      importText.forEach(function(myTextItem, index, jsonfile) {
-        if (!myTextItem.some(x => x[0] === "session_of_texts")) {
-          myTextItem.push(["session_of_texts","previous"]);
-        } else if(myTextItem.some(x => x[0] === "session_of_texts")) { 
-          myTextItem.forEach(function(info) {
-            if(info[0] === "session_of_texts") {
-              if (!info[1] === "previous") {
-                info[1] = "previous";
-              }
-            } 
-          });
-        }
-      });
-    }
-
-    const fd = new FormData();
-    fd.append('myFile', file);
-    fetch(URL.createObjectURL(file))
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(myBlub) {
-        console.log(myBlub); //database.json
-        const myBlob = [...Object.values(myBlub.items)];
-        console.log(myBlob); //database.json
-        console.log(file.name);
-        return myBlob;
-      })
-      .then(thirdres => {
-        const myItems = thirdres.map(obj => obj);
-
-        document.getElementById('username').dataset.passwords = JSON.stringify(myItems.pop());
-        console.log(myItems);
-
-        //testAddSession(myItems);
-        function usersItem(textvar) {
-          if(!textvar.some(x => x[0] === "users" && x[1].includes(document.getElementById('username')))) {
-            document.getElementById('other-users-items').innerHTML = Number(document.getElementById('other-users-items').innerHTML) +1;
-            importedTexts.dataset.allusers = JSON.stringify([...JSON.parse(importedTexts.dataset.allusers), textvar]);
-            
-          }
-
-          return textvar.some(x => x[0] === "users" && x[1].includes(document.getElementById('username'))); 
-          //textvar.forEach((prop, index, texts) => {
-          //  if(prop[0] === "users") {
-          //    prop[1].forEach(element => {
-          //      if(element === importedTexts.dataset.username) {
-          //        return arguments[0];
-          //      }
-          //    });
-          //  } 
-          //})
-
-
-        }
-        return myItems.filter(usersItem);
-
-      })
-      .then(result => {
-        console.log(result);
-        if(result === (null||undefined) || result instanceof Array && result.length === 0) {return;} 
-
-        result.forEach(textitem => {
-          document.getElementById('previous-items').innerHTML = Number(document.getElementById('previous-items').innerHTML) +1;
-
-          const importedTexts = document.getElementById('preview');
-          importedTexts.dataset.texts = JSON.stringify(textitem);
-          this.textAdd();  
-        });
-        
-
-
-
-      })
-  }
 
   sendTextFile = (file) => {
-    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1025,9 +950,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     const callbackFunction = result => {
       console.log(result);
-      const importedTexts = document.getElementById('preview');
-      importedTexts.dataset.texts = JSON.stringify(result);
-      this.textAdd(); 
+      const texts = JSON.stringify(result);
+      this.textAdd(texts); 
       document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1; 
     }
 
@@ -1044,7 +968,6 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendDocxFile = (file) => {
-    const importedTexts = document.getElementById('preview'); 
     const textId = createNewTextId(textId);
     const today = daysDate(today);
 
@@ -1086,11 +1009,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function (resultObject) {
         result2.innerHTML = resultObject.value
         const newText = createFileList();
-
-        const importedTexts = document.getElementById('preview');
         addContent(newText, resultObject.value);
-        importedTexts.dataset.texts = JSON.stringify(newText);
-        this.textAdd();
+        this.textAdd(JSON.stringify(newText));
         document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
       })
     };
@@ -1099,7 +1019,6 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   sendPdfFile = (file) => { 
-    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1174,15 +1093,12 @@ my two mistresses: what a beast am I to slack it!`,*/
         // Display text of all the pages in the console
         // e.g ["Text content page 1", "Text content page 2", "Text content page 3" ... ]
           console.log(pagesText);
-          const importedTexts = document.getElementById('preview');
           const newText = createFileList();
 
 
           addContent(newText, pagesText.join(' '));
           
-          importedTexts.dataset.texts = JSON.stringify(newText);
-          console.log(JSON.parse(importedTexts.dataset.texts));
-          this.textAdd();
+          this.textAdd(JSON.stringify(newText));
           document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;          
 
         });
@@ -1261,8 +1177,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
 		}
   }
-  textAdd = (event) => {
-    const addedTexts = document.getElementById('preview');
+  textAdd = (text) => {
     function handleText(mytext) {
       mytext.forEach(element => {  
         if (element[0] === "mycontent") {
@@ -1289,11 +1204,10 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
 
     function pushItem(item) {
-      addedTexts.dataset.alltexts = JSON.stringify([...JSON.parse(addedTexts.dataset.alltexts), item]);
+      const alltexts = JSON.stringify([...JSON.parse(this.state.alltexts), item]);
     }
 
-    const newlist = JSON.parse(addedTexts.dataset.texts);
-    isDroppedFile(newlist);
+    isDroppedFile(text);
     function addTextSize(size, text) {
       //const VAR_NAME = 
       text.forEach(item => {
@@ -1304,16 +1218,16 @@ my two mistresses: what a beast am I to slack it!`,*/
       });
     }
     function getTextSize(callback) {
-      newlist.forEach(item => {
+      text.forEach(item => {
         if(item[0] === "mycontent" && item[1].length > 0) {
-          callback(item[1].length, newlist);
+          callback(item[1].length, text);
         }
       });
     }
     getTextSize(addTextSize);
-    handleText(newlist); 
-    pushItem(newlist);
-    this.displayNewEntries(JSON.parse(addedTexts.dataset.alltexts));
+    handleText(text); 
+    pushItem(text);
+    this.displayNewEntries(JSON.parse(this.state.alltexts));
     
   }
   displayNewEntries = (textsToDisplay) => { 
@@ -1352,7 +1266,6 @@ my two mistresses: what a beast am I to slack it!`,*/
   displayWordsBtnsToRmWords = (words, texts) => {
 
 
-    const importedTexts = document.getElementById('preview');
     function ifUserConnected() {
 
       if (document.getElementById('username').value.length === 0) {return false;} else {
@@ -1375,18 +1288,16 @@ my two mistresses: what a beast am I to slack it!`,*/
       const removeWord = document.createElement('div');
       const selectText = document.createElement('input');
       displayDiv.appendChild(removeWord);
-      const importedTexts = document.getElementById('preview');
       if (ifUserConnected() && typeof words[rangeitem-1] === 'string' && item instanceof Array) {
         const textDiv = document.createElement('div');
         textDiv.classList.add('display-text');
         textDiv.id = words[rangeitem-1];
-        importedTexts.dataset.textId = words[rangeitem-1];
-        console.log(importedTexts.dataset.textId);
+        const textId = words[rangeitem-1];
         modalbody.appendChild(textDiv);
         textDiv.appendChild(displayDiv);
         //modalbody.removeChild(modalbody.firstChild);
       } else if (ifUserConnected() && words[rangeitem-1] instanceof Array && item instanceof Array) {
-        document.getElementById(importedTexts.dataset.textId).appendChild(displayDiv);
+        document.getElementById(this.state.textId).appendChild(displayDiv);
       } else {
         modalbody.appendChild(displayDiv); //1855
       }
@@ -1399,7 +1310,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       removeWord.type = "button";
       removeWord.textContent = "Remove this word";
       removeWord.onclick = (event) => {
-        const importedTexts = document.getElementById('preview');
 
         if(removeWord.parentElement) {
           //console.log(texts);
@@ -1409,7 +1319,7 @@ my two mistresses: what a beast am I to slack it!`,*/
             function removeText(idx1, texts, text) {
               texts.splice(idx1, 1);
               console.log(texts);
-              importedTexts.dataset.alltexts = JSON.stringify([...texts]);
+              const alltexts = JSON.stringify([...texts]);
               alert('rm text');
             }
 
@@ -1419,18 +1329,18 @@ my two mistresses: what a beast am I to slack it!`,*/
                 if(item[0] === "mycontent"){
                   texts[idx1][text.indexOf(item)][1].splice(idx, 1);
                   console.log(texts[idx1][text.indexOf(item)][1]);
-                  importedTexts.dataset.alltexts = JSON.stringify([...texts]);
+                  const alltexts = JSON.stringify([...texts]);
                 }
               });
             } 
 
             function findRange(callback) {
-              const textvar = [...JSON.parse(importedTexts.dataset.alltexts)];
+              const textvar = [...JSON.parse(this.state.alltexts)];
               //console.log(textvar);
               textvar.forEach(textitem => {
                 textitem.forEach(item => {
                   if(item[0] === "textId"){
-                    if (item[1] === importedTexts.dataset.textId) {
+                    if (item[1] === this.state.textId) {
                       const idx2 = textvar.indexOf(textitem);
                       if (idx2 !== -1) {
                         callback(idx2, textvar, textitem);
@@ -1446,13 +1356,13 @@ my two mistresses: what a beast am I to slack it!`,*/
 
 
             if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
-              importedTexts.dataset.textId = removeWord.parentNode.parentNode.id; 
+              const textId = removeWord.parentNode.parentNode.id; 
               removeWord.parentNode.parentNode.remove();
 
               findRange(removeText);
 
             } else {
-              importedTexts.dataset.textId = removeWord.parentNode.parentNode.id; 
+              const textId = removeWord.parentNode.parentNode.id; 
               removeWord.parentNode.parentNode.childNodes[idx].remove();
 
 
@@ -1527,7 +1437,6 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   }
   useWordItemInputField = (event) => {
-    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1562,15 +1471,13 @@ my two mistresses: what a beast am I to slack it!`,*/
     const newText = createList();
     wordItemInputField(newText);
     addContent(newText, valueword);
-    importedTexts.dataset.texts = JSON.stringify(newText);
-    this.textAdd();
+    this.textAdd(JSON.stringify(newText));
     document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
     valueword = '';
 
   }
 
   useTextInputField = (event) => {
-    const importedTexts = document.getElementById('preview');
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1606,39 +1513,27 @@ my two mistresses: what a beast am I to slack it!`,*/
     const newText = createList();
     addContent(newText, this.state.value);
     textInputField(newText);
-    importedTexts.dataset.texts = JSON.stringify(newText);
-    this.textAdd();
+    this.textAdd(JSON.stringify(newText));
     document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
     this.state.value = "";
   }
   onChange = (date) => {
     this.setState({ date });
     const selectDate = (date.getMonth()+1)+'/'+date.getDate()+'/'+date.getFullYear();
-    document.getElementById('sort-items-by-date').dataset.date = selectDate;
-    console.log(document.getElementById('sort-items-by-date').dataset.date);
-    console.log(date.toUTCString());
 
   }
   btnSortByDate = (event) => {
-    console.log(document.getElementById('sort-items-by-date').dataset.date);
-    const importedTexts = document.getElementById('preview');
-    const allMyTexts = JSON.parse(importedTexts.dataset.alltexts);
-    if(document.getElementById('sort-items-by-date').dataset.date === null) {
-      this.displayNewEntries(allMyTexts);
+    const alltexts = this.state;
+    const date = this.state;
+    if(date === null) {
+      this.displayNewEntries(alltexts);
       return;
     };
-    const selectDate = document.getElementById('sort-items-by-date').dataset.date;
 
     function loadTextsByDate(text) {
-      return text.some(prop => prop[0] === "dates" && prop[1].includes(selectDate));
+      return text.some(prop => prop[0] === "dates" && prop[1].includes(date));
     }
-    //allMyTexts.filter(loadTextByDate)
-
-    //function selected(list){
-    //  return list.some(x=> x[0] === "select_text" && x[1] === "selected");
-    //}
-    importedTexts.dataset.alltexts = JSON.stringify([...allMyTexts.filter(loadTextsByDate)]);
-    this.displayNewEntries(allMyTexts.filter(loadTextsByDate));
+    this.displayNewEntries(JSON.stringify(alltexts.filter(loadTextsByDate)));
   };
 
 
