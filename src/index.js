@@ -435,6 +435,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       alltexts:[],
       number:null,
       otherUsersItems:null,
+      nbCurrent:null,
     };
   }
   componentDidMount() {
@@ -477,7 +478,10 @@ my two mistresses: what a beast am I to slack it!`,*/
     this.setState({username:'user'});
     const alltexts = [];
     this.setState({alltexts});
+    const wordsToDisplay=[];
+	this.setState({wordsToDisplay});
     const otherUsersItems = Number('');
+    const nbCurrent = Number('');
 
     fetch('database.json')
       .then(function(response) {
@@ -953,7 +957,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     const callbackFunction = result => {
       console.log(result);
       this.textAdd(result); 
-      document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1; 
+      const nbCurrent = this.state.nbCurrent;
+      this.state.nbCurrent += 1;
     }
 
     const mainFunction = callback => {
@@ -1012,7 +1017,8 @@ my two mistresses: what a beast am I to slack it!`,*/
         const newText = createFileList();
         addContent(newText, resultObject.value);
         this.textAdd(newText);
-        document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
+        const nbCurrent = this.state.nbCurrent;
+        this.state.nbCurrent += 1;
       })
     };
     reader.readAsArrayBuffer(file);
@@ -1100,7 +1106,8 @@ my two mistresses: what a beast am I to slack it!`,*/
           addContent(newText, pagesText.join(' '));
           
           this.textAdd(newText);
-          document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;          
+          const nbCurrent = this.state.nbCurrent;
+          this.state.nbCurrent += 1;
 
         });
 
@@ -1232,6 +1239,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
   displayNewEntries = (textsToDisplay) => { 
     const idx = this.state;
+    const textId = [];
 
     const wordsToDisplay = [];
     if (!(textsToDisplay instanceof Array)) {
@@ -1241,7 +1249,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       textItem.forEach(function(infoItem) {
 
         if (infoItem[0] === 'textId') { //1794
-          wordsToDisplay.push(infoItem[1]); 
+          textId.push(infoItem[1]); 
         } 
 
         if (infoItem[0] === 'mycontent') {
@@ -1249,28 +1257,15 @@ my two mistresses: what a beast am I to slack it!`,*/
           const idx1 = textsToDisplay.indexOf(textItem);
 
           textItem[idx][1].forEach(function(word) {
-            wordsToDisplay.push([word, idx,idx1]); //textsToDisplay[word[2]][word[1]][1]
+            wordsToDisplay.push([word, idx,idx1, textId[textId.length-1]]); //textsToDisplay[word[2]][word[1]][1]
           }) // 
         }
       });
     });
-    this.displayWordsBtnsToRmWords(wordsToDisplay, textsToDisplay);
+    this.setState({wordsToDisplay});
   }
 
-  displayWordsBtnsToRmWords = (words, texts) => {
 
-    const username = this.state;
-    function ifUserConnected() {
-
-      if (username.length === 0) {return false;} else {
-        return true;
-      }
-    }
-    const modalbody = document.getElementById('editor');
-    if(words instanceof Array && words.length === 0) {return};
-    
-
-  }
 
 
   handleTextChange = (event) => {
@@ -1369,7 +1364,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     wordItemInputField(newText);
     addContent(newText, valueword);
     this.textAdd(newText);
-    document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
+    const nbCurrent = this.state.nbCurrent;
+    this.state.nbCurrent = this.state.nbCurrent;
     valueword = '';
 
   }
@@ -1411,7 +1407,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     addContent(newText, this.state.value);
     textInputField(newText);
     this.textAdd(newText);
-    document.getElementById('current-items').innerHTML = Number(document.getElementById('current-items').innerHTML) +1;
+    const nbCurrent = this.state.nbCurrent;
+    this.state.nbCurrent += 1;
     this.state.value = "";
   }
   onChange = (date) => {
@@ -1432,6 +1429,72 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     this.displayNewEntries(alltexts.filter(loadTextsByDate));
   };
+  removeWord = (event) => {
+
+    if(event.target.parentElement) {
+      //console.log(texts);
+
+      const idx = Array.prototype.indexOf.call(event.target.parentNode.parentNode.childNodes, event.target.parentNode);
+      if (idx !== -1) {
+        function removeText(idx1, texts, text) {
+          texts.splice(idx1, 1);
+          console.log(texts);
+          const alltexts = [...texts];
+          this.setState({alltexts});
+          alert('rm text');
+        }
+
+        function removeItem(idx1, texts, text) {
+          alert('rm item'+(idx+1));
+          text.forEach(item => {
+            if(item[0] === "mycontent"){
+              texts[idx1][text.indexOf(item)][1].splice(idx, 1);
+              console.log(texts[idx1][text.indexOf(item)][1]);
+              const alltexts = [...texts];
+              this.setState({alltexts});
+            }
+          });
+        } 
+
+        function findRange(callback) {
+          const alltexts = this.state.alltexts;
+          const textvar = [...alltexts];
+          //console.log(textvar);
+          textvar.forEach(textitem => {
+            textitem.forEach(item => {
+              if(item[0] === "textId"){
+                if (item[1] === this.state.textId) {
+                  const idx2 = textvar.indexOf(textitem);
+                  if (idx2 !== -1) {
+                    callback(idx2, textvar, textitem);
+                  }
+                }
+              }
+            });
+          });
+        }
+
+
+
+
+
+        if (event.target.parentNode.parentNode.childNodes.length === 1 && event.target.parentNode.parentNode.classList.contains("display-text")) {
+          const textId = event.target.parentNode.parentNode.id; 
+          event.target.parentNode.parentNode.remove();
+
+          findRange(removeText);
+
+        } else {
+          const textId = event.target.parentNode.parentNode.id; 
+          event.target.parentNode.parentNode.childNodes[idx].remove();
+
+
+          findRange(removeItem);
+
+        }
+      }
+    }
+  }
 
 
   render() { 
@@ -1459,6 +1522,11 @@ my two mistresses: what a beast am I to slack it!`,*/
             <SidebarItem>
               <Link to={`play`}>
                 Write the words
+              </Link>
+            </SidebarItem>
+            <SidebarItem>
+              <Link to={`import`}>
+                Import 
               </Link>
             </SidebarItem>
           </SideBar>
@@ -1509,6 +1577,11 @@ my two mistresses: what a beast am I to slack it!`,*/
               )} />
 
               <Route path="/edit" component={Editor}/>
+              <Route path="/edit" render={() => (
+                <div>
+                  <input type="button" onclick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
+                </div>
+              )} />
               <Route exact={true} path="/" render={() => (
                 <div id="login-form-body" className={`login-form`}> 
                 <h1>Welcome</h1>
@@ -1528,6 +1601,21 @@ my two mistresses: what a beast am I to slack it!`,*/
                 </button>
                 </div>
               )} />
+              <Route path="/import" render={() => (
+                <div id="text-items">
+                  <div class="display-items" >
+                    {this.state.nbCurrent} texts added during this session by the logged in user
+                  </div>
+                  <div class="display-items">
+                    <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
+                  </div>
+                  <div class="display-items">
+                    {this.state.otherUsersItems} texts from other users that are left in the database
+                  </div>
+                </div>
+              )} />
+              
+
 
               <Route path="/play" render={() => (
                 <div>
@@ -1615,150 +1703,42 @@ const DisplayDiv = (props) => (
   <div className={'display-div'} {...props}/>
 
 )
+const TextDiv = (props) => (
+  <div className={'display-text'} {...props}/>
+
+)
 const DisplayWord = (props) => (
-  <div className={{'label-word'}} {...props}/>
+  <div className={'label-word'} {...props}/>
 
 )
 const RemoveWord = (props) => (
-  <div {...props}/>
+  <div onClick={this.removeWord} {...props}/>
+
 
 )
 const Editor = ({ wordsToDisplay }) => {
   return(
     <div>
-      <div id="text-items" onchange={this.increment}>
-        <div class="display-items" >
-          <a id="current-items" name="sessions-of-texts">0</a> texts added during this session by the logged in user
-        </div>
-        <div class="display-items">
-          <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
-        </div>
-        <div class="display-items">
-          {this.state.otherUsersItems} texts from other users that are left in the database
-        </div>
-      </div>
+
       <div id="editor">
-      
         {wordsToDisplay ? (
-          {wordsToDisplay.forEach((item, rangeitem, allwords) => {
-            {typeof item === 'string' ? ( 
-              {rangeitem !== 0 ? (
-                </TextDiv>
-              ) : ( null )}
-              <TextDiv id={wordsToDisplay[0]}>
-            ) : (
-                <DisplayDiv>
-                  <DisplayWord>
-                    {item[0]}
-                  </DisplayWord>
-                  <RemoveWord>
-                  </RemoveWord>
-                </DisplayDiv>
-              {rangeItem === allwords.length -1 ? (
-                </TextDiv>
-              ) ? ( 
-                null 
-              )}
-
-
-
-
-              if (ifUserConnected() && typeof words[rangeitem-1] === 'string' && item instanceof Array) {
-                const modalbody = document.getElementById('editor');
-                const textDiv = document.createElement('div');
-                textDiv.classList.add('display-text');
-                textDiv.id = words[rangeitem-1];
-                const textId = words[rangeitem-1];
-                modalbody.appendChild(textDiv);
-                //modalbody.removeChild(modalbody.firstChild);
-              } else if (ifUserConnected() && words[rangeitem-1] instanceof Array && item instanceof Array) {
-                document.getElementById(this.state.textId).appendChild(displayDiv);
-              } else {
-                modalbody.appendChild(displayDiv); //1855
-              }
-
-
- 
-              removeWord.classList.add("btn");
-              removeWord.classList.add("btn-secondary");
-              removeWord.classList.add("btn-word");
-              removeWord.type = "button";
-              removeWord.textContent = "Remove this word";
-              removeWord.onclick = (event) => {
-
-                if(removeWord.parentElement) {
-                  //console.log(texts);
-
-                  const idx = Array.prototype.indexOf.call(removeWord.parentNode.parentNode.childNodes, removeWord.parentNode);
-                  if (idx !== -1) {
-                    function removeText(idx1, texts, text) {
-                      texts.splice(idx1, 1);
-                      console.log(texts);
-                      const alltexts = [...texts];
-                      this.setState({alltexts});
-                      alert('rm text');
-                    }
-
-                    function removeItem(idx1, texts, text) {
-                      alert('rm item'+(idx+1));
-                      text.forEach(item => {
-                        if(item[0] === "mycontent"){
-                          texts[idx1][text.indexOf(item)][1].splice(idx, 1);
-                          console.log(texts[idx1][text.indexOf(item)][1]);
-                          const alltexts = [...texts];
-                          this.setState({alltexts});
-                        }
-                      });
-                    } 
-
-                    function findRange(callback) {
-                      const alltexts = this.state.alltexts;
-                      const textvar = [...alltexts];
-                      //console.log(textvar);
-                      textvar.forEach(textitem => {
-                        textitem.forEach(item => {
-                          if(item[0] === "textId"){
-                            if (item[1] === this.state.textId) {
-                              const idx2 = textvar.indexOf(textitem);
-                              if (idx2 !== -1) {
-                                callback(idx2, textvar, textitem);
-                              }
-                            }
-                          }
-                        });
-                      });
-                    }
-
-
-
-
-
-                    if (removeWord.parentNode.parentNode.childNodes.length === 1 && removeWord.parentNode.parentNode.classList.contains("display-text")) {
-                      const textId = removeWord.parentNode.parentNode.id; 
-                      removeWord.parentNode.parentNode.remove();
-
-                      findRange(removeText);
-
-                    } else {
-                      const textId = removeWord.parentNode.parentNode.id; 
-                      removeWord.parentNode.parentNode.childNodes[idx].remove();
-
-
-                      findRange(removeItem);
-
-                    }
-                  }
-                }
-              }
-            )}
-          })};
+          wordsToDisplay.map(item => (
+            <DisplayDiv id={item[3]}>
+              <DisplayWord>
+                {item[0]}
+              </DisplayWord>
+              <RemoveWord>
+                <button type="button" className="btn btn-secondary btn-word">
+                  Remove this word
+                </button>
+              </RemoveWord>
+            </DisplayDiv>
+          ))
         ) : (
           <div>Loading...</div>
         )}
-    
-
       </div>
-      <input type="button" onclick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
+
     </div>
   )
 }
