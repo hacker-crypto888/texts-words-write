@@ -436,6 +436,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       otherUsersItems:Number('-1'),
       nbCurrent:Number(''),
       passwords:[],
+      showWordItems:false,
     };
   }
   componentDidMount() {
@@ -1388,7 +1389,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     if (this.state.value === "") {return;}
     const newText = createList();
-    addContent(newText, this.state.value);
+    addContent(newText, JSON.stringify(this.state.value));
     textInputField(newText);
     this.textAdd(newText);
     this.setState({nbCurrent: this.state.nbCurrent+=1});
@@ -1412,22 +1413,21 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     this.displayNewEntries(alltexts.filter(loadTextsByDate));
   };
-  removeWord = (event) => {
+  removeItem = (event) => {
+    console.log(event.target.dataset.textid, 'event target dataset text id');
+    this.state.alltexts.forEach(text => {
+      if(text.some(x=>x[1]===event.target.dataset.textid)){
+        this.state.alltexts.splice(this.state.alltexts.indexOf(text), 1);
+      }
+    });
+    event.target.parentNode.remove();
   }
-                  //<label id={`labelWord`}>
-                  //  Your Word:
-
-
-                  //</label>
-                  //<br /><input onChange={this.handleWordItem} placeholder="Enter a word" id="valueword" value={this.state.valueword} /> 
-                  //<button onClick={this.useWordItemInputField} className={`btn btn-success`}>  
-                  //  Add a new word 
-                  //</button>
-
+  displayItem = (event) => {
+    console.log(event.target.parentNode.firstChild.dataset.textid);
+  } 
 
   render() { 
     const itemsloaded = this.state.itemsloaded;
-    
     return(
       <Router>
         <Root>
@@ -1497,11 +1497,6 @@ my two mistresses: what a beast am I to slack it!`,*/
                 </div>
               )} />
 
-              <Route path="/edit" render={() => (
-                <div>
-                  <input type="button" onClick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
-                </div>
-              )} />
               <Route exact={true} path="/" render={() => (
                 <div>
                   <div id="login-form-body" className={`login-form`}> 
@@ -1539,19 +1534,17 @@ my two mistresses: what a beast am I to slack it!`,*/
               <Route path="/edit" render={() => (
                 <div>
                   {this.state.alltexts.length > 0 ? (
-                    this.state.alltexts.map(text => (
-                      text.filter(x=> x[0] === "mycontent")[1].map(content => (
-                        <div>
-                          <DisplayWord>
-                            {content}
-                          </DisplayWord>
-                          <RemoveWord onClick={this.removeWord}>
-                            {'Remove this word'}
-                          </RemoveWord>
-                        </div>
-                      ))
+                    <div>
+                    {this.state.alltexts.map(text => (
+                      <div>
+                        <button data-textid={text.filter(x=>x[0] === 'textId')[0][1]} onClick={(event) => {this.state.alltexts.splice(this.state.alltexts.indexOf(text), 1);event.target.parentNode.remove();}}>
+                          {'remove items from this text'}
+                        </button>
+                        {this.displayItem}
 
-                    ))
+                      </div>
+                    ))}
+                    </div>
                   ) : (
                     <div>Load new texts...</div>
                   )}
@@ -1610,6 +1603,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     );
   }
 }
+
 const Root = (props) => (
   <div style={{
     display: 'flex'
@@ -1643,21 +1637,11 @@ const Main = (props) => (
     <div style={{ padding: '20px' }} {...props}/>
   </div>
 )
-const DisplayDiv = (props) => (
-  <div className={'display-div'} {...props}/>
+const DisplayItem = (props) => (
+  <div {...props}/>
 
 )
-const TextDiv = (props) => (
-  <div className={'display-text'} {...props}/>
-
-)
-const DisplayWord = (props) => (
-  <div className={'label-word'} {...props}/>
-
-)
-const RemoveWord = (props) => (
+const RemoveItem = (props) => (
   <button {...props}/>
-
-
 )
 ReactDOM.render(<BasicForm/>, document.getElementById('root'));

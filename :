@@ -1413,7 +1413,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     this.displayNewEntries(alltexts.filter(loadTextsByDate));
   };
   removeWord = (event) => {
-    console.log(event.target.id.split(','));
   }
                   //<label id={`labelWord`}>
                   //  Your Word:
@@ -1424,11 +1423,23 @@ my two mistresses: what a beast am I to slack it!`,*/
                   //<button onClick={this.useWordItemInputField} className={`btn btn-success`}>  
                   //  Add a new word 
                   //</button>
+                    //alltexts.map(text => (
+                    //  text.filter(x=> x[0] === "mycontent")[1].map(content => (
+                    //    <div>
+                    //      <DisplayWord>
+                    //        {content}
+                    //      </DisplayWord>
+                    //      <RemoveWord onClick={this.removeWord}>
+                    //        {'Remove this word'}
+                    //      </RemoveWord>
+                    //    </div>
+                    //  ))
+
+                    //))
 
 
   render() { 
     const itemsloaded = this.state.itemsloaded;
-    
     return(
       <Router>
         <Root>
@@ -1477,6 +1488,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                   </button>
 
 
+                  <br />
 
                   <a href={``} id={`export_all_items_link`} download={`database.json`} ref={a => {this.a = a}}></a>
                   <br />
@@ -1497,38 +1509,39 @@ my two mistresses: what a beast am I to slack it!`,*/
                 </div>
               )} />
 
-              <Route path="/edit" component={Editor}/>
               <Route path="/edit" render={() => (
                 <div>
                   <input type="button" onClick={this.editEntries} id="edit-entries-save-changes" value="save changes"/>
                 </div>
               )} />
               <Route exact={true} path="/" render={() => (
-                <div id="login-form-body" className={`login-form`}> 
-                <h1>Welcome</h1>
-                <br /><div id="welcome"></div>
+                <div>
+                  <div id="login-form-body" className={`login-form`}> 
+                  <h1>Welcome</h1>
+                  <br /><div id="welcome"></div>
 
-                <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
-                <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
+                  <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
+                  <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
 
-                <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
-                  sign in 
-                </button>
+                  <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
+                    sign in 
+                  </button>
 
-                <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
-                <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
-                <br /><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
-                  Sign up 
-                </button>
+                  <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
+                  <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
+                  <br /><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
+                    Sign up 
+                  </button>
+                  </div>
                 </div>
               )} />
               <Route path="/import" render={() => (
-                <div id="text-items">
+                <div>
                   <div class="display-items" >
                     {this.state.nbCurrent} texts added during this session by the logged in user
                   </div>
                   <div class="display-items">
-                    <a id="previous-items" name="sessions-of-texts">0</a> texts imported from the user's previous sessions of texts
+                    {this.state.nbPrev} texts imported from the user's previous sessions of texts
                   </div>
                   <div class="display-items">
                     {this.state.otherUsersItems} texts from other users that are left in the database
@@ -1536,20 +1549,12 @@ my two mistresses: what a beast am I to slack it!`,*/
                 </div>
               )} />
               <Route path="/edit" render={() => (
-                <div id="editor">
+                <div>
                   {this.state.alltexts.length > 0 ? (
-                    this.state.alltexts.map(text => (
-                      text.filter(x=> x[0] === "mycontent")[1].map(content => (
-                        <div>
-                          <DisplayWord>
-                            {content}
-                          </DisplayWord>
-                          <RemoveWord id={JSON.stringify([text.filter(x=>x[0] === 'textId')[1]+text.indexOf(this.state.alltexts)+content].join(',')])} onClick={this.removeWord}>
-                            {'Remove this word'}
-                          </RemoveWord>
-                        </div>
+                    this.state.alltexts.filter(text => (
+                      text.forEach(prop => (
+                        {prop[0]}
                       ))
-
                     ))
                   ) : (
                     <div>Load new texts...</div>
@@ -1601,7 +1606,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                     </div>
                   </div>
                 </div>
-              )}/>
+              )} />
             </form>
           </Main>
         </Root>
@@ -1655,97 +1660,6 @@ const DisplayWord = (props) => (
 
 )
 const RemoveWord = (props) => (
-  <button {...props}/>
-
-
+  <div {...props}/>
 )
-const Editor = ({ alltexts }) => {
-  function removeWord(event){
-
-    if(event.target.parentElement) {
-      //console.log(texts);
-
-      const idx = Array.prototype.indexOf.call(event.target.parentNode.parentNode.childNodes, event.target.parentNode);
-      if (idx !== -1) {
-        function removeText(idx1, texts, text) {
-          texts.splice(idx1, 1);
-          console.log(texts);
-          const alltexts = [...texts];
-          this.setState({alltexts});
-          alert('rm text');
-        }
-
-        function removeItem(idx1, texts, text) {
-          alert('rm item'+(idx+1));
-          text.forEach(item => {
-            if(item[0] === "mycontent"){
-              texts[idx1][text.indexOf(item)][1].splice(idx, 1);
-              console.log(texts[idx1][text.indexOf(item)][1]);
-              const alltexts = [...texts];
-              this.setState({alltexts});
-            }
-          });
-        } 
-
-        function findRange(callback) {
-          const textvar = [...alltexts];
-          //console.log(textvar);
-          textvar.forEach(textitem => {
-            textitem.forEach(item => {
-              if(item[0] === "textId"){
-                if (item[1] === this.state.textId) {
-                  const idx2 = textvar.indexOf(textitem);
-                  if (idx2 !== -1) {
-                    callback(idx2, textvar, textitem);
-                  }
-                }
-              }
-            });
-          });
-        }
-
-
-
-
-
-        if (event.target.parentNode.parentNode.childNodes.length === 1 && event.target.parentNode.parentNode.classList.contains("display-text")) {
-          const textId = event.target.parentNode.parentNode.id; 
-          event.target.parentNode.parentNode.remove();
-
-          findRange(removeText);
-
-        } else {
-          const textId = event.target.parentNode.parentNode.id; 
-          event.target.parentNode.parentNode.childNodes[idx].remove();
-
-
-          findRange(removeItem);
-
-        }
-      }
-    }
-  }
-            //<div id={text.filter(x => x[0] === "textId")[1]}>
-            //text.filter(x=> x[0] === "mycontent").map(content => (
-            //  content[1].map(word => (
-            //    <DisplayDiv>
-            //      <DisplayWord>
-            //        word
-            //      </DisplayWord>
-            //      <RemoveWord>
-            //        <button type="button" onClick={removeWord} className="btn btn-secondary btn-word">
-            //          {'Remove this word'}
-            //        </button>
-            //      </RemoveWord>
-            //    </DisplayDiv>
-            //  ))
-            //))
-            //</div>
-  return(
-    <div>
-
-
-    </div>
-  )
-}
 ReactDOM.render(<BasicForm/>, document.getElementById('root'));
