@@ -1413,15 +1413,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     this.displayNewEntries(alltexts.filter(loadTextsByDate));
   };
-  removeItem = (event) => {
-    console.log(event.target.dataset.textid, 'event target dataset text id');
-    this.state.alltexts.forEach(text => {
-      if(text.some(x=>x[1]===event.target.dataset.textid)){
-        this.state.alltexts.splice(this.state.alltexts.indexOf(text), 1);
-      }
-    });
-    event.target.parentNode.remove();
-  }
   displayItem = (event) => {
     console.log(event.target.parentNode.firstChild.dataset.textid);
   } 
@@ -1537,10 +1528,16 @@ my two mistresses: what a beast am I to slack it!`,*/
                     <div>
                     {this.state.alltexts.map(text => (
                       <div>
-                        <button data-textid={text.filter(x=>x[0] === 'textId')[0][1]} onClick={(event) => {this.state.alltexts.splice(this.state.alltexts.indexOf(text), 1);event.target.parentNode.remove();}}>
+                        <button onClick={(event) => {this.state.alltexts.splice(this.state.alltexts.indexOf(text), 1);event.target.parentNode.remove();}}>
                           {'remove items from this text'}
                         </button>
-                        {this.displayItem}
+                        <div>
+                          {text.filter(x=>x[0]==="mycontent")[0][1].map(word => (
+                            <div>
+                              {word}
+                            </div>
+                          ))}
+                        </div>
 
                       </div>
                     ))}
