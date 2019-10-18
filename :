@@ -1536,7 +1536,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                             <div>
                               {word}
 
-                              <button onClick={(event) => {text.map(x=>x[1].filter(x=>x===word).length>0)[0][1].delete(word);event.target.parentNode.remove();}}>
+                              <button onClick={(event) => {text.map(x=>x[1]).filter(x=>x.includes(word))[0].splice(text.map(x=>x[1]).filter(x=>x.includes(word))[0].indexOf(word),1);event.target.parentNode.remove();console.log(text.map(x=>x[1]).filter(x=>x.includes(word)[0]))}}>
                                 {'remove items from this text'}
                               </button>
                             </div>
