@@ -1234,7 +1234,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           item.splice(1,1);
           //item.push(JSON.stringify(text.filter(x=>x[0] === "mycontent")[0][1].length));
           console.log(text.filter(x=>x[0] === "mycontent").length);
-          console.log(text.filter(x=>x[0] === "mycontent"));
+          item.push(JSON.stringify(text.filter(x=>x[0] === "mycontent")[0][1].length));
         }
       });
     }
@@ -1535,10 +1535,11 @@ my two mistresses: what a beast am I to slack it!`,*/
                           {text.filter(x=>x[0]==="mycontent")[0][1].map(word => (
                             <div>
                               {word}
+
+                              <button onClick={(event) => {text.map(x=>x[1]).filter(x=>x.includes(word))[0].splice(text.map(x=>x[1]).filter(x=>x.includes(word))[0].indexOf(word),1);event.target.parentNode.remove();console.log(this.state.alltexts)}}>
+                                {'remove items from this text'}
+                              </button>
                             </div>
-                            <button onClick={(event) => {text.map(x=>x[1]).filter(x=>x.contains(word));event.target.parentNode.remove();}}>
-                              {'remove items from this text'}
-                            </button>
                        
                           ))}
                         </div>
