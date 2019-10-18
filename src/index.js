@@ -1536,6 +1536,10 @@ my two mistresses: what a beast am I to slack it!`,*/
                             <div>
                               {word}
                             </div>
+                            <button onClick={(event) => {text.map(x=>x[1]).filter(x=>x.contains(word));event.target.parentNode.remove();}}>
+                              {'remove items from this text'}
+                            </button>
+                       
                           ))}
                         </div>
 
