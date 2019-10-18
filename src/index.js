@@ -432,7 +432,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       allusers:[],
       texts:null,
       alltexts:[],
-      number:null,
+      number:Number(''),
       otherUsersItems:Number('-1'),
       nbCurrent:Number(''),
       passwords:[],
@@ -591,7 +591,6 @@ my two mistresses: what a beast am I to slack it!`,*/
   };
   displayAudio = event => {
     const itemlist = [];
-    const number = Number('');
     const alltexts = this.state.alltexts;
 
     if(alltexts.length === 0) {return;};
@@ -606,8 +605,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         return response.json();
       })
       .then(function(mp3WordList){
-        document.getElementById('loadingAudioFiles').hidden = false;
-
         alltexts.forEach(function(text) {
           text.forEach(prop => {
             if(prop[0] === "mycontent") {
@@ -615,8 +612,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       
                 const audioFilePreview = document.createElement('audio'); 
                 audioFilePreview.className=myworditem;
-                const number = Number(this.state.number) + 1;
-                audioFilePreview.key=this.state.number;
+                //audioFilePreview.key=number;
                 audioFilePreview.id=myworditem;
                 audioFilePreview.controls=true;
                 audioFilePreview.onpause = (event) => {
@@ -653,7 +649,6 @@ my two mistresses: what a beast am I to slack it!`,*/
                   }
                 });
                 
-                document.getElementById('loadingAudioFiles').hidden = true;
               });
             }
           });
@@ -1566,9 +1561,6 @@ my two mistresses: what a beast am I to slack it!`,*/
                     <div className={`play`}> 
 
 
-                      <div className="spinner-border" id={`loadingAudioFiles`} role="status">
-                        <span className="sr-only">Loading...</span>
-                      </div>
                       <label htmlFor={`wordinput`}></label>
                       <input
                         className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
