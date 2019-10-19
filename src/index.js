@@ -1443,7 +1443,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           <Main>
             
             <form onSubmit={this.handleSubmit}>
-              <Route path="/upload" render={() => ( 
+              <Route path="/upload" exact render={() => ( 
                 <div>
   	          <div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver} />
                   <div id={`preview`} />
@@ -1465,7 +1465,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                   <div id={`download_all_items`}></div> 
                 </div>
               )} />
-              <Route path="/sort" render={() => ( 
+              <Route path="/sort" exact render={() => ( 
                 <div>
                   <div id="sort-items-by-date"><label>Load words by date</label></div>
                   <div>
@@ -1500,7 +1500,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                   </div>
                 </div>
               )} />
-              <Route path="/import" render={() => (
+              <Route path="/import" exact render={() => (
                 <div>
                   <div class="display-items" >
                     {this.state.alltexts.length} texts added during this session by the logged in user
@@ -1513,7 +1513,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                   </div>
                 </div>
               )} />
-              <Route path="/edit" render={() => (
+              <Route path="/edit" exact render={() => (
                 <div>
                   {this.state.alltexts.length > 0 ? (
                     <div>
@@ -1547,7 +1547,7 @@ my two mistresses: what a beast am I to slack it!`,*/
               
 
 
-              <Route path="/play" render={() => (
+              <Route path="/play" exact render={() => (
                 <div>
                   <div>
                     <input type="checkbox" id="playAllTheWords" value={this.state.preloadOrAutoplay} onChange={this.checkBox} name="playAllTheWords"/>
