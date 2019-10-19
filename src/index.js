@@ -1519,7 +1519,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                     <div>
                     {this.state.alltexts.map(text => (
                       <div>
-                        <button onClick={(event) => {this.state.alltexts.splice(this.state.alltexts.indexOf(text), 1);event.target.parentNode.remove();}}>
+                        <button onShow={(event) => {(text.some(x=>x[0] === "session_of_texts"&&x[1]==="previous"))?(event.target.classList.add('previous-sessions-text'))&&(event.target.hidden === true):null;}} onClick={(event) => {this.state.alltexts.splice(this.state.alltexts.indexOf(text), 1);event.target.parentNode.remove();}}>
                           {'remove items from this text'}
                         </button>
                         <div>
@@ -1542,6 +1542,14 @@ my two mistresses: what a beast am I to slack it!`,*/
                     <div>Load new texts...</div>
                   )}
                 </div>
+              )} />
+              <Route path="/edit" exact render={() => (
+                <div>
+                  <button onClick={(event) => {document.getElementByClassName('previous-sessions-texts').hidden === false;this.state.alltexts.forEach(text=> {text.forEach(prop=>{(prop[0] === "session_of_texts")?(prop.slice(1,1))&&(prop.push('previous')):null})});}}>
+                    edit texts from previous sessions
+                  </button>
+                </div>
+                
               )} />
 
               
