@@ -433,19 +433,21 @@ my two mistresses: what a beast am I to slack it!`,*/
       texts:null,
       alltexts:[],
       number:Number(''),
-      otherUsersItems:Number('-1'),
+      otherUsersItems:Number(''),
       nbCurrent:Number(''),
       passwords:[],
       showWordItems:false,
     };
+
   }
   componentDidMount() {
     const valueword = '';
     this.setState({valueword:this.state.valueword});
+
+    const allusers = [];
     const value = '';
     this.setState({value:this.state.value});
-    const otherUsersItems = -1;
-    this.setState({otherUsersItems});
+
     const preloadOrAutoplay = 'preload';
     this.setState({preloadOrAutoplay});
     const username = "username";
@@ -518,9 +520,8 @@ my two mistresses: what a beast am I to slack it!`,*/
           return textvar.some(x => x[0] === "users" && x[1].includes(username)); 
         }
         const allusers = items.map(x=>x).filter(allusersItems);
-        for (var i=0; i<allusers.length ; i++) {
-          this.setState({otherUsersItems: this.state.otherUsersItems + 1});
-        }
+
+        this.setState({otherUsersItems:allusers.length -1 });
         return items.map(x => x).filter(usersItem);
 
       })
@@ -966,8 +967,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     const callbackFunction = result => {
       console.log(result);
       this.textAdd(result); 
-      const nbCurrent = this.state.nbCurrent;
-      nbCurrent+=1;
     }
 
     const mainFunction = callback => {
@@ -1026,8 +1025,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         const newText = createFileList();
         addContent(newText, resultObject.value);
         this.textAdd(newText);
-        const nbCurrent = this.state.nbCurrent;
-        nbCurrent+=1;
       })
     };
     reader.readAsArrayBuffer(file);
@@ -1115,8 +1112,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           addContent(newText, pagesText.join(' '));
           
           this.textAdd(newText);
-          const nbCurrent = this.state.nbCurrent;
-          nbCurrent+=1;
+
 
         });
 
@@ -1238,6 +1234,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const alltexts = this.state.alltexts;
 
     alltexts.push(text);
+    this.setState({nbCurrent:alltexts.length});
     console.log(alltexts, "add a text"); 
     
   }
@@ -1345,7 +1342,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     wordItemInputField(newText);
     addContent(newText, valueword);
     this.textAdd(newText);
-    this.setState({nbCurrent: this.state.nbCurrent +1});
     valueword.length = null;
 
   }
@@ -1387,7 +1383,6 @@ my two mistresses: what a beast am I to slack it!`,*/
     addContent(newText, JSON.stringify(this.state.value).trim());
     textInputField(newText);
     this.textAdd(newText);
-    this.setState({nbCurrent: this.state.nbCurrent+=1});
     this.state.value = "";
   }
   onChange = (date) => {
@@ -1414,6 +1409,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   render() { 
     const itemsloaded = this.state.itemsloaded;
+    const nbCurrent = this.state.nbCurrent;
     return(
       <Router>
         <Root>
@@ -1507,10 +1503,10 @@ my two mistresses: what a beast am I to slack it!`,*/
               <Route path="/import" render={() => (
                 <div>
                   <div class="display-items" >
-                    {this.state.nbCurrent} texts added during this session by the logged in user
+                    {this.state.alltexts.length} texts added during this session by the logged in user
                   </div>
                   <div class="display-items">
-                    {this.state.nbPrev} texts imported from the user's previous sessions of texts
+                    {this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "previous")).length} texts imported from the user's previous sessions of texts
                   </div>
                   <div class="display-items">
                     {this.state.otherUsersItems} texts from other users that are left in the database
