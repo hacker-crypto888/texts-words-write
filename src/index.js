@@ -1538,7 +1538,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                       </div>
                     ))}
                       <div>
-                        <button onClick={(event) => {event.target.parentNode.pa	rentNode.childNodes.hidden = false;this.state.alltexts.map(x=>x.filter(prop => prop[0]==="session_of_texts").map(prop => (prop.splice(1,1))&&(prop.push('current'))));}}>
+                        <button onClick={(event) => {event.target.parentNode.pa	rentNode.childNodes.hidden = false;this.state.alltexts.map(x=>x.filter(prop => prop[0]==="session_of_texts")).map(x=>x[0].splice(1,1).push('current'));}}>
                           edit texts from previous sessions
                         </button>
                       </div>
