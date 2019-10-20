@@ -530,8 +530,6 @@ my two mistresses: what a beast am I to slack it!`,*/
         if(result === (null||undefined) || result instanceof Array && result.length === 0) {return;} 
 
         result.forEach(textitem => {
-          document.getElementById('previous-items').innerHTML = Number(document.getElementById('previous-items').innerHTML) +1;
-
           this.textAdd(textitem);  
         });
       })
@@ -1503,7 +1501,7 @@ my two mistresses: what a beast am I to slack it!`,*/
               <Route path="/import" exact render={() => (
                 <div>
                   <div class="display-items" >
-                    {this.state.alltexts.length} texts added during this session by the logged in user
+                    {this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "current")).length} texts added during this session by the logged in user
                   </div>
                   <div class="display-items">
                     {this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "previous")).length} texts imported from the user's previous sessions of texts
@@ -1513,36 +1511,36 @@ my two mistresses: what a beast am I to slack it!`,*/
                   </div>
                 </div>
               )} />
+
               <Route path="/edit" exact render={() => (
                 <div>
                   {this.state.alltexts.length > 0 ? (
                     <div>
-                    {this.state.alltexts.map(text => (
+                    {this.state.alltexts.filter(text=>text.some(prop=>prop[1] === "current")).map(text => (
                       <div>
-                        <button onShow={(event) => {((text.some(x=>x[0] === "session_of_texts"&&x[1]==="previous"))?event.target.parentNode.hidden = true:null)}} onClick={(event) => {this.state.alltexts.splice(this.state.alltexts.indexOf(text), 1);event.target.parentNode.remove();}}>
-                          {'remove items from this text'}
+
+                        <button onClick={(event) => {this.state.alltexts.splice(this.state.alltexts.indexOf(text), 1);((this.state.alltexts.filter(text=>text.some(prop=>prop[1] === "current")).length === 0)?event.target.parentNode.parentNode.remove():event.target.parentNode.remove());}}>
+                          {'remove all items from this text'}
                         </button>
                         <div>
                           {text.filter(x=>x[0]==="mycontent")[0][1].map(word => (
                             <div>
                               {word}
-
-                              <button onClick={(event) => {text.map(x=>x[1]).filter(x=>x.includes(word))[0].splice(text.map(x=>x[1]).filter(x=>x.includes(word))[0].indexOf(word),1);(event.target.parentNode.parentNode.childNodes.length === 1 ?event.target.parentNode.parentNode.parentNode.firstChild.click():event.target.parentNode.remove());}}>
-                                {'remove items from this text'}
+                              <button onClick={(event) => {text.map(prop=>((prop[1] instanceof Array && prop[1].includes(word))?prop[1].splice(prop[1].indexOf(word),1):null));(event.target.parentNode.parentNode.childNodes.length === 1 ?event.target.parentNode.parentNode.parentNode.firstChild.click():event.target.parentNode.remove());}}>
+                                {'remove one item'}
                               </button>
                             </div>
-                       
                           ))}
                         </div>
-
                       </div>
                     ))}
+                    {this.state.alltexts.some(text => text.some(prop => prop[1] === "previous"))?(
                       <div>
-                        <button onClick={(event) => {event.target.parentNode.pa	rentNode.childNodes.hidden = false;this.state.alltexts.map(x=>x.filter(prop => (prop[0]==="session_of_texts")).map(prop => (prop.splice(1,1))&&(prop.push('current'))));}}>
-                          edit texts from previous sessions
+                        <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('current')):null)));event.target.hidden=true;}}>
+                          also show items from previous sessions
                         </button>
                       </div>
-
+                    ) : null}
 
                     </div>
 
@@ -1551,10 +1549,6 @@ my two mistresses: what a beast am I to slack it!`,*/
                   )}
 
                 </div>
-              )} />
-              <Route path="/edit" exact render={() => (
-
-                
               )} />
 
               
@@ -1648,3 +1642,4 @@ const RemoveItem = (props) => (
   <button {...props}/>
 )
 ReactDOM.render(<BasicForm/>, document.getElementById('root'));
+                        //(text.some(x=>x[0] === "session_of_texts"&&x[1]==="previous"))?return:null
