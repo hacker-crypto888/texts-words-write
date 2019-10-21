@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
+const fs= require('fs');
 
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
@@ -1437,6 +1438,11 @@ my two mistresses: what a beast am I to slack it!`,*/
                 Import 
               </Link>
             </SidebarItem>
+            <SidebarItem>
+              <Link to={`export`}>
+                Export items
+              </Link>
+            </SidebarItem>
           </SideBar>
           <Main>
             
@@ -1475,6 +1481,14 @@ my two mistresses: what a beast am I to slack it!`,*/
                   </div>
                   <button type="button" onClick={this.btnSortByDate} id="btn-sort-by-date">sort items by date</button>
                 </div>
+              )} />
+
+              <Route exact={true} path="/export" render={() => (
+                      <div>
+                        <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('previous')):null)));this.state.allusers.map(text => this.state.alltexts.push(text));this.state.alltexts.push(this.state.passwords);fs.writeFile("database.json", JSON.stringify([this.state.alltexts], null, 2));this.state.alltexts.length=null;}}>
+                          save edits
+                        </button>
+                      </div>
               )} />
 
               <Route exact={true} path="/" render={() => (
@@ -1537,7 +1551,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                     {this.state.alltexts.some(text => text.some(prop => prop[1] === "previous"))?(
                       <div>
                         <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('current')):null)));event.target.hidden=true;}}>
-                          also show items from previous sessions
+                          texts from previous sessions of texts
                         </button>
                       </div>
                     ) : null}

@@ -1,6 +1,8 @@
-var webpack = require('webpack'); // eslint-disable-line no-unused-vars
-var path = require('path');
-var nodeExternals = require('webpack-node-externals');
+const webpack = require('webpack'); // eslint-disable-line no-unused-vars
+const path = require('path'); 
+const fs = require('fs');
+const nodeExternals = require('webpack-node-externals');
+
 
 module.exports = {
   context: __dirname,
@@ -19,4 +21,7 @@ module.exports = {
   },
   target: 'node', // in order to ignore built-in modules like path, fs, etc.
   externals: [nodeExternals(), "node-helper"], // in order to ignore all modules in node_modules folder
+  node: {
+    fs:'empty'
+  },
 };
