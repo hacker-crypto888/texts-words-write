@@ -4,10 +4,11 @@ import './index.css';
 import DatePicker from 'react-date-picker';
 import './App.js';
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
+import * as fs from 'fs';
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
-const fs= require('fs');
+const path=require('path');
 
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
@@ -1485,7 +1486,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
               <Route exact={true} path="/export" render={() => (
                       <div>
-                        <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('previous')):null)));this.state.allusers.map(text => this.state.alltexts.push(text));this.state.alltexts.push(this.state.passwords);fs.writeFile("database.json", JSON.stringify([this.state.alltexts], null, 2), (err)=>((err)?console.log(err):console.log('file saved')));this.state.alltexts.length=null;}}>
+                        <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('previous')):null)));this.state.allusers.map(text => this.state.alltexts.push(text));this.state.alltexts.push(this.state.passwords);fs.writeFile(`database.json`, JSON.stringify([this.state.alltexts], null, 2), 'utf-8');/*, (err)=>((err)?console.log(err):console.log('file saved')));*//*this.state.alltexts.length=null;*/}}>
                           save edits
                         </button>
                       </div>
