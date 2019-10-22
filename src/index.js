@@ -4,7 +4,7 @@ import './index.css';
 import DatePicker from 'react-date-picker';
 import './App.js';
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
-import * as fs from 'fs';
+import * as fs from 'fs-web';
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
@@ -13,12 +13,7 @@ const path=require('path');
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 const mammoth = require("mammoth");
-//handle dates ----> do like for "remove text function " (import and export texts in imported Texts field and remove the items not matching the selected date (on click)
 
-//dates output in the array. before being able to "sort by date"
-//    const daysDate = new Date();
-//    const today = (daysDate.getMonth()+1)+'/'+daysDate.getDate()+'/'+daysDate.getFullYear();
-//    const msTime = Date.now();
 class BasicForm extends React.Component {
   constructor(props) {
     super(props);
@@ -1485,11 +1480,17 @@ my two mistresses: what a beast am I to slack it!`,*/
               )} />
 
               <Route exact={true} path="/export" render={() => (
-                      <div>
-                        <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('previous')):null)));this.state.allusers.map(text => this.state.alltexts.push(text));this.state.alltexts.push(this.state.passwords);fs.writeFile(`database.json`, JSON.stringify([this.state.alltexts], null, 2), 'utf-8');/*, (err)=>((err)?console.log(err):console.log('file saved')));*//*this.state.alltexts.length=null;*/}}>
-                          save edits
-                        </button>
-                      </div>
+
+                <div>
+                {this.state.alltexts.length>0?(
+                  <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('previous')):null)));this.state.allusers.map(text => this.state.alltexts.push(text));((!this.state.alltexts.includes(this.state.passwords))?this.state.alltexts.push(this.state.passwords):(this.state.alltexts.splice(this.state.alltexts.indexOf(this.state.passwords)))&&(this.state.alltexts.push(this.state.passwords)));fs.writeFile(`database.json`, JSON.stringify([this.state.alltexts], null, 2)).then(console.log('file saved', this.state.alltexts));/*, (err)=>((err)?console.log(err):console.log('file saved')));*//*this.state.alltexts.length=null;*/}}>
+                     save edits
+                   </button>
+
+                ):(
+                  null
+                )}
+                </div>
               )} />
 
               <Route exact={true} path="/" render={() => (
