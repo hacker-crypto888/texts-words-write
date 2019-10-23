@@ -4,18 +4,36 @@ import './index.css';
 import DatePicker from 'react-date-picker';
 import './App.js';
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
-import { fs } from 'memfs';
-//import * as fs from 'fs-web';
+import * as fs from 'fs';
+import {FilesReader,FilesWriter} from 'react-files-rwc';
+//import saferw from 'safe-read-write';
+const Textfile = require('eztxt4fs');
+//const writeFile = require('write-file');
+//const rp = require('fs.realpath');
+//process.version = '8.16.0';
+//process.versions.node = '8.16.0';
+//console.log(`Version: ${process.versions.node}`);
+//rp.monkeypatch(); 
+//import { fs } from 'memfs';
+
 //const fs=require('bro-fs');
 //fs.writeFile("filename.txt", "content");
 const bcrypt = require("bcryptjs");
+//const fs = require('fs-extra');
+//const writeData = require('write-data');
 const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
 const path=require('path');
-
+//const jsonfile =require('jsonfile');
+//const write = require('write');
+//const thenWriteJson = require('then-write-json');
+//const writeJson = require('write-json'); 
 PDFJS.workerSrc = 'pdf.worker.js';
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 const mammoth = require("mammoth");
+//const fsxu = require('fsxu');
+//const saferw = require('safe-read-write');
+//const fs =require('graceful-fs');
 
 class BasicForm extends React.Component {
   constructor(props) {
@@ -792,8 +810,13 @@ my two mistresses: what a beast am I to slack it!`,*/
         importText.forEach(function(myTextItem, index, jsonfile) {
           myTextItem.forEach(function(info) {
             if(info[0] === "users") {
-              if (!info[1].includes(document.getElementById('username').value)) {
-                info[1].push(document.getElementById('username').value); //array
+              if(info[1] instanceof Array) {
+                info[1].push(this.state.username); //array
+              } else {
+            
+                info.splice(1,1);
+        
+                info.push(this.state.username); //array
               }
             } 
           });
@@ -1404,6 +1427,35 @@ my two mistresses: what a beast am I to slack it!`,*/
   displayItem = (event) => {
     console.log(event.target.parentNode.firstChild.dataset.textid);
   } 
+  exportItems = (event) =>{
+    if(this.state.alltexts.length>0) {
+      this.state.alltexts.map(text=>{
+        text.map(prop=>{
+          if(prop[0] === "session_of_texts"){
+            prop.splice(1.1);
+            prop.push('previous');
+          }
+        });
+      });
+      this.state.allusers.map(text => {
+        this.state.alltexts.push(text);
+      });
+      if (!this.state.alltexts.includes(this.state.passwords)){
+        this.state.alltexts.push(this.state.passwords)
+      } else {
+        this.state.alltexts.splice(this.state.alltexts.indexOf(this.state.passwords),1);
+        this.state.alltexts.push(this.state.passwords);
+      }
+    }
+    return(
+      <FilesWriter extension={`json`} fileName={`./database`} datas={JSON.stringify([this.state.alltexts],null,2)}>
+
+        <button>
+          save edits
+        </button>
+      </FilesWriter>
+    )
+  }                
 
   render() { 
     const itemsloaded = this.state.itemsloaded;
@@ -1468,6 +1520,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                   <div id={`download_all_items`}></div> 
                 </div>
               )} />
+              <Route exact={true} path="/export" render={this.exportItems}/>
               <Route path="/sort" exact render={() => ( 
                 <div>
                   <div id="sort-items-by-date"><label>Load words by date</label></div>
@@ -1482,20 +1535,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                 </div>
               )} />
 
-              <Route exact={true} path="/export" render={() => (
 
-                <div>
-                {this.state.alltexts.length>0?(
-                  <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('previous')):null)));this.state.allusers.map(text => this.state.alltexts.push(text));((!this.state.alltexts.includes(this.state.passwords))?this.state.alltexts.push(this.state.passwords):(this.state.alltexts.splice(this.state.alltexts.indexOf(this.state.passwords),1))&&(this.state.alltexts.push(this.state.passwords)));fs.writeFileSync('./data.json', JSON.stringify([this.state.alltexts], null, 2));console.log('reaad file',fs.readFileSync('./data.json','utf8'));/*, (err)=>((err)?console.log(err):console.log('file saved')));*//*this.state.alltexts.length=null;*/}}>
-
-                     save edits
-                   </button>
-
-                ):(
-                  null
-                )}
-                </div>
-              )} />
 
               <Route exact={true} path="/" render={() => (
                 <div>
@@ -1620,6 +1660,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     );
   }
 }
+
 
 const Root = (props) => (
   <div style={{
