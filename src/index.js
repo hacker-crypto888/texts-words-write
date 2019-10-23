@@ -4,7 +4,10 @@ import './index.css';
 import DatePicker from 'react-date-picker';
 import './App.js';
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
-import * as fs from 'fs-web';
+import { fs } from 'memfs';
+//import * as fs from 'fs-web';
+//const fs=require('bro-fs');
+//fs.writeFile("filename.txt", "content");
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
@@ -1483,7 +1486,8 @@ my two mistresses: what a beast am I to slack it!`,*/
 
                 <div>
                 {this.state.alltexts.length>0?(
-                  <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('previous')):null)));this.state.allusers.map(text => this.state.alltexts.push(text));((!this.state.alltexts.includes(this.state.passwords))?this.state.alltexts.push(this.state.passwords):(this.state.alltexts.splice(this.state.alltexts.indexOf(this.state.passwords)))&&(this.state.alltexts.push(this.state.passwords)));fs.writeFile(`database.json`, JSON.stringify([this.state.alltexts], null, 2)).then(console.log('file saved', this.state.alltexts));/*, (err)=>((err)?console.log(err):console.log('file saved')));*//*this.state.alltexts.length=null;*/}}>
+                  <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('previous')):null)));this.state.allusers.map(text => this.state.alltexts.push(text));((!this.state.alltexts.includes(this.state.passwords))?this.state.alltexts.push(this.state.passwords):(this.state.alltexts.splice(this.state.alltexts.indexOf(this.state.passwords),1))&&(this.state.alltexts.push(this.state.passwords)));fs.writeFileSync('./data.json', JSON.stringify([this.state.alltexts], null, 2));console.log('reaad file',fs.readFileSync('./data.json','utf8'));/*, (err)=>((err)?console.log(err):console.log('file saved')));*//*this.state.alltexts.length=null;*/}}>
+
                      save edits
                    </button>
 
