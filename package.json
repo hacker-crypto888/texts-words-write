@@ -18,6 +18,7 @@
     "docx-parser": "^0.2.1",
     "docx4js": "^3.1.32",
     "docxtemplater": "^3.14.3",
+    "exec-php": "0.0.5",
     "export-from-json": "^1.1.4",
     "express": "^4.17.1",
     "eztxt4fs": "^1.1.0",

@@ -6,6 +6,7 @@ import './App.js';
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
 import * as fs from 'fs';
 import {FilesReader,FilesWriter} from 'react-files-rwc';
+
 //import saferw from 'safe-read-write';
 const Textfile = require('eztxt4fs');
 //const writeFile = require('write-file');
@@ -39,6 +40,8 @@ class BasicForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      htmlEl:null,
+      htmlBody:null,
       inputValue:'',
       checkInput:'',
       wordtest:'',
@@ -1446,17 +1449,26 @@ my two mistresses: what a beast am I to slack it!`,*/
         this.state.alltexts.splice(this.state.alltexts.indexOf(this.state.passwords),1);
         this.state.alltexts.push(this.state.passwords);
       }
+      const data = "var1="+JSON.stringify({"items":this.state.alltexts}, null, 2);
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "http://localhost/file.php", true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");                  
+      xhr.send(data);
+      return('items were exported');
     }
-    return(
-      <FilesWriter extension={`json`} fileName={`./database`} datas={JSON.stringify([this.state.alltexts],null,2)}>
-
-        <button>
-          save edits
-        </button>
-      </FilesWriter>
-    )
+    
   }                
+  exportTexts= (event) => {
+    //const htmlEl = document.createElement('div');
 
+    //htmlEL.hidden = true;
+    //document.body.appendChild(htmlEl);
+    //htmlEl.hidden = false;
+    //fetch('database.json').then(content=>console.log(content.json()));
+    //location.reload();
+
+    
+  }
   render() { 
     const itemsloaded = this.state.itemsloaded;
     const nbCurrent = this.state.nbCurrent;
