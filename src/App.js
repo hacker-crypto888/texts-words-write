@@ -13,6 +13,12 @@ class App extends Component {
         //    .then(res => res.text())
         //    .then(res => this.setState({ apiResponse: res }))
         //    .catch(err => err);
+        //function formEncode(obj) {
+        //    var str = [];
+        //    for(var p in obj)
+        //    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        //    return str.join("&");
+        //}
         fetch('http://localhost:9000/testAPI', {
           method: 'POST',
           body: JSON.stringify({"items":this.props.jsonData}),
