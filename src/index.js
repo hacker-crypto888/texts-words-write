@@ -1712,6 +1712,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                       <div>
                         <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('current')):null)));event.target.hidden=true;}}>
                           texts from previous sessions of texts
+
                         </button>
                       </div>
                     ) : null}
@@ -1844,4 +1845,6 @@ ReactDOM.render(<BasicForm/>, document.getElementById('root'));
                   //):(
                   //  null
                   //)}
+                        //<button onClick={(event) => {event.target.parentNode.pa	rentNode.childNodes.hidden = false;this.state.alltexts.map(x=>x.filter(prop => prop[0]==="session_of_texts")).map(x=>x[0].splice(1,1).push('current'));}}>
+                        //  edit texts from previous sessions
 registerServiceWorker();
