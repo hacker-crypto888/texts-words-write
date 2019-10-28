@@ -1,14 +1,17 @@
-import React, {setState} from 'react'; 
+import React from 'react'; 
+import setState from 'react'; 
 import ReactDOM from 'react-dom'; 
 import './index.css';
 import DatePicker from 'react-date-picker';
 import './App.js';
-import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Link, Route, Switch, Redirect } from 'react-router-dom';
+import App from './App';
+import { withRouter } from "react-router-dom";
 import * as fs from 'fs';
-import {FilesReader,FilesWriter} from 'react-files-rwc';
-
+import registerServiceWorker from './registerServiceWorker';
+//const fetch = require("node-fetch");
+const $ = window.$;
 //import saferw from 'safe-read-write';
-const Textfile = require('eztxt4fs');
 //const writeFile = require('write-file');
 //const rp = require('fs.realpath');
 //process.version = '8.16.0';
@@ -22,9 +25,9 @@ const Textfile = require('eztxt4fs');
 const bcrypt = require("bcryptjs");
 //const fs = require('fs-extra');
 //const writeData = require('write-data');
-const salt = bcrypt.genSaltSync(10);
+//const salt = bcrypt.genSaltSync(10);
 const PDFJS = window['pdfjs-dist/build/pdf'];
-const path=require('path');
+//const path=require('path');
 //const jsonfile =require('jsonfile');
 //const write = require('write');
 //const thenWriteJson = require('then-write-json');
@@ -43,12 +46,25 @@ class BasicForm extends React.Component {
       htmlEl:null,
       htmlBody:null,
       inputValue:'',
+      req:null,
+      contactForm:null,
+      request:null,
+      subject:null,
+      
+      display:null,
+      email:null,
+      
+      xmlhttp:null,
+      http:null,
       checkInput:'',
       wordtest:'',
       checkTarget:'',
+      params:null,
       targetValue: '',
       variableErrors:'',
       mountElements:[],
+      formData:null,
+      dataString:null,
       controls:true,
       items: [],
       wordinputError: '',
@@ -458,10 +474,13 @@ my two mistresses: what a beast am I to slack it!`,*/
       nbCurrent:Number(''),
       passwords:[],
       showWordItems:false,
+      history:null,
     };
 
   }
   componentDidMount() {
+
+    //window.history.push('/');
     const valueword = '';
     this.setState({valueword:this.state.valueword});
 
@@ -516,6 +535,24 @@ my two mistresses: what a beast am I to slack it!`,*/
       });
     }
 
+    function formEncode(obj) {
+        var str = [];
+        for(var p in obj)
+        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        return str.join("&");
+    }
+    //var url = '';
+    //const formData = new FormData();
+    //formData.append('x', 'hello'); 
+    //fetch('hello.php', {
+    //  method: 'POST',
+    //  headers: { "Content-type": "application/x-www-form-urlencoded"},
+    //  body: formData
+    //}).then(res => {
+    //  return res.text();
+    //}).then(body => {
+    //  console.log(body);
+    //});
 
     fetch('database.json')
       .then(function(response) {
@@ -563,7 +600,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     
   }
 
-  fieldOnblur = () => {
+  fieldOnblur = (event) => {
     this.setState({
       audioplayerToggle:
         null,
@@ -1454,20 +1491,82 @@ my two mistresses: what a beast am I to slack it!`,*/
       xhr.open("POST", "http://localhost/file.php", true);
       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");                  
       xhr.send(data);
-      return('items were exported');
+      //return('items were exported');
     }
+
+    
+
     
   }                
-  exportTexts= (event) => {
-    //const htmlEl = document.createElement('div');
+  ecrireDiv=(event)=>{
+    const display = document.getElementById("test-div");
+    display.innerHTML = "<form class=\"circleForm\" id=\"registerForm\">\n     Imię: <input type=\"text\" id=\"user_name\" value=\"my user name\"><br>\n     Nazwisko: <input type=\"text\" id=\"user_lastname\" value=\"my last name\">\n    <br>\n<input class=\"btnCircle\" type=\"button\" id=\"submit\" value=\"Przejdź dalej\" />                    \n </form>";
 
-    //htmlEL.hidden = true;
-    //document.body.appendChild(htmlEl);
-    //htmlEl.hidden = false;
-    //fetch('database.json').then(content=>console.log(content.json()));
-    //location.reload();
+
 
     
+
+
+        //event.preventDefault();
+        //$.post(
+        //   'connexion.php', // Un script PHP que l'on va créer juste après
+        //   {
+        //       username : $("#username").val(),  // Nous récupérons la valeur de nos input que l'on fait passer à connexion.php
+        //       password : $("#password").val()
+        //   },
+ 
+        //   function(data){
+ 
+        //       if(data == 'Success'){
+        //            // Le membre est connecté. Ajoutons lui un message dans la page HTML.
+ 
+        //            $("#resultat").html("<p>Vous avez été connecté avec succès !</p>");
+        //       }
+        //       else{
+        //            // Le membre n'a pas été connecté. (data vaut ici "failed")
+ 
+        //            $("#resultat").html("<p>Erreur lors de la connexion...</p>");
+        //       }
+        //
+        //   },
+        //   'text'
+        //);
+    //}
+
+    //document.getElementById('confirm').click();
+  }
+  headingSearch = (event) => {
+    event.preventDefault();
+    const display = document.getElementById("test-div");
+    console.log(event.target.form.title.value);
+    $.ajax({
+      type: "POST",
+      url: "edit.php",
+      data: {title:event.target.form.title.value} ,
+      
+      success: function(data) {
+        //$('.center').html(data); 
+        display.innerHTML += data;
+      }
+    });
+  }
+  refreshData = (event) => {
+    event.preventDefault();
+    const display = document.getElementById("test-div");
+    $.ajax({
+    	type: 'POST',
+    	url: 'sessions.php',
+    	data: $('#saveuser').serialize(),
+    
+    	success: function (msg) {
+    		msg = $.trim(msg);
+    		if (msg == 'Success') {
+           //Do Whatever					
+           //jQuery("#thanks_message").show('slow');
+                  alert('ok');
+    		}
+    	}
+    });
   }
   render() { 
     const itemsloaded = this.state.itemsloaded;
@@ -1532,7 +1631,6 @@ my two mistresses: what a beast am I to slack it!`,*/
                   <div id={`download_all_items`}></div> 
                 </div>
               )} />
-              <Route exact={true} path="/export" render={this.exportItems}/>
               <Route path="/sort" exact render={() => ( 
                 <div>
                   <div id="sort-items-by-date"><label>Load words by date</label></div>
@@ -1551,24 +1649,28 @@ my two mistresses: what a beast am I to slack it!`,*/
 
               <Route exact={true} path="/" render={() => (
                 <div>
-                  <div id="login-form-body" className={`login-form`}> 
-                  <h1>Welcome</h1>
+                  <App jsonData={this.state.alltexts}/>
+
+                  <div id="login-form-body" className={`login-form`}/> 
                   <br /><div id="welcome"></div>
 
-                  <input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
-                  <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
 
-                  <br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
-                    sign in 
-                  </button>
+                </div>
+              )} />
+              <Route path="/export" exact render={() => (
+                <div>
 
-                  <br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
-                  <br /><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
-                  <br /><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
-                    Sign up 
-                  </button>
+                  <div id="div1"></div>
+                  <div class="the-return">
+
+                  </div>
+                  <input type="button" onClick={this.ecrireDiv}/>
+                  <ClickButton/>
+                  <div id="test-div">
+                    [HTML is replaced when successful.]
                   </div>
                 </div>
+
               )} />
               <Route path="/import" exact render={() => (
                 <div>
@@ -1707,6 +1809,14 @@ const Main = (props) => (
     <div style={{ padding: '20px' }} {...props}/>
   </div>
 )
+const ClickButton = withRouter(({ history }) => (
+  <button
+    type="button"
+    onClick={(event) => { history.push('/'); }}
+  >
+    CliCk Me!
+  </button>
+))
 const DisplayItem = (props) => (
   <div {...props}/>
 
@@ -1716,3 +1826,22 @@ const RemoveItem = (props) => (
 )
 ReactDOM.render(<BasicForm/>, document.getElementById('root'));
                         //(text.some(x=>x[0] === "session_of_texts"&&x[1]==="previous"))?return:null
+                  //<input onChange={this.handleUsernameChange} placeholder="Username" id="username" value={this.state.username} />
+                  //<br /><input onChange={this.handleUsernameChange} placeholder="Password" id="password" value={this.state.password} />
+
+                  //<br /><button id="loginbtn" onClick={this.loginUser} className={`btn btn-success`}>  
+                  //  sign in 
+                  //</button>
+
+                  //<br /><input onChange={this.handleUsernameChange} placeholder="Username" id="signup-username" value={this.state.signupUsername} /> 
+                  //<br /><input onChange={this.handleUsernameChange} placeholder="Password" id="signup-password" value={this.state.signupPassword} /> 
+                  //<br /><button id="btn-signup" onClick={this.signupUser} className={`btn btn-success`}> 
+                  //  Sign up 
+                  //</button>
+                  //</div>
+                  //{this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "current")).length > 0?(
+
+                  //):(
+                  //  null
+                  //)}
+registerServiceWorker();

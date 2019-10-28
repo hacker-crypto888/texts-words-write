@@ -1,5 +1,6 @@
 
 <?php
+header('Access-Control-Allow-Origin: *')
 $myarray = &$_POST;
 // Ouvre un fichier pour lire un contenu existant
 $file='data.json';

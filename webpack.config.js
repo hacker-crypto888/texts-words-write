@@ -1,8 +1,10 @@
+
+const path = require('path'); 
 const webpack = require('webpack'); // eslint-disable-line no-unused-vars
-import path from 'path'; 
+
 const nodeExternals = require('webpack-node-externals');
 const fs=require('fs');
-import WriteFilePlugin from 'write-file-webpack-plugin';
+
 
 module.exports = {
   entry: {
@@ -20,26 +22,11 @@ module.exports = {
     "node-helper":"require('node-helper')", 
     "fs":"require('fs')", 
     "path":"require('path')"
-    [remainder omitted]
   }, // in order to ignore all modules in node_modules folder
-  plugins: [
-    new WriteFilePlugin()
-  ],
   resolve: {
     extensions: ['.js'],
     alias: {
       'fs': 'memfs',
     }
-  },
-  module: {
-      loaders: [
-          {
-              test: /\.js$/,
-              loader: 'babel-loader',
-              query: {
-                  presets: ['es2015']
-              }
-          }
-      ]
   },
 };

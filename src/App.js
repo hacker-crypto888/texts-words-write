@@ -1,56 +1,40 @@
-import React from "react";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
+import React, { Component } from "react";
+import logo from "./logo.svg";
+import "./Appcss.css";
 
-export default function App() {
-  return (
-    <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-              <Link to="/user">User</Link>
-            </li>
-          </ul>
-        </nav>
+class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { apiResponse: "", apiResponse2: "" };
+    }
 
-        {/* A <Switch> looks through its children <Route>s and
-            renders the first one that matches the current URL. */}
-        <Switch>
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/users">
-            <Users />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
-  );
+    callAPI() {
+        //fetch("http://localhost:9000/testAPI")
+        //    .then(res => res.text())
+        //    .then(res => this.setState({ apiResponse: res }))
+        //    .catch(err => err);
+        fetch('http://localhost:9000/testAPI', {
+          method: 'POST',
+          body: JSON.stringify({"items":this.props.jsonData}),
+          headers: {"Content-Type":"application/json"},
+
+        })
+        .then(res => res.text())
+        .then(res => this.setState({apiResponse2: res}))
+
+    }
+
+    componentDidMount() {
+        this.callAPI();
+    }
+
+    render() {
+        return (
+            <div className="App">
+                <p className="App-intro">{this.state.apiResponse2}</p>
+            </div>
+        );
+    }
 }
 
-function Home() {
-  return <h2>Home</h2>;
-}
-
-function About() {
-  return <h2>About</h2>;
-}
-
-function Users() {
-  return <h2>Users</h2>;
-}
-
+export default App;
