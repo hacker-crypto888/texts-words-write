@@ -89,6 +89,7 @@ class BasicForm extends React.Component {
       itemsImportMode:null,
       myAudioNode:null,
       previewMyItems:null,
+      audioItems:null,
       preview:null,
       audioElements:null,
       previewAudioFiles:null,
@@ -121,9 +122,9 @@ class BasicForm extends React.Component {
       saltRounds:null,
       plainTextUsername1:null,
       plainTextPassword1:null,
-      password:'',
+      //password:'',
       hash:null,
-      passwordlist:null,
+      //passwordlist:null,
       name: '',
       email: '',
       value: '',/*`Truly, for mine own part, I would little or nothing
@@ -474,7 +475,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       number:Number(''),
       otherUsersItems:Number(''),
       nbCurrent:Number(''),
-      passwords:[],
+      //passwords:[],
       showWordItems:false,
       history:null,
     };
@@ -492,7 +493,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     const preloadOrAutoplay = 'preload';
     this.setState({preloadOrAutoplay});
-    const username = "username";
+    const username = "thirdusername";
     const textId = createNewTextId();
     const today = daysDate();
     this.setState({texts: JSON.stringify([])});
@@ -502,8 +503,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     const wordsToDisplay=[];
     this.setState({wordsToDisplay});
     const nbCurrent = 0;
-    const passwords = [];
-    this.setState({passwords});
+    //const passwords = [];
+    //this.setState({passwords});
 
     function createNewTextId(string) {
       string += Math.random().toString(16).substring(7); //myTextIf IS A STRING THAT WAS GENERATED RANDOMLY BY THE PROGRAM AS A TEXT ID TO RECOGNIZE WHICH WORD BELONGS TO WHICH TEXT AND CONVERSELY
@@ -562,8 +563,8 @@ my two mistresses: what a beast am I to slack it!`,*/
       .then(allitems => {
     //  const allitems= [...Object.values(JSON.parse(valueExport).items)];
         if (allitems === (null||undefined)) {return;}
-        const passwords = this.state.passwords;
-        passwords.push(allitems.map(obj => obj)[allitems.length -1]);
+        //const passwords = this.state.passwords;
+        //passwords.push(allitems.map(obj => obj)[allitems.length -1]);
         allitems.map(obj => obj).pop();
 
         function allusersItems(textvar) {
@@ -574,12 +575,12 @@ my two mistresses: what a beast am I to slack it!`,*/
         }
         const allusers = allitems.map(x=>x).filter(allusersItems);
         this.setState({allusers});
-        this.setState({otherUsersItems:allusers.length -1 });
-        allitems.map(x => x).filter(usersItem);
+        this.setState({otherUsersItems:allusers.length});
+        const alltexts = allitems.filter(usersItem);
 
-        if(allitems === (null||undefined) || allitems instanceof Array && allitems.length === 0) {return;} 
+        if(alltexts === (null||undefined) || alltexts instanceof Array && alltexts.length === 0) {return;} 
 
-        allitems.forEach(textitem => {
+        alltexts.forEach(textitem => {
           this.textAdd(textitem);  
         });
       })
@@ -591,7 +592,36 @@ my two mistresses: what a beast am I to slack it!`,*/
 
     
   }
+  fetchItems = () => {
+    const username = this.state.username;
+    fetch('http://localhost:9000/exportItems')
+      .then(res=>res.json())
+      .then(res2=>res2.items)
+      .then(allitems => {
+    //  const allitems= [...Object.values(JSON.parse(valueExport).items)];
+        if (allitems === (null||undefined)) {return;}
+        //const passwords = this.state.passwords;
+        //passwords.push(allitems.map(obj => obj)[allitems.length -1]);
+        allitems.map(obj => obj).pop();
 
+        function allusersItems(textvar) {
+          return textvar.some(x => x[0] === "users" && !x[1].includes(username));
+        }
+        function usersItem(textvar) {
+          return textvar.some(x => x[0] === "users" && x[1].includes(username)); 
+        }
+        const allusers = allitems.map(x=>x).filter(allusersItems);
+        this.setState({allusers});
+        this.setState({otherUsersItems:allusers.length});
+        const alltexts = allitems.filter(usersItem);
+
+        if(alltexts === (null||undefined) || alltexts instanceof Array && alltexts.length === 0) {return;} 
+
+        alltexts.forEach(textitem => {
+          this.textAdd(textitem);  
+        });
+      })
+  }
   fieldOnblur = (event) => {
     this.setState({
       audioplayerToggle:
@@ -643,6 +673,18 @@ my two mistresses: what a beast am I to slack it!`,*/
     const alltexts = this.state.alltexts;
 
     if(alltexts.length === 0) {return;};
+    const audioItems = [];
+    alltexts.forEach(function(text) {
+      text.forEach(prop => {
+        if(prop[0] === "mycontent") {
+          prop[1].forEach(myworditem => {
+            if(!audioItems.includes(myworditem)) {
+              audioItems.push(myworditem);
+            }
+          });
+        }
+      });
+    });
     const myNode = document.getElementById('myAudioFiles');
     while(myNode.firstChild) {
       myNode.removeChild(myNode.firstChild);
@@ -654,58 +696,50 @@ my two mistresses: what a beast am I to slack it!`,*/
         return response.json();
       })
       .then(function(mp3WordList){
-        alltexts.forEach(function(text) {
-          text.forEach(prop => {
-            if(prop[0] === "mycontent") {
-              prop[1].forEach(myworditem => {
-      
-                const audioFilePreview = document.createElement('audio'); 
-                audioFilePreview.className=myworditem;
-                //audioFilePreview.key=number;
-                audioFilePreview.id=myworditem;
-                audioFilePreview.controls=true;
-                audioFilePreview.onpause = (event) => {
-                  event.currentTarget.currentTime = 0;
-                }
-                if (document.getElementById('playAllTheWords').checked) {
-                  audioFilePreview.onended = (event) => {
-                    const allAudioElements = document.getElementsByTagName('audio');
-                    if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
-                      const myAudioItems = document.getElementById('myAudioFiles');
+        audioItems.forEach(myworditem => {
+          const audioFilePreview = document.createElement('audio'); 
+          audioFilePreview.className=myworditem;
+          //audioFilePreview.key=number;
+          audioFilePreview.id=myworditem;
+          audioFilePreview.controls=true;
+          audioFilePreview.onpause = (event) => {
+            event.currentTarget.currentTime = 0;
+          }
+          if (document.getElementById('playAllTheWords').checked) {
+            audioFilePreview.onended = (event) => {
+              const allAudioElements = document.getElementsByTagName('audio');
+              if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
+                const myAudioItems = document.getElementById('myAudioFiles');
 
-                      const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
-                      myAudioItems.childNodes[indexAudioElement].play();
+                const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
+                myAudioItems.childNodes[indexAudioElement].play();
 
-                    }
-                  };
-                }
-                audioFilePreview.onplay = (event) => { 
-                  const targetValue = audioFilePreview.id;
-                };
-                [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
-                  if(mp3[0] === myworditem && mp3[1].length){
-                    mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
-                      const theFirstChild = audioFilePreview.firstChild;
-                      const sourceFile = document.createElement('source');
-                      sourceFile.src = mp3link; 
-                      sourceFile.className = myworditem; 
-                      sourceFile.type = 'audio/mpeg'; 
-                      audioFilePreview.insertBefore(sourceFile, theFirstChild);
+              }
+            };
+          }
+          audioFilePreview.onplay = (event) => { 
+            const targetValue = audioFilePreview.id;
+          };
+          [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
+            if(mp3[0] === myworditem && mp3[1].length){
+              mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
+                const theFirstChild = audioFilePreview.firstChild;
+                const sourceFile = document.createElement('source');
+                sourceFile.src = mp3link; 
+                sourceFile.className = myworditem; 
+                sourceFile.type = 'audio/mpeg'; 
+                audioFilePreview.insertBefore(sourceFile, theFirstChild);
 
-                    })
-                    myAudioFiles.push(audioFilePreview);
-                    
-                  }
-                });
-                
-              });
+              })
+              myAudioFiles.push(audioFilePreview);
+              
             }
           });
-
-        });
-        const previewMyAudioFiles = document.getElementById('myAudioFiles');
-        myAudioFiles.forEach(function(item, index, object) {
-          previewMyAudioFiles.appendChild(item); 
+          
+          const previewMyAudioFiles = document.getElementById('myAudioFiles');
+          myAudioFiles.forEach(function(item, index, object) {
+            previewMyAudioFiles.appendChild(item); 
+          });
         });
         
       })
@@ -734,18 +768,18 @@ my two mistresses: what a beast am I to slack it!`,*/
         ''
     });
   }
-  handleUsernameChange = (event) => {
-    this.setState({
-      username:
-        event.target.username,
-      password:
-        event.target.password,
-      signupUsername:
-        event.target.signupUsername,
-      signupPassword:
-        event.target.signupPassword
-    });
-  }
+  //handleUsernameChange = (event) => {
+  //  this.setState({
+  //    username:
+  //      event.target.username,
+  //    password:
+  //      event.target.password,
+  //    signupUsername:
+  //      event.target.signupUsername,
+  //    signupPassword:
+  //      event.target.signupPassword
+  //  });
+  //}
   checkStringLength = (string) => {
     if(!(typeof string === 'string' && string.length > 0)) {return;};
   }
@@ -762,58 +796,58 @@ my two mistresses: what a beast am I to slack it!`,*/
   hideDropzone = () => {
     document.getElementById('dropzone').hidden = false;
   }
-  loginUser = (event) => {
-    const username = this.state.username;
-    const password = this.state.password;
-    const passwords = this.state.passwords;
-    console.log(username, password, passwords);
-    
-    if(typeof username === 'string') {
-      if(!passwords.some(x=> bcrypt.compareSync(password, x.password) && username === x.username)) {
-        document.getElementById('username').classList.add('error-signin');
-        document.getElementById('password').classList.add('error-signin');
-        return;
-      }
-      
+  //loginUser = (event) => {
+  //  const username = this.state.username;
+  //  //const password = this.state.password;
+  //  //const passwords = this.state.passwords;
+  //  console.log(username, password, passwords);
+  //  
+  //  if(typeof username === 'string') {
+  //    if(!passwords.some(x=> bcrypt.compareSync(password, x.password) && username === x.username)) {
+  //      document.getElementById('username').classList.add('error-signin');
+  //      document.getElementById('password').classList.add('error-signin');
+  //      return;
+  //    }
+  //    
 
-      this.checkStringLength(username);
-      document.getElementById('loginbtn').innerHTML = 'sign out';
-      document.getElementById('username').hidden = true;
-      document.getElementById('password').hidden = true;
-      document.getElementById('username').className= '' 
-      document.getElementById('password').className = '';
-      document.getElementById('welcome').innerHTML = "Hello, "+username;
+  //    this.checkStringLength(username);
+  //    document.getElementById('loginbtn').innerHTML = 'sign out';
+  //    document.getElementById('username').hidden = true;
+  //    document.getElementById('password').hidden = true;
+  //    document.getElementById('username').className= '' 
+  //    document.getElementById('password').className = '';
+  //    document.getElementById('welcome').innerHTML = "Hello, "+username;
 
-      
+  //    
 
-    } else if(document.getElementById('loginbtn').innerHTML === 'sign out') {
-      this.state.username = '';
-      document.getElementById('loginbtn').innerHTML = 'sign in';
+  //  } else if(document.getElementById('loginbtn').innerHTML === 'sign out') {
+  //    this.state.username = '';
+  //    document.getElementById('loginbtn').innerHTML = 'sign in';
 
-      document.getElementById('welcome').innerHTML = "";
-      this.state.password = "";
-      const importedTexts = document.getElementById('preview');
-      while (importedTexts.firstChild) {
-        importedTexts.removeChild(importedTexts.firstChild);
-      }
+  //    document.getElementById('welcome').innerHTML = "";
+  //    this.state.password = "";
+  //    const importedTexts = document.getElementById('preview');
+  //    while (importedTexts.firstChild) {
+  //      importedTexts.removeChild(importedTexts.firstChild);
+  //    }
 
 
-    }
-    
-  }
-  signupUser = (event) => {
-    const saltRounds = 10;
-    const plainTextUsername1 = this.state.signupUsername;
-    const plainTextPassword1 = this.state.signupPassword;
-    const passwords = this.state.passwords;
-    
-    bcrypt.genSalt(10, function(err, salt) {
-        bcrypt.hash(plainTextPassword1, salt, function(err, hash) {
-          passwords.push({username: plainTextUsername1, password: hash});
-            // Store hash in your password DB.
-        });
-    });
-  }
+  //  }
+  //  
+  //}
+  //signupUser = (event) => {
+  //  const saltRounds = 10;
+  //  const plainTextUsername1 = this.state.signupUsername;
+  //  const plainTextPassword1 = this.state.signupPassword;
+  //  const passwords = this.state.passwords;
+  //  
+  //  bcrypt.genSalt(10, function(err, salt) {
+  //      bcrypt.hash(plainTextPassword1, salt, function(err, hash) {
+  //        passwords.push({username: plainTextUsername1, password: hash});
+  //          // Store hash in your password DB.
+  //      });
+  //  });
+  //}
 
   editEntries = (event) => {
     const alltexts = this.state.alltexts;
@@ -831,26 +865,29 @@ my two mistresses: what a beast am I to slack it!`,*/
         })
       });
     }
-    sessionExport(output);
+
     testAddDate(output);
     testAddUser(output);
+    sessionExport(output);
     //testAddSession(output); 
     function testAddUser(importText){
       if (this.state.username.length > 0) {
         importText.forEach(function(myTextItem, index, jsonfile) {
-          myTextItem.forEach(function(info) {
-            if(info[0] === "users") {
-              if(info[1] instanceof Array && info[1].length > 0) {
-                info[1].push(this.state.username); //array
-                console.log(info);
-              } else {
-                info.length = 0;
+          if(myTextItem.some(x=>x[0] === "session_of_texts" && x[1]==="current")){
+            myTextItem.forEach(function(info) {
+              if(info[0] === "users") {
+                if(info[1] instanceof Array && info[1].length > 0) {
+                  info[1].push(this.state.username); //array
+                  console.log(info);
+                } else {
+                  info.length = 0;
         
-                info= ["users", [this.state.username]]; //array
-                console.log(info);
-              }
-            } 
-          });
+                  info= ["users", [this.state.username]]; //array
+                  console.log(info);
+                }
+              } 
+            });
+          }
         });
       }
     }
@@ -870,10 +907,10 @@ my two mistresses: what a beast am I to slack it!`,*/
     //testAddUser(output);
     //testAddSession(output);
     //testAddDate(output);
-    const blobData = new Blob([JSON.stringify({"items": [...[...output, JSON.parse(this.state.allusers)], JSON.parse(this.state.passwords)]},null,2)], {type: 'application/json'});
-    const url = window.URL.createObjectURL(blobData);
-    document.getElementById('export_all_items_link').href = url;
-    document.getElementById('export_all_items_link').click();
+    //const blobData = new Blob([JSON.stringify({"items": [...[...output, JSON.parse(this.state.allusers)], JSON.parse(this.state.passwords)]},null,2)], {type: 'application/json'});
+    //const url = window.URL.createObjectURL(blobData);
+    //document.getElementById('export_all_items_link').href = url;
+    //document.getElementById('export_all_items_link').click();
   }
   handleNameChange = event => {
     this.setState({ name: event.target.value }, () => {
@@ -1461,7 +1498,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     console.log(event.target.parentNode.firstChild.dataset.textid);
   } 
   exportItems = (event) =>{
-    alert(JSON.stringify(this.state.alltexts));
+    //alert(JSON.stringify(this.state.alltexts));
     if(this.state.alltexts.length === 0) {
       alert('no items');
       return;
@@ -1479,12 +1516,12 @@ my two mistresses: what a beast am I to slack it!`,*/
     this.state.allusers.map(text => {
       this.state.alltexts.push(text);
     });
-    if (!this.state.alltexts.includes(this.state.passwords)){
-      this.state.alltexts.push(this.state.passwords)
-    } else {
-      this.state.alltexts.splice(this.state.alltexts.indexOf(this.state.passwords),1);
-      this.state.alltexts.push(this.state.passwords);
-    }
+    //if (!this.state.alltexts.includes(this.state.passwords)){
+    //  this.state.alltexts.push(this.state.passwords)
+    //} else {
+    //  this.state.alltexts.splice(this.state.alltexts.indexOf(this.state.passwords),1);
+    //  this.state.alltexts.push(this.state.passwords);
+    //}
     const data = "var1="+JSON.stringify({"items":this.state.alltexts}, null, 2);
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "http://localhost/file.php", true);
@@ -1563,6 +1600,9 @@ my two mistresses: what a beast am I to slack it!`,*/
     	}
     });
   }
+  reloadEditRoute = (event) => {
+    document.getElementById('edit_items_route').click();
+  }
   render() { 
 
     const itemsloaded = this.state.itemsloaded;
@@ -1598,7 +1638,7 @@ my two mistresses: what a beast am I to slack it!`,*/
             </SidebarItem>
             <SidebarItem>
               <Link to={`export`}>
-                Export 
+                Export all
               </Link>
             </SidebarItem>
             <SidebarItem>
@@ -1613,6 +1653,7 @@ my two mistresses: what a beast am I to slack it!`,*/
               <Route path="/exportedItems" exact render={() => ( 
                 <div>
                   <App jsonData={this.state.alltexts}/>
+                 {this.fetchItems}
                 </div>
               )} />
 
@@ -1674,7 +1715,6 @@ my two mistresses: what a beast am I to slack it!`,*/
                   <input type="button" onClick={this.exportItems}/>
                   <ClickButton/>
                   <div id="test-div">
-                    [HTML is replaced when successful.]
                   </div>
                 </div>
 
@@ -1682,19 +1722,21 @@ my two mistresses: what a beast am I to slack it!`,*/
               <Route path="/import" exact render={() => (
                 <div>
                   <div class="display-items" >
-                    {this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "current")).length} texts added during this session by the logged in user
+                    {this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "current")).length} texts are selected
                   </div>
                   <div class="display-items">
-                    {this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "previous")).length} texts imported from the user's previous sessions of texts
+                    {this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "previous")).length} texts were saved by the user currently logged in
                   </div>
                   <div class="display-items">
-                    {this.state.otherUsersItems} texts from other users that are left in the database
+                    There are {this.state.otherUsersItems} texts from other users that are leftin the database
                   </div>
                 </div>
               )} />
 
               <Route path="/edit" exact render={() => (
                 <div>
+
+
                   {this.state.alltexts.length > 0 ? (
                     <div>
                     {this.state.alltexts.filter(text=>text.some(prop=>prop[1] === "current")).map(text => (
@@ -1717,7 +1759,8 @@ my two mistresses: what a beast am I to slack it!`,*/
                     ))}
                     {this.state.alltexts.some(text => text.some(prop => prop[1] === "previous"))?(
                       <div>
-                        <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('current')):null)));event.target.hidden=true;}}>
+                        <ShowPrevSessions/>
+                        <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('current')):null)));this.reloadEditRoute();event.target.hidden=true;}}>
                           texts from previous sessions of texts
 
                         </button>
@@ -1823,6 +1866,16 @@ const ClickButton = withRouter(({ history }) => (
     id="export_items_route"
     type="button"
     onClick={(event) => { history.push('/exportedItems'); }}
+  >
+     save as json 
+  </button>
+))
+const ShowPrevSessions = withRouter(({ history }) => (
+  <button
+    hidden="true"
+    id="edit_items_route"
+    type="button"
+    onClick={(event) => { history.push('/edit'); }}
   >
      save as json 
   </button>
