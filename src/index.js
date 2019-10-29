@@ -6,6 +6,7 @@ import DatePicker from 'react-date-picker';
 import './App.js';
 import { BrowserRouter as Router, Link, Route, Switch, Redirect } from 'react-router-dom';
 import App from './App';
+//import valueExport from './import';
 import { withRouter } from "react-router-dom";
 import * as fs from 'fs';
 import registerServiceWorker from './registerServiceWorker';
@@ -464,6 +465,7 @@ my two mistresses: what a beast am I to slack it!`,*/
       displayWord:null,
       removeWord:null, 
       textelements:null,
+      allitems:[],
       selectDate:null,
       date:null,  
       allusers:[],
@@ -484,7 +486,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     const valueword = '';
     this.setState({valueword:this.state.valueword});
 
-    const allusers = [];
+    //const allusers = [];
     const value = '';
     this.setState({value:this.state.value});
 
@@ -553,41 +555,31 @@ my two mistresses: what a beast am I to slack it!`,*/
     //}).then(body => {
     //  console.log(body);
     //});
-
-    fetch('database.json')
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(myBlub) {
-        return [...Object.values(myBlub.items)];
-      })
-      .then(items => {
-
-        if(items === (null||undefined)) {return;}
-        console.log(items);
+//IMPORT ITEMS
+    fetch('http://localhost:9000/exportItems')
+      .then(res=>res.json())
+      .then(res2=>res2.items)
+      .then(allitems => {
+    //  const allitems= [...Object.values(JSON.parse(valueExport).items)];
+        if (allitems === (null||undefined)) {return;}
         const passwords = this.state.passwords;
-        console.log(passwords);
-        passwords.push(items.map(obj => obj)[items.length -1]);
-        items.map(obj => obj).pop();
+        passwords.push(allitems.map(obj => obj)[allitems.length -1]);
+        allitems.map(obj => obj).pop();
 
-        console.log(passwords);
         function allusersItems(textvar) {
-          return !textvar.some(x => x[0] === "users" && x[1].includes(username));
+          return textvar.some(x => x[0] === "users" && !x[1].includes(username));
         }
         function usersItem(textvar) {
           return textvar.some(x => x[0] === "users" && x[1].includes(username)); 
         }
-        const allusers = items.map(x=>x).filter(allusersItems);
-
+        const allusers = allitems.map(x=>x).filter(allusersItems);
+        this.setState({allusers});
         this.setState({otherUsersItems:allusers.length -1 });
-        return items.map(x => x).filter(usersItem);
+        allitems.map(x => x).filter(usersItem);
 
-      })
-      .then(result => {
-        console.log(result);
-        if(result === (null||undefined) || result instanceof Array && result.length === 0) {return;} 
+        if(allitems === (null||undefined) || allitems instanceof Array && allitems.length === 0) {return;} 
 
-        result.forEach(textitem => {
+        allitems.forEach(textitem => {
           this.textAdd(textitem);  
         });
       })
@@ -795,12 +787,11 @@ my two mistresses: what a beast am I to slack it!`,*/
       
 
     } else if(document.getElementById('loginbtn').innerHTML === 'sign out') {
-      document.getElementById('username').value = '';
+      this.state.username = '';
       document.getElementById('loginbtn').innerHTML = 'sign in';
 
       document.getElementById('welcome').innerHTML = "";
-      document.getElementById('username').value = "";
-      document.getElementById('password').value = "";
+      this.state.password = "";
       const importedTexts = document.getElementById('preview');
       while (importedTexts.firstChild) {
         importedTexts.removeChild(importedTexts.firstChild);
@@ -825,7 +816,6 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   editEntries = (event) => {
-    const allusers = this.state;
     const alltexts = this.state.alltexts;
     const output = [...alltexts];
   
@@ -846,17 +836,18 @@ my two mistresses: what a beast am I to slack it!`,*/
     testAddUser(output);
     //testAddSession(output); 
     function testAddUser(importText){
-      if (document.getElementById('username').value.length > 0) {
+      if (this.state.username.length > 0) {
         importText.forEach(function(myTextItem, index, jsonfile) {
           myTextItem.forEach(function(info) {
             if(info[0] === "users") {
-              if(info[1] instanceof Array) {
+              if(info[1] instanceof Array && info[1].length > 0) {
                 info[1].push(this.state.username); //array
+                console.log(info);
               } else {
-            
-                info.splice(1,1);
+                info.length = 0;
         
-                info.push(this.state.username); //array
+                info= ["users", [this.state.username]]; //array
+                console.log(info);
               }
             } 
           });
@@ -1094,6 +1085,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
   sendPdfFile = (file) => { 
     const textId = createNewTextId();
+    const username = this.state.username;
     const today = daysDate();
 
     function createNewTextId(string) {
@@ -1109,7 +1101,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createFileList(list) {
-      list = [["textId",textId], ["session_of_texts", "current"],["users",[document.getElementById('username')]], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
+      list = [["textId",textId], ["session_of_texts", "current"],["users",[username]], ["dates", [today]], ["lastModified", file.lastModified], ["name", file.name], ["webkitRelativePath", file.webkitRelativePath], ["size", file.size], ["type", file.type]];
       console.log(list);
       return list;
     }
@@ -1293,7 +1285,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     addTextSize(text);
     handleText(text); 
     const alltexts = this.state.alltexts;
-
+    if(this.state.alltexts.includes(text)) {return;}
     alltexts.push(text);
     this.setState({nbCurrent:alltexts.length});
     console.log(alltexts, "add a text"); 
@@ -1408,6 +1400,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
 
   useTextInputField = (event) => {
+    const username = this.state.username;
     const textId = createNewTextId();
     const today = daysDate();
 
@@ -1427,7 +1420,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
       
     function createList(list) {
-      list = [["textId",textId],["users",[document.getElementById('username')]],["session_of_texts","current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
+      list = [["textId",textId],["users",[username]],["session_of_texts","current"], ["dates", [today]], ["lastModified", ''], ["name", ''], ["webkitRelativePath", ''], ["size", ''], ["type", '']];
       return list;
     }
 
@@ -1468,39 +1461,41 @@ my two mistresses: what a beast am I to slack it!`,*/
     console.log(event.target.parentNode.firstChild.dataset.textid);
   } 
   exportItems = (event) =>{
-    if(this.state.alltexts.length>0) {
-      this.state.alltexts.map(text=>{
-        text.map(prop=>{
-          if(prop[0] === "session_of_texts"){
-            prop.splice(1.1);
-            prop.push('previous');
-          }
-        });
-      });
-      this.state.allusers.map(text => {
-        this.state.alltexts.push(text);
-      });
-      if (!this.state.alltexts.includes(this.state.passwords)){
-        this.state.alltexts.push(this.state.passwords)
-      } else {
-        this.state.alltexts.splice(this.state.alltexts.indexOf(this.state.passwords),1);
-        this.state.alltexts.push(this.state.passwords);
-      }
-      const data = "var1="+JSON.stringify({"items":this.state.alltexts}, null, 2);
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", "http://localhost/file.php", true);
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");                  
-      xhr.send(data);
-      //return('items were exported');
+    alert(JSON.stringify(this.state.alltexts));
+    if(this.state.alltexts.length === 0) {
+      alert('no items');
+      return;
     }
-
-    
-
-    
+    this.state.alltexts.map(text=>{
+      text.map(prop=>{
+        if(prop[0] === "session_of_texts"){
+          prop.splice(1.1);
+          prop.push('previous');
+        }
+      });
+    });
+    const allusers = this.state.allusers;
+    console.log(allusers);
+    this.state.allusers.map(text => {
+      this.state.alltexts.push(text);
+    });
+    if (!this.state.alltexts.includes(this.state.passwords)){
+      this.state.alltexts.push(this.state.passwords)
+    } else {
+      this.state.alltexts.splice(this.state.alltexts.indexOf(this.state.passwords),1);
+      this.state.alltexts.push(this.state.passwords);
+    }
+    const data = "var1="+JSON.stringify({"items":this.state.alltexts}, null, 2);
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://localhost/file.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");                  
+    xhr.send(data);
+    document.getElementById("export_items_route").click();
   }                
   ecrireDiv=(event)=>{
-    const display = document.getElementById("test-div");
-    display.innerHTML = "<form class=\"circleForm\" id=\"registerForm\">\n     Imię: <input type=\"text\" id=\"user_name\" value=\"my user name\"><br>\n     Nazwisko: <input type=\"text\" id=\"user_lastname\" value=\"my last name\">\n    <br>\n<input class=\"btnCircle\" type=\"button\" id=\"submit\" value=\"Przejdź dalej\" />                    \n </form>";
+    //const display = document.getElementById("test-div");
+
+    //display.innerHTML = "<form class=\"circleForm\" id=\"registerForm\">\n     Imię: <input type=\"text\" id=\"user_name\" value=\"my user name\"><br>\n     Nazwisko: <input type=\"text\" id=\"user_lastname\" value=\"my last name\">\n    <br>\n<input class=\"btnCircle\" type=\"button\" id=\"submit\" value=\"Przejdź dalej\" />                    \n </form>";
 
 
 
@@ -1569,6 +1564,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     });
   }
   render() { 
+
     const itemsloaded = this.state.itemsloaded;
     const nbCurrent = this.state.nbCurrent;
     return(
@@ -1602,13 +1598,24 @@ my two mistresses: what a beast am I to slack it!`,*/
             </SidebarItem>
             <SidebarItem>
               <Link to={`export`}>
-                Export items
+                Export 
+              </Link>
+            </SidebarItem>
+            <SidebarItem>
+              <Link to={`exportedItems`}>
+                Exported items
               </Link>
             </SidebarItem>
           </SideBar>
           <Main>
             
             <form onSubmit={this.handleSubmit}>
+              <Route path="/exportedItems" exact render={() => ( 
+                <div>
+                  <App jsonData={this.state.alltexts}/>
+                </div>
+              )} />
+
               <Route path="/upload" exact render={() => ( 
                 <div>
   	          <div id={`dropzone`} multiple onDragEnter={this.onDragEnter} onDrop={this.onDrop} onDragOver={this.onDragOver} />
@@ -1649,7 +1656,7 @@ my two mistresses: what a beast am I to slack it!`,*/
 
               <Route exact={true} path="/" render={() => (
                 <div>
-                  <App jsonData={this.state.alltexts}/>
+
 
                   <div id="login-form-body" className={`login-form`}/> 
                   <br /><div id="welcome"></div>
@@ -1664,7 +1671,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                   <div class="the-return">
 
                   </div>
-                  <input type="button" onClick={this.ecrireDiv}/>
+                  <input type="button" onClick={this.exportItems}/>
                   <ClickButton/>
                   <div id="test-div">
                     [HTML is replaced when successful.]
@@ -1812,10 +1819,12 @@ const Main = (props) => (
 )
 const ClickButton = withRouter(({ history }) => (
   <button
+    hidden="true"
+    id="export_items_route"
     type="button"
-    onClick={(event) => { history.push('/'); }}
+    onClick={(event) => { history.push('/exportedItems'); }}
   >
-    CliCk Me!
+     save as json 
   </button>
 ))
 const DisplayItem = (props) => (
