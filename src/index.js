@@ -61,6 +61,7 @@ class BasicForm extends React.Component {
       wordtest:'',
       checkTarget:'',
       params:null,
+      numberid:Number(''),
       targetValue: '',
       variableErrors:'',
       mountElements:[],
@@ -396,7 +397,6 @@ my two mistresses: what a beast am I to slack it!`,*/
       output:null,
       textlist:null,
       selectText:null,
-      selectDate:null,
       date:null, 
       date: new Date(),
       selectedDate:'',
@@ -636,26 +636,38 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
   handleWordInput = (event) => {
     event.preventDefault();
-    this.btn.removeAttribute("disabled");
+    //this.btn.removeAttribute("disabled");
   }
   
   disableButton = (event) => {
     event.preventDefault();
     if(document.getElementById('myAudioFiles').hasChildNodes) {
-      const targetValue = this.state;
-      const { inputValue } = this.state;
-      this.btn.setAttribute("disabled", "disabled");
-      //console.log({targetValue});
-      //console.log({inputValue});
+      const targetValue = this.state.targetValue;
+      const inputValue = this.state.inputValue;
+      //this.btn.setAttribute("disabled", "disabled");
+      if(inputValue === targetValue) {this.removeAudioPlayer();}
       this.setState({
-        wordtest:
-          inputValue === targetValue ? this.removeAudioPlayer() : null,      
+
         checkInput:
           inputValue === '' ? 'enter a word' : null,
         checkTarget:
           targetValue === '' ? 'play a word' : null
       });
     }
+  }
+  removeAudioPlayer = (event) => {
+    const targetValue = this.state.targetValue;
+    const inputValue = this.state.inputValue;
+    const mountElements = document.getElementById(targetValue+'-audio');
+    if (mountElements !== undefined) {
+      mountElements.pause();
+      mountElements.currentTime = 0;
+      mountElements.removeAttribute('controls');
+    }
+    this.setState({
+      inputValue:
+        ''
+    });
   }
   disableFormButton = () => {
     this.setState({
@@ -669,7 +681,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     });
   };
   displayAudio = event => {
-    const itemlist = [];
+
     const alltexts = this.state.alltexts;
     if(alltexts.length === 0) {return;}
     const audioItems = [];
@@ -690,37 +702,48 @@ my two mistresses: what a beast am I to slack it!`,*/
     }
     const myAudioFiles = [];
 
+    console.log('test');
     fetch("https://raw.githubusercontent.com/nathanielove/English-words-pronunciation-mp3-audio-download/master/ultimate.json")
       .then(function(response){
         return response.json();
       })
       .then(function(mp3WordList){
+        console.log('fetch');
         audioItems.forEach(myworditem => {
+          if(document.getElementById(myworditem.trim()+'-audio')) {return;}
+          const itemlist = document.getElementsByTagName('audio');
           const audioFilePreview = document.createElement('audio'); 
           audioFilePreview.className=myworditem;
-          //audioFilePreview.key=number;
-          audioFilePreview.id=myworditem;
+          if (itemlist.length === 0) { 
+            audioFilePreview.key=Number('');
+          } else {
+            audioFilePreview.key=Number(itemlist[itemlist.length-1].key +1);
+          }
+
+          audioFilePreview.id=myworditem.trim()+'-audio';
           audioFilePreview.controls=true;
           audioFilePreview.onpause = (event) => {
             event.currentTarget.currentTime = 0;
           }
-          if (document.getElementById('playAllTheWords').checked) {
-            audioFilePreview.onended = (event) => {
-              const allAudioElements = document.getElementsByTagName('audio');
-              if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
-                const myAudioItems = document.getElementById('myAudioFiles');
+          //if (document.getElementById('playAllTheWords').checked) {
+          //  audioFilePreview.onended = (event) => {
+          //    const allAudioElements = document.getElementsByTagName('audio');
+          //    if (allAudioElements && allAudioElements.length && allAudioElements.length >= 2) {
+          //      const myAudioItems = document.getElementById('myAudioFiles');
 
-                const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
-                myAudioItems.childNodes[indexAudioElement].play();
+          //      const indexAudioElement = Array.prototype.indexOf.call(myAudioItems.children, event.currentTarget) + 1;
+          //      myAudioItems.childNodes[indexAudioElement].play();
 
-              }
-            };
-          }
+          //    }
+          //  };
+          //}
           audioFilePreview.onplay = (event) => { 
-            const targetValue = audioFilePreview.id;
+            const targetValue = audioFilePreview.id.substring(0,audioFilePreview.id.length-6);
+            console.log('target value -',targetValue);
+
           };
           [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
-            if(mp3[0] === myworditem && mp3[1].length){
+            if(mp3[0] === myworditem.trim() && mp3[1].length){
               mp3[1].forEach(function(mp3link, indexmp3link, objectmp3link) {
                 const theFirstChild = audioFilePreview.firstChild;
                 const sourceFile = document.createElement('source');
@@ -744,30 +767,7 @@ my two mistresses: what a beast am I to slack it!`,*/
         
       })
   }
-  removeAudioPlayer = (props) => {
-    const targetValue = this.state;
-    const { inputValue } = this.state;
-    this.setState({
-      wordtest:
-        `Values: \n ${inputValue} / ${targetValue} ok`   
-    });
-    //console.log({targetValue});
-    const mountElements = document.getElementById(targetValue);
-    //console.log({mountElements});
-    this.setState({
-      variableErrors:
-        mountElements === undefined ? "Please choose and listen to a word first" : null
-    });
-    if (mountElements !== undefined) {
-      mountElements.pause();
-      mountElements.currentTime = 0;
-      mountElements.removeAttribute('controls');
-    }
-    this.setState({
-      inputValue:
-        ''
-    });
-  }
+
   //handleUsernameChange = (event) => {
   //  this.setState({
   //    username:
@@ -1479,20 +1479,29 @@ my two mistresses: what a beast am I to slack it!`,*/
   onChange = (date) => {
     this.setState({ date });
     const selectDate = (date.getMonth()+1)+'/'+date.getDate()+'/'+date.getFullYear();
+    this.setState({ selectDate });
 
   }
   btnSortByDate = (event) => {
     const alltexts = this.state.alltexts;
-    const date = this.state;
+    const date = this.state.date;
+    const selectDate = this.state.selectDate;
     if(date === null) {
-      this.displayNewEntries(alltexts);
       return;
     };
 
     function loadTextsByDate(text) {
       return text.some(prop => prop[0] === "dates" && prop[1].includes(date));
     }
-    //this.displayNewEntries(alltexts.filter(loadTextsByDate));
+    this.state.alltexts.forEach(textitem => {
+      if(!textitem.some(prop => prop[0] === "dates" && prop[1].includes(selectDate))){
+        textitem.forEach(prop => {
+          if(prop[0] === "session_of_texts"){
+            prop[1] = "";
+          }
+        });
+      }
+    });
   };
   displayItem = (event) => {
     console.log(event.target.parentNode.firstChild.dataset.textid);
@@ -1757,10 +1766,10 @@ my two mistresses: what a beast am I to slack it!`,*/
                         </div>
                       </div>
                     ))}
-                    {this.state.alltexts.some(text => text.some(prop => prop[1] === "previous"))?(
+                    {this.state.alltexts.some(text => text.some(prop => prop[1] !== "current"))?(
                       <div>
                         <ShowPrevSessions/>
-                        <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? (prop.splice(1.1))&&(prop.push('current')):null)));this.reloadEditRoute();event.target.hidden=true;}}>
+                        <button onClick={(event) => {this.state.alltexts.map(text=>text.map(prop=>((prop[0] === "session_of_texts")? prop[1]="current":null)));this.reloadEditRoute();event.target.hidden=true;}}>
                           texts from previous sessions of texts
 
                         </button>
@@ -1796,9 +1805,9 @@ my two mistresses: what a beast am I to slack it!`,*/
                         placeholder='Enter word'
                         value={this.state.inputValue}
                         //onMouseOver={this.displayAudio}
-                        onClick={this.handleWordInput}
-                        onFocus={this.handleWordInput}
-                        onChange={e => this.setState({ inputValue: e.target.value }) }
+                        onBlur={(event) => {this.setState({ inputValue: event.target.inputValue })}}
+                        onChange={(event) => {this.setState({ inputValue: event.target.inputValue })}}
+                        //onFocus={(event) => {this.btn.removeAttribute('disabled')}}
                              
                       />
                       <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
