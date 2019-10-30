@@ -640,12 +640,14 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
   
   disableButton = (event) => {
-    event.preventDefault();
+    const targetValue = this.state.targetValue;
+    const inputValue = this.state.inputValue;
+    //event.preventDefault();
     if(document.getElementById('myAudioFiles').hasChildNodes) {
-      const targetValue = this.state.targetValue;
-      const inputValue = this.state.inputValue;
+      console.log('target value=', targetValue);
+      console.log('input value=', inputValue);
       //this.btn.setAttribute("disabled", "disabled");
-      if(inputValue === targetValue) {this.removeAudioPlayer();}
+      
       this.setState({
 
         checkInput:
@@ -662,7 +664,8 @@ my two mistresses: what a beast am I to slack it!`,*/
     if (mountElements !== undefined) {
       mountElements.pause();
       mountElements.currentTime = 0;
-      mountElements.removeAttribute('controls');
+      //mountElements.removeAttribute('controls');
+      mountElements.hidden = true;
     }
     this.setState({
       inputValue:
@@ -681,8 +684,10 @@ my two mistresses: what a beast am I to slack it!`,*/
     });
   };
   displayAudio = event => {
-
-    const alltexts = this.state.alltexts;
+    function selectText(textitem){
+      return textitem.some(x=>x[0] === "session_of_texts" && x[1]==="current");
+    }
+    const alltexts = this.state.alltexts.filter(selectText);
     if(alltexts.length === 0) {return;}
     const audioItems = [];
     alltexts.forEach(function(text) {
@@ -738,8 +743,7 @@ my two mistresses: what a beast am I to slack it!`,*/
           //  };
           //}
           audioFilePreview.onplay = (event) => { 
-            const targetValue = audioFilePreview.id.substring(0,audioFilePreview.id.length-6);
-            console.log('target value -',targetValue);
+            this.btn.dataset.targetValue = audioFilePreview.id.substring(0,audioFilePreview.id.length-6).trim();
 
           };
           [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
@@ -1478,26 +1482,38 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
   onChange = (date) => {
     this.setState({ date });
+    const idx=document.getElementById('msg-date-picker');
+    idx.innerHTML = '';
+    if(this.state.date=== null) {return;}
     const selectDate = (date.getMonth()+1)+'/'+date.getDate()+'/'+date.getFullYear();
+    
     this.setState({ selectDate });
+    if(!this.state.alltexts.some(x=>x.some(x=>x[0]==="dates" && x[1].includes(selectDate)))){
+      idx.innerHTML = 'no items found';
+    }
 
   }
   btnSortByDate = (event) => {
     const alltexts = this.state.alltexts;
     const date = this.state.date;
     const selectDate = this.state.selectDate;
+    if(!this.state.alltexts.some(x=>x.some(x=>x[0]==="dates" && x[1].includes(selectDate)))){
+      return;
+    }
     if(date === null) {
       return;
     };
-
-    function loadTextsByDate(text) {
-      return text.some(prop => prop[0] === "dates" && prop[1].includes(date));
-    }
     this.state.alltexts.forEach(textitem => {
       if(!textitem.some(prop => prop[0] === "dates" && prop[1].includes(selectDate))){
         textitem.forEach(prop => {
           if(prop[0] === "session_of_texts"){
             prop[1] = "";
+          }
+        });
+      } else {
+        textitem.forEach(prop => {
+          if(prop[0] === "session_of_texts"){
+            prop[1] = "current";
           }
         });
       }
@@ -1612,6 +1628,26 @@ my two mistresses: what a beast am I to slack it!`,*/
   reloadEditRoute = (event) => {
     document.getElementById('edit_items_route').click();
   }
+  updateInputValue = (event) => {
+    this.setState({
+      inputValue:
+        event.target.inputValue,
+    });
+    const inputValue = this.state.inputValue;
+    this.btn.hidden = true;
+    document.getElementById('replace-btn').hidden=false;
+    if((this.btn.dataset.targetValue.trim()!=='')&&(inputValue.trim()!=='') &&(this.btn.dataset.targetValue.trim() === inputValue.trim())){
+      alert('===');
+      this.btn.hidden = false;
+      document.getElementById('replace-btn').hidden=true;
+    }
+  }
+  reinitInputValue = (event) => {
+    this.setState({
+      inputValue:
+        ''
+    });
+  }
   render() { 
 
     const itemsloaded = this.state.itemsloaded;
@@ -1697,7 +1733,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                       onChange={this.onChange}
                       value={this.state.date}
                     />
-                  </div>
+                  </div><div id="msg-date-picker"></div>
                   <button type="button" onClick={this.btnSortByDate} id="btn-sort-by-date">sort items by date</button>
                 </div>
               )} />
@@ -1734,7 +1770,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                     {this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "current")).length} texts are selected
                   </div>
                   <div class="display-items">
-                    {this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "previous")).length} texts were saved by the user currently logged in
+                    {this.state.alltexts.filter(x=>x.some(x=> x[0] === "session_of_texts" && x[1] === "previous")).length} texts were saved since the latest changes 
                   </div>
                   <div class="display-items">
                     There are {this.state.otherUsersItems} texts from other users that are leftin the database
@@ -1796,25 +1832,18 @@ my two mistresses: what a beast am I to slack it!`,*/
                   </div>
                   <div id="all-input-fields">
                     <div className={`play`}> 
-
-
                       <label htmlFor={`wordinput`}></label>
                       <input
-                        className={`form-control ${this.state.wordinputError ? 'is-invalid' : ''}`}
                         id={`wordinput`}
                         placeholder='Enter word'
                         value={this.state.inputValue}
-                        //onMouseOver={this.displayAudio}
-                        onBlur={(event) => {this.setState({ inputValue: event.target.inputValue })}}
-                        onChange={(event) => {this.setState({ inputValue: event.target.inputValue })}}
-                        //onFocus={(event) => {this.btn.removeAttribute('disabled')}}
-                             
+                        onChange={this.updateInputValue}
                       />
-                      <button ref={btn => { this.btn = btn; }} onClick={this.disableButton} >
+
+                      <button hidden={true} ref={btn => { this.btn = btn; }} onClick={(event) => {document.getElementById(this.btn.dataset.targetValue+'-audio').pause();document.getElementById(this.btn.dataset.targetValue+'-audio').hidden = true;this.setState({inputValue:''});}} >
                         click me
                       </button>
-
-
+                      <button hidden={false} id='replace-btn'>click me</button>
                       <button id={`loadItemsForNewGame`} onClick={this.displayAudio}>
 
                         Start a new game 
@@ -1871,7 +1900,7 @@ const Main = (props) => (
 )
 const ClickButton = withRouter(({ history }) => (
   <button
-    hidden="true"
+    hidden={true}
     id="export_items_route"
     type="button"
     onClick={(event) => { history.push('/exportedItems'); }}
@@ -1881,7 +1910,7 @@ const ClickButton = withRouter(({ history }) => (
 ))
 const ShowPrevSessions = withRouter(({ history }) => (
   <button
-    hidden="true"
+    hidden={true}
     id="edit_items_route"
     type="button"
     onClick={(event) => { history.push('/edit'); }}
