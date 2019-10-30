@@ -671,8 +671,7 @@ my two mistresses: what a beast am I to slack it!`,*/
   displayAudio = event => {
     const itemlist = [];
     const alltexts = this.state.alltexts;
-
-    if(alltexts.length === 0) {return;};
+    if(alltexts.length === 0) {return;}
     const audioItems = [];
     alltexts.forEach(function(text) {
       text.forEach(prop => {
@@ -736,10 +735,11 @@ my two mistresses: what a beast am I to slack it!`,*/
             }
           });
           
-          const previewMyAudioFiles = document.getElementById('myAudioFiles');
-          myAudioFiles.forEach(function(item, index, object) {
-            previewMyAudioFiles.appendChild(item); 
-          });
+
+        });
+        const previewMyAudioFiles = document.getElementById('myAudioFiles');
+        myAudioFiles.forEach(function(item, index, object) {
+          previewMyAudioFiles.appendChild(item); 
         });
         
       })
@@ -1492,7 +1492,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     function loadTextsByDate(text) {
       return text.some(prop => prop[0] === "dates" && prop[1].includes(date));
     }
-    this.displayNewEntries(alltexts.filter(loadTextsByDate));
+    //this.displayNewEntries(alltexts.filter(loadTextsByDate));
   };
   displayItem = (event) => {
     console.log(event.target.parentNode.firstChild.dataset.textid);
