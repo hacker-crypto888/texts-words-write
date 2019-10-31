@@ -1607,6 +1607,7 @@ my two mistresses: what a beast am I to slack it!`,*/
     console.log('input value=', inputValue, 'targetValue', btn.dataset.targetValue);
     btn.hidden = true;
     document.getElementById('replace-btn').hidden=false;
+    if(!btn.dataset.targetValue){return;}
     if((btn.dataset.targetValue.trim()!=='')&&(this.state.inputValue.trim()!=='') &&(btn.dataset.targetValue.trim() === this.state.inputValue.trim())){
       alert('===');
       btn.hidden = false;
