@@ -1601,14 +1601,14 @@ my two mistresses: what a beast am I to slack it!`,*/
       inputValue:
         event.target.inputValue,
     });
-    const inputValue = documemt.getElementById('wordinput').value;
+    const inputValue = document.getElementById('wordinput').value;
     const btn = document.getElementById('audio-btn');
     console.log('input value=', inputValue, 'targetValue', btn.dataset.targetValue);
     btn.hidden = true;
     document.getElementById('replace-btn').hidden=false;
     if(!btn.dataset.targetValue){return;}
     if((btn.dataset.targetValue.trim()!=='')&&(inputValue.trim()!=='') &&(btn.dataset.targetValue.trim() === inputValue.trim())){
-      alert('===');
+      //alert('===');
       btn.hidden = false;
       document.getElementById('replace-btn').hidden=true;
     }
