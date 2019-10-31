@@ -86,6 +86,7 @@ class BasicForm extends React.Component {
       myBlob:null,
       myBlub:null,
       myAudioFiles:null,
+      btn:null,
       wordInputField:null,
       itemsImportMode:null,
       myAudioNode:null,
@@ -636,42 +637,8 @@ my two mistresses: what a beast am I to slack it!`,*/
   }
   handleWordInput = (event) => {
     event.preventDefault();
-    //this.btn.removeAttribute("disabled");
   }
   
-  disableButton = (event) => {
-    const targetValue = this.state.targetValue;
-    const inputValue = this.state.inputValue;
-    //event.preventDefault();
-    if(document.getElementById('myAudioFiles').hasChildNodes) {
-      console.log('target value=', targetValue);
-      console.log('input value=', inputValue);
-      //this.btn.setAttribute("disabled", "disabled");
-      
-      this.setState({
-
-        checkInput:
-          inputValue === '' ? 'enter a word' : null,
-        checkTarget:
-          targetValue === '' ? 'play a word' : null
-      });
-    }
-  }
-  removeAudioPlayer = (event) => {
-    const targetValue = this.state.targetValue;
-    const inputValue = this.state.inputValue;
-    const mountElements = document.getElementById(targetValue+'-audio');
-    if (mountElements !== undefined) {
-      mountElements.pause();
-      mountElements.currentTime = 0;
-      //mountElements.removeAttribute('controls');
-      mountElements.hidden = true;
-    }
-    this.setState({
-      inputValue:
-        ''
-    });
-  }
   disableFormButton = () => {
     this.setState({
       controls: 
@@ -743,7 +710,8 @@ my two mistresses: what a beast am I to slack it!`,*/
           //  };
           //}
           audioFilePreview.onplay = (event) => { 
-            this.btn.dataset.targetValue = audioFilePreview.id.substring(0,audioFilePreview.id.length-6).trim();
+            const btn = document.getElementById('audio-btn');
+            btn.dataset.targetValue = audioFilePreview.id.substring(0,audioFilePreview.id.length-6).trim();
 
           };
           [...Object.entries(mp3WordList)].forEach(function(mp3, indexmp3, objectmp3) {
@@ -1633,12 +1601,15 @@ my two mistresses: what a beast am I to slack it!`,*/
       inputValue:
         event.target.inputValue,
     });
+    console.log(this.state.inputValue);
     const inputValue = this.state.inputValue;
-    this.btn.hidden = true;
+    const btn = document.getElementById('audio-btn');
+    console.log('input value=', inputValue, 'targetValue', btn.dataset.targetValue);
+    btn.hidden = true;
     document.getElementById('replace-btn').hidden=false;
-    if((this.btn.dataset.targetValue.trim()!=='')&&(inputValue.trim()!=='') &&(this.btn.dataset.targetValue.trim() === inputValue.trim())){
+    if((btn.dataset.targetValue.trim()!=='')&&(this.state.inputValue.trim()!=='') &&(btn.dataset.targetValue.trim() === this.state.inputValue.trim())){
       alert('===');
-      this.btn.hidden = false;
+      btn.hidden = false;
       document.getElementById('replace-btn').hidden=true;
     }
   }
@@ -1840,7 +1811,7 @@ my two mistresses: what a beast am I to slack it!`,*/
                         onChange={this.updateInputValue}
                       />
 
-                      <button hidden={true} ref={btn => { this.btn = btn; }} onClick={(event) => {document.getElementById(this.btn.dataset.targetValue+'-audio').pause();document.getElementById(this.btn.dataset.targetValue+'-audio').hidden = true;this.setState({inputValue:''});}} >
+                      <button hidden={true} ref={btn => { this.btn = btn; }} id="audio-btn" onClick={(event) => {document.getElementById(event.target.dataset.targetValue+'-audio').pause();document.getElementById(event.target.dataset.targetValue+'-audio').hidden = true;this.setState({inputValue:''});}} >
                         click me
                       </button>
                       <button hidden={false} id='replace-btn'>click me</button>
