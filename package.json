@@ -41,7 +41,7 @@
     "mz": "^2.7.0",
     "natives": "^1.1.6",
     "node-expat": "^2.3.18",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "node-gyp": "^5.0.3",
     "pdfjs-dist": "^2.1.266",
     "react": "^16.9.0",
